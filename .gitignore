@@ -1,12 +1,25 @@
-# Ignore environment configuration
-.env
+# Uploaded files
+public/uploads/*
+!public/uploads/.gitkeep
 
-# Ignore vendor directory if Composer is used in future
-/vendor/
+# Configuration with sensitive data
+config.php
 
-# OS-specific junk
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
 .DS_Store
 Thumbs.db
 
-# Log files
+# Logs
 *.log
+
+# Temporary files
+tmp/
+temp/
+cache/
