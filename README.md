@@ -5,154 +5,49 @@ This website—when completed—will allow users to create events, add events to
 
 To keep things straightforward the application is built with plain PHP, HTML, CSS, and a sprinkle of vanilla JavaScript—no heavy frameworks or tooling required.
 
-## Features
+This is being done via vibe coding, with manual changes where the AI gets it wrong.
 
-- **Event Management** – Create events with titles, descriptions, dates, times, and assigned venues
-- **Venue Management** – Add venues with full address details, owners, and deputies
-- **Deputy System** – Attach deputies to both events and venues so tasks can be delegated easily
-- **Community Calendar** – View an aggregated calendar that highlights upcoming events and who has added them to their own calendars
-- **Calendar Entries** – Friends can add events to their calendar with one click so organizers see who is interested
-- **Photo Gallery** – Upload event photos (JPEG/PNG/GIF), add captions, and see who uploaded them
-- **Photo Comments** – Comment threads keep conversations alive under each photo
-- **Event Sharing** – Share events with others by name to keep everyone in the loop
-- **MySQL Database** – Uses MySQL for reliable, relational data storage
+## Tagging & Sharing
 
-## Getting Started
+Two lightweight JSON APIs expose the new functionality.
 
-### Prerequisites
+### Tagging (api/tags.php)
 
-- **PHP 8.0 or higher** with PDO MySQL extension enabled
-- **MySQL 5.7+ or MariaDB 10.3+**
-- A web server (Apache, Nginx, or PHP's built-in server for development)
+| Action | Method | Required payload/query |
+| --- | --- | --- |
+| `add_event_tag` | POST | `{ "event_id": <int>, "tag_name": "<string>", "category": "<optional>" }` |
+| `add_venue_tag` | POST | `{ "venue_id": <int>, "tag_name": "<string>", "category": "<optional>" }` |
+| `remove_event_tag` | DELETE | `{ "event_id": <int>, "tag_id": <int> }` |
+| `remove_venue_tag` | DELETE | `{ "venue_id": <int>, "tag_id": <int> }` |
+| `get_event_tags` | GET | `?action=get_event_tags&event_id=<int>` |
+| `get_venue_tags` | GET | `?action=get_venue_tags&venue_id=<int>` |
+| `search_tags` | GET | `?action=search_tags&query=<string>&limit=<optional int>` |
+| `get_popular_tags` | GET | `?action=get_popular_tags&limit=<optional int>` |
+| `get_events_by_tag` | GET | `?action=get_events_by_tag&tag_id=<int>` |
+| `get_venues_by_tag` | GET | `?action=get_venues_by_tag&tag_id=<int>` |
 
-### Quick Setup
+All tagging actions require an authenticated session (`$_SESSION['user_id']`). Tag associations are public; the API records the user who attached each tag for auditing and personal suggestions.
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd LENSsf
-   ```
+### Sharing (api/sharing.php)
 
-2. **Create a MySQL database:**
-   ```sql
-   CREATE DATABASE lenssf CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   ```
+| Action | Method | Required payload/query |
+| --- | --- | --- |
+| `share_event` | POST | `{ "event_id": <int>, "shared_with": <int>, "message": "<optional>" }` |
+| `revoke_event_share` | DELETE | `{ "event_id": <int>, "shared_with": <int> }` |
+| `get_event_shares` | GET | `?action=get_event_shares&event_id=<int>` |
+| `get_events_shared_with_me` | GET | `?action=get_events_shared_with_me` |
+| `share_venue` | POST | `{ "venue_id": <int>, "shared_with": <int>, "message": "<optional>" }` |
+| `revoke_venue_share` | DELETE | `{ "venue_id": <int>, "shared_with": <int> }` |
+| `get_venue_shares` | GET | `?action=get_venue_shares&venue_id=<int>` |
+| `get_venues_shared_with_me` | GET | `?action=get_venues_shared_with_me` |
 
-3. **Run the setup script:**
-   ```bash
-   ./setup.sh
-   ```
-   > This creates the upload directory and copies `config.example.php` to `config.php`
+Again, session authentication is required. A single share per sender/recipient is maintained for each entity; subsequent shares update the message and timestamp.
 
-4. **Configure the database:**
-   Edit `config.php` and update your MySQL credentials:
-   ```php
-   define('DB_HOST', '127.0.0.1');
-   define('DB_NAME', 'lenssf');
-   define('DB_USER', 'your_username');
-   define('DB_PASS', 'your_password');
-   ```
+### Database
 
-5. **Start the development server:**
-   ```bash
-   cd public
-   php -S localhost:8000
-   ```
+`newesSchema.sql` now includes:
+- `event_tags` and `venue_tags` tables with `user_id` tracking and timestamps.
+- `event_shares` and `venue_shares` tables for user-to-user sharing.
+- `usage_count` on `tags` for surfacing popular tags.
 
-6. **Visit the app:**
-   Open [http://localhost:8000](http://localhost:8000) in your browser
-   
-   The database tables will be created automatically on first load.
-
-## Project Structure
-
-```
-.
-├── public/               # Document root
-│   ├── index.php        # Main application entry point
-│   ├── css/             # Stylesheets
-│   ├── js/              # JavaScript helpers
-│   └── uploads/         # Photo uploads (gitignored)
-├── includes/
-│   ├── helpers.php      # Common helper functions
-│   ├── db.php           # PDO database connection
-│   ├── managers/        # Domain services (EventManager, VenueManager, PhotoManager)
-│   └── pages/           # Page templates (home, events, calendar, venues, photos)
-├── database/
-│   └── schema_mysql.sql # MySQL database schema
-├── setup.sh             # Setup script
-├── config.example.php   # Sample configuration
-└── README.md
-```
-
-## Database Schema
-
-The application uses MySQL to store:
-
-- **venues** – Venue details with owner names and deputies (stored as JSON)
-- **events** – Events with dates, times, venue links, and deputies
-- **event_calendar_entries** – User calendar additions for events
-- **event_shares** – Event sharing between users
-- **photos** – Photo uploads with captions and event associations
-- **photo_comments** – Comments on photos
-
-The schema is automatically applied on first run. You can also manually run:
-
-```bash
-mysql -u your_user -p lenssf < database/schema_mysql.sql
-```
-
-## Configuration
-
-Edit `config.php` to customize:
-
-```php
-// Database
-define('DB_HOST', '127.0.0.1');
-define('DB_PORT', 3306);
-define('DB_NAME', 'lenssf');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-
-// Site
-define('SITE_NAME', 'Local Event Network Service');
-define('SITE_URL', 'http://localhost:8000');
-
-// Uploads
-define('UPLOAD_DIR', __DIR__ . '/public/uploads/');
-define('MAX_UPLOAD_SIZE', 5_242_880); // 5MB
-```
-
-## Development Notes
-
-- **Database Initialization** – The schema is automatically created on first database connection
-- **Sessions** – Started automatically in `config.php`
-- **Flash Messages** – Use the Post/Redirect/Get pattern to avoid duplicate submissions
-- **File Uploads** – Limited to 5 MB, JPEG/PNG/GIF only, saved in `public/uploads/`
-- **No Authentication** – Names are collected via form fields for now (authentication is a future enhancement)
-- **Deputies** – Stored as JSON arrays in the database for flexibility
-
-## Future Enhancements
-
-- User authentication and authorization system
-- Search and filtering for events and venues
-- Email reminders or notifications for shared events
-- iCal or Google Calendar export support
-- Advanced media gallery with lightbox
-- RSVP tracking and attendee limits
-- Social sharing integrations
-- Admin dashboard for site management
-
-## Deployment
-
-For production deployment:
-
-1. Use a proper web server (Apache or Nginx)
-2. Enable HTTPS with SSL certificates
-3. Harden MySQL user permissions
-4. Set restrictive file permissions on config.php
-5. Configure proper error logging
-6. Consider adding Redis/Memcached for session storage
-7. Set up automated backups for the database
-
-Enjoy building out your Local Event Network!
+Ensure these migrations are applied before exercising the APIs.
