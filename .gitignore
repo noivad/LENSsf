@@ -1,0 +1,12 @@
+# Ignore environment configuration
+.env
+
+# Ignore vendor directory if Composer is used in future
+/vendor/
+
+# OS-specific junk
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log

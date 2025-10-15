@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tagging and Sharing Demo - LENS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.secondary {
+            background-color: #2196F3;
+        }
+        button.secondary:hover {
+            background-color: #0b7dda;
+        }
+        button.danger {
+            background-color: #f44336;
+        }
+        button.danger:hover {
+            background-color: #da190b;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .tag {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>LENS - Tagging and Sharing Demo</h1>
+    
+    <div class="grid">
+        <div class="container">
+            <h2>Event Tagging</h2>
+            <div class="form-group">
+                <label for="event-id">Event ID:</label>
+                <input type="number" id="event-id" placeholder="Enter event ID">
+            </div>
+            <div class="form-group">
+                <label for="event-tag">Tag Name:</label>
+                <input type="text" id="event-tag" placeholder="e.g., live-music">
+            </div>
+            <div class="form-group">
+                <label for="event-tag-category">Category (optional):</label>
+                <input type="text" id="event-tag-category" placeholder="e.g., genre">
+            </div>
+            <button onclick="addEventTag()">Add Tag to Event</button>
+            <button class="secondary" onclick="getEventTags()">Get Event Tags</button>
+            <div id="event-tags-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="container">
+            <h2>Venue Tagging</h2>
+            <div class="form-group">
+                <label for="venue-id">Venue ID:</label>
+                <input type="number" id="venue-id" placeholder="Enter venue ID">
+            </div>
+            <div class="form-group">
+                <label for="venue-tag">Tag Name:</label>
+                <input type="text" id="venue-tag" placeholder="e.g., outdoor">
+            </div>
+            <div class="form-group">
+                <label for="venue-tag-category">Category (optional):</label>
+                <input type="text" id="venue-tag-category" placeholder="e.g., amenity">
+            </div>
+            <button onclick="addVenueTag()">Add Tag to Venue</button>
+            <button class="secondary" onclick="getVenueTags()">Get Venue Tags</button>
+            <div id="venue-tags-result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="container">
+            <h2>Share Event</h2>
+            <div class="form-group">
+                <label for="share-event-id">Event ID:</label>
+                <input type="number" id="share-event-id" placeholder="Enter event ID">
+            </div>
+            <div class="form-group">
+                <label for="share-event-user">Share with User ID:</label>
+                <input type="number" id="share-event-user" placeholder="Enter user ID">
+            </div>
+            <div class="form-group">
+                <label for="share-event-message">Message (optional):</label>
+                <textarea id="share-event-message" rows="3" placeholder="Add a personal message..."></textarea>
+            </div>
+            <button onclick="shareEvent()">Share Event</button>
+            <button class="secondary" onclick="getEventsSharedWithMe()">Events Shared With Me</button>
+            <div id="event-share-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="container">
+            <h2>Share Venue</h2>
+            <div class="form-group">
+                <label for="share-venue-id">Venue ID:</label>
+                <input type="number" id="share-venue-id" placeholder="Enter venue ID">
+            </div>
+            <div class="form-group">
+                <label for="share-venue-user">Share with User ID:</label>
+                <input type="number" id="share-venue-user" placeholder="Enter user ID">
+            </div>
+            <div class="form-group">
+                <label for="share-venue-message">Message (optional):</label>
+                <textarea id="share-venue-message" rows="3" placeholder="Add a personal message..."></textarea>
+            </div>
+            <button onclick="shareVenue()">Share Venue</button>
+            <button class="secondary" onclick="getVenuesSharedWithMe()">Venues Shared With Me</button>
+            <div id="venue-share-result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Search & Popular Tags</h2>
+        <div class="form-group">
+            <label for="tag-search">Search Tags:</label>
+            <input type="text" id="tag-search" placeholder="Enter search term">
+        </div>
+        <button onclick="searchTags()">Search</button>
+        <button class="secondary" onclick="getPopularTags()">Get Popular Tags</button>
+        <div id="tags-search-result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function apiRequest(endpoint, action, method = 'GET', data = null) {
+            const url = `${endpoint}?action=${action}`;
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            
+            if (data && (method === 'POST' || method === 'DELETE')) {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(url, options);
+                return await response.json();
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        }
+
+        function displayResult(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function addEventTag() {
+            const eventId = document.getElementById('event-id').value;
+            const tagName = document.getElementById('event-tag').value;
+            const category = document.getElementById('event-tag-category').value;
+            
+            const result = await apiRequest('api/tags.php', 'add_event_tag', 'POST', {
+                event_id: parseInt(eventId),
+                tag_name: tagName,
+                category: category || null
+            });
+            
+            displayResult('event-tags-result', result);
+        }
+
+        async function getEventTags() {
+            const eventId = document.getElementById('event-id').value;
+            const result = await apiRequest(`api/tags.php?event_id=${eventId}`, 'get_event_tags');
+            displayResult('event-tags-result', result);
+        }
+
+        async function addVenueTag() {
+            const venueId = document.getElementById('venue-id').value;
+            const tagName = document.getElementById('venue-tag').value;
+            const category = document.getElementById('venue-tag-category').value;
+            
+            const result = await apiRequest('api/tags.php', 'add_venue_tag', 'POST', {
+                venue_id: parseInt(venueId),
+                tag_name: tagName,
+                category: category || null
+            });
+            
+            displayResult('venue-tags-result', result);
+        }
+
+        async function getVenueTags() {
+            const venueId = document.getElementById('venue-id').value;
+            const result = await apiRequest(`api/tags.php?venue_id=${venueId}`, 'get_venue_tags');
+            displayResult('venue-tags-result', result);
+        }
+
+        async function shareEvent() {
+            const eventId = document.getElementById('share-event-id').value;
+            const sharedWith = document.getElementById('share-event-user').value;
+            const message = document.getElementById('share-event-message').value;
+            
+            const result = await apiRequest('api/sharing.php', 'share_event', 'POST', {
+                event_id: parseInt(eventId),
+                shared_with: parseInt(sharedWith),
+                message: message || null
+            });
+            
+            displayResult('event-share-result', result);
+        }
+
+        async function getEventsSharedWithMe() {
+            const result = await apiRequest('api/sharing.php', 'get_events_shared_with_me');
+            displayResult('event-share-result', result);
+        }
+
+        async function shareVenue() {
+            const venueId = document.getElementById('share-venue-id').value;
+            const sharedWith = document.getElementById('share-venue-user').value;
+            const message = document.getElementById('share-venue-message').value;
+            
+            const result = await apiRequest('api/sharing.php', 'share_venue', 'POST', {
+                venue_id: parseInt(venueId),
+                shared_with: parseInt(sharedWith),
+                message: message || null
+            });
+            
+            displayResult('venue-share-result', result);
+        }
+
+        async function getVenuesSharedWithMe() {
+            const result = await apiRequest('api/sharing.php', 'get_venues_shared_with_me');
+            displayResult('venue-share-result', result);
+        }
+
+        async function searchTags() {
+            const query = document.getElementById('tag-search').value;
+            const result = await apiRequest(`api/tags.php?query=${query}`, 'search_tags');
+            displayResult('tags-search-result', result);
+        }
+
+        async function getPopularTags() {
+            const result = await apiRequest('api/tags.php', 'get_popular_tags');
+            displayResult('tags-search-result', result);
+        }
+    </script>
+</body>
+</html>
