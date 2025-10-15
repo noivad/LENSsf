@@ -5,12 +5,6 @@ public/uploads/*
 # Configuration with sensitive data
 config.php
 
-# Database files
-data/*.db
-data/*.sqlite
-data/*.sqlite3
-!data/*.json
-
 # IDE and editor files
 .vscode/
 .idea/

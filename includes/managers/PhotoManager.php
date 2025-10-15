@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 class PhotoManager
 {
-    private const STORE_KEY = 'photos';
-
-    private int $maxFileSize;
-
     public function __construct(
-        private readonly DataStore $store,
+        private readonly PDO $db,
         private readonly string $uploadPath,
-        int $maxFileSize = 5_242_880 // 5MB
+        private readonly int $maxFileSize = 5_242_880
     ) {
-        $this->maxFileSize = $maxFileSize;
-
         if (!is_dir($this->uploadPath)) {
             mkdir($this->uploadPath, 0755, true);
         }
@@ -22,13 +16,33 @@ class PhotoManager
 
     public function all(): array
     {
-        $photos = $this->store->load(self::STORE_KEY);
+        $stmt = $this->db->query(
+            'SELECT * FROM photos ORDER BY uploaded_at DESC'
+        );
 
-        usort($photos, static function (array $a, array $b) {
-            return strcmp($b['uploaded_at'] ?? '', $a['uploaded_at'] ?? '');
-        });
+        $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!$photos) {
+            return [];
+        }
 
-        return $photos;
+        $photoIds = array_map(static fn (array $photo): int => (int) $photo['id'], $photos);
+        $commentsMap = $this->fetchComments($photoIds);
+
+        return array_map(function (array $photo) use ($commentsMap): array {
+            $id = (int) $photo['id'];
+
+            return [
+                'id' => $id,
+                'event_id' => $photo['event_id'],
+                'filename' => $photo['filename'],
+                'original_name' => $photo['original_name'],
+                'caption' => $photo['caption'],
+                'uploaded_by' => $photo['uploaded_by'],
+                'uploaded_at' => $photo['uploaded_at'],
+                'size' => (int) $photo['file_size'],
+                'comments' => $commentsMap[$id] ?? [],
+            ];
+        }, $photos);
     }
 
     public function add(array $file, array $data): ?array
@@ -37,7 +51,7 @@ class PhotoManager
             return null;
         }
 
-        $size = $file['size'] ?? 0;
+        $size = (int) ($file['size'] ?? 0);
         if ($size <= 0 || $size > $this->maxFileSize) {
             return null;
         }
@@ -67,52 +81,107 @@ class PhotoManager
             return null;
         }
 
-        $photos = $this->store->load(self::STORE_KEY);
+        $caption = trim($data['caption'] ?? '') ?: null;
+        $uploadedBy = trim($data['uploaded_by'] ?? '');
+        $eventId = $data['event_id'] ?: null;
 
-        $photo = [
-            'id' => generate_id('ph_'),
-            'filename' => $uniqueName,
-            'original_name' => $file['name'],
-            'size' => $size,
-            'caption' => trim($data['caption'] ?? ''),
-            'uploaded_by' => trim($data['uploaded_by'] ?? ''),
-            'event_id' => $data['event_id'] ?? null,
-            'uploaded_at' => date('c'),
-            'comments' => [],
-        ];
+        if ($uploadedBy === '') {
+            unlink($destination);
 
-        $photos[] = $photo;
-        $this->store->save(self::STORE_KEY, $photos);
+            return null;
+        }
 
-        return $photo;
+        $stmt = $this->db->prepare(
+            'INSERT INTO photos (event_id, filename, original_name, file_size, caption, uploaded_by)
+             VALUES (:event_id, :filename, :original_name, :file_size, :caption, :uploaded_by)'
+        );
+
+        try {
+            $stmt->execute([
+                ':event_id' => $eventId ?: null,
+                ':filename' => $uniqueName,
+                ':original_name' => $file['name'],
+                ':file_size' => $size,
+                ':caption' => $caption,
+                ':uploaded_by' => $uploadedBy,
+            ]);
+        } catch (Throwable $e) {
+            unlink($destination);
+            throw $e;
+        }
+
+        $photoId = (int) $this->db->lastInsertId();
+
+        return $this->findById($photoId);
     }
 
     public function addComment(string $photoId, string $name, string $comment): void
     {
+        $photoId = trim($photoId);
         $name = trim($name);
         $comment = trim($comment);
 
-        if ($name === '' || $comment === '') {
+        if ($photoId === '' || $name === '' || $comment === '') {
             return;
         }
 
-        $photos = $this->store->load(self::STORE_KEY);
+        $stmt = $this->db->prepare(
+            'INSERT INTO photo_comments (photo_id, name, comment) VALUES (:photo_id, :name, :comment)'
+        );
 
-        foreach ($photos as &$photo) {
-            if ($photo['id'] !== $photoId) {
-                continue;
-            }
+        $stmt->execute([
+            ':photo_id' => (int) $photoId,
+            ':name' => $name,
+            ':comment' => $comment,
+        ]);
+    }
 
-            $photo['comments'][] = [
-                'id' => generate_id('com_'),
-                'name' => $name,
-                'comment' => $comment,
-                'created_at' => date('c'),
+    private function fetchComments(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->db->prepare(
+            sprintf('SELECT id, photo_id, name, comment, created_at FROM photo_comments WHERE photo_id IN (%s) ORDER BY created_at ASC', $placeholders)
+        );
+        $stmt->execute(array_values($ids));
+
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $photoId = (int) $row['photo_id'];
+            $result[$photoId][] = [
+                'id' => (int) $row['id'],
+                'name' => $row['name'],
+                'comment' => $row['comment'],
+                'created_at' => $row['created_at'],
             ];
-
-            $this->store->save(self::STORE_KEY, $photos);
-
-            return;
         }
+
+        return $result;
+    }
+
+    private function findById(int $photoId): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM photos WHERE id = :id');
+        $stmt->execute([':id' => $photoId]);
+
+        $photo = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$photo) {
+            return null;
+        }
+
+        return [
+            'id' => (int) $photo['id'],
+            'event_id' => $photo['event_id'],
+            'filename' => $photo['filename'],
+            'original_name' => $photo['original_name'],
+            'caption' => $photo['caption'],
+            'uploaded_by' => $photo['uploaded_by'],
+            'uploaded_at' => $photo['uploaded_at'],
+            'size' => (int) $photo['file_size'],
+            'comments' => $this->fetchComments([$photoId])[$photoId] ?? [],
+        ];
     }
 }

@@ -5,8 +5,8 @@ echo ""
 
 # Create required directories
 echo "Creating directories..."
-mkdir -p data public/uploads
-chmod 755 data public/uploads
+mkdir -p public/uploads
+chmod 755 public/uploads
 
 # Create config file from example
 if [ ! -f config.php ]; then
@@ -17,18 +17,17 @@ else
     echo "✓ config.php already exists"
 fi
 
-# Create empty data files if they don't exist
-for file in events venues photos; do
-    if [ ! -f "data/${file}.json" ]; then
-        echo "[]" > "data/${file}.json"
-        echo "✓ Created data/${file}.json"
-    else
-        echo "✓ data/${file}.json already exists"
-    fi
-done
-
 echo ""
 echo "Setup complete!"
+echo ""
+echo "IMPORTANT: Before starting, you need to:"
+echo "1. Create a MySQL database (e.g., lenssf)"
+echo "2. Update config.php with your MySQL credentials"
+echo ""
+echo "Example MySQL commands:"
+echo "  CREATE DATABASE lenssf CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+echo ""
+echo "The database schema will be automatically created on first run."
 echo ""
 echo "To start the development server, run:"
 echo "  cd public && php -S localhost:8000"

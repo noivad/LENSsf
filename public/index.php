@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/../includes/helpers.php';
-require __DIR__ . '/../includes/DataStore.php';
+require __DIR__ . '/../includes/db.php';
 require __DIR__ . '/../includes/managers/EventManager.php';
 require __DIR__ . '/../includes/managers/VenueManager.php';
 require __DIR__ . '/../includes/managers/PhotoManager.php';
@@ -15,14 +15,13 @@ if (file_exists(__DIR__ . '/../config.php')) {
 autoloadSession();
 ensureSiteName();
 
-$dataDir = __DIR__ . '/../data';
 $uploadDir = defined('UPLOAD_DIR') ? rtrim((string) UPLOAD_DIR, '/') : __DIR__ . '/uploads';
 $maxUploadSize = defined('MAX_UPLOAD_SIZE') ? (int) MAX_UPLOAD_SIZE : 5_242_880;
 
-$store = DataStore::getInstance($dataDir);
-$eventManager = new EventManager($store);
-$venueManager = new VenueManager($store);
-$photoManager = new PhotoManager($store, $uploadDir, $maxUploadSize);
+$pdo = Database::connect();
+$eventManager = new EventManager($pdo);
+$venueManager = new VenueManager($pdo);
+$photoManager = new PhotoManager($pdo, $uploadDir, $maxUploadSize);
 
 $page = $_GET['page'] ?? 'home';
 
@@ -52,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $venues = $venueManager->all();
-$events = $eventManager->attachVenueName($eventManager->all(), $venues);
+$events = $eventManager->all();
 $photos = $photoManager->all();
 $upcomingEvents = $eventManager->upcoming(5);
 $siteName = SITE_NAME;

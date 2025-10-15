@@ -4,55 +4,108 @@ declare(strict_types=1);
 
 class VenueManager
 {
-    private const STORE_KEY = 'venues';
-
-    public function __construct(private readonly DataStore $store)
+    public function __construct(private readonly PDO $db)
     {
     }
 
     public function all(): array
     {
-        $venues = $this->store->load(self::STORE_KEY);
+        $stmt = $this->db->query(
+            'SELECT * FROM venues ORDER BY name ASC'
+        );
 
-        usort($venues, static function (array $a, array $b) {
-            return strcasecmp($a['name'] ?? '', $b['name'] ?? '');
-        });
+        $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $venues;
+        return array_map(static function (array $venue): array {
+            $deputies = json_decode($venue['deputies'] ?? '[]', true) ?: [];
+
+            return [
+                'id' => (int) $venue['id'],
+                'name' => $venue['name'],
+                'address' => $venue['address'],
+                'city' => $venue['city'],
+                'state' => $venue['state'],
+                'zip_code' => $venue['zip_code'],
+                'description' => $venue['description'],
+                'owner' => $venue['owner_name'],
+                'deputies' => $deputies,
+                'created_at' => $venue['created_at'],
+            ];
+        }, $venues);
     }
 
-    public function create(array $data): array
+    public function create(array $data): ?array
     {
-        $venues = $this->store->load(self::STORE_KEY);
-        $id = generate_id('ven_');
+        $name = trim($data['name'] ?? '');
+        $owner = trim($data['owner'] ?? '');
 
-        $venue = [
-            'id' => $id,
-            'name' => trim($data['name'] ?? ''),
-            'address' => trim($data['address'] ?? ''),
-            'city' => trim($data['city'] ?? ''),
-            'state' => trim($data['state'] ?? ''),
-            'zip_code' => trim($data['zip_code'] ?? ''),
-            'description' => trim($data['description'] ?? ''),
-            'owner' => trim($data['owner'] ?? ''),
-            'deputies' => $data['deputies'] ?? [],
-            'created_at' => date('c'),
+        if ($name === '' || $owner === '') {
+            return null;
+        }
+
+        $address = trim($data['address'] ?? '') ?: null;
+        $city = trim($data['city'] ?? '') ?: null;
+        $state = trim($data['state'] ?? '') ?: null;
+        $zipCode = trim($data['zip_code'] ?? '') ?: null;
+        $description = trim($data['description'] ?? '') ?: null;
+
+        $deputies = array_map('trim', $data['deputies'] ?? []);
+        $deputies = array_values(array_filter(array_unique($deputies)));
+
+        $stmt = $this->db->prepare(
+            'INSERT INTO venues (name, address, city, state, zip_code, description, owner_name, deputies)
+             VALUES (:name, :address, :city, :state, :zip_code, :description, :owner_name, :deputies)'
+        );
+
+        $stmt->execute([
+            ':name' => $name,
+            ':address' => $address,
+            ':city' => $city,
+            ':state' => $state,
+            ':zip_code' => $zipCode,
+            ':description' => $description,
+            ':owner_name' => $owner,
+            ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
+        ]);
+
+        $venueId = (int) $this->db->lastInsertId();
+
+        return $this->findById($venueId);
+    }
+
+    public function findById(int $venueId): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM venues WHERE id = :id');
+        $stmt->execute([':id' => $venueId]);
+
+        $venue = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$venue) {
+            return null;
+        }
+
+        $deputies = json_decode($venue['deputies'] ?? '[]', true) ?: [];
+
+        return [
+            'id' => (int) $venue['id'],
+            'name' => $venue['name'],
+            'address' => $venue['address'],
+            'city' => $venue['city'],
+            'state' => $venue['state'],
+            'zip_code' => $venue['zip_code'],
+            'description' => $venue['description'],
+            'owner' => $venue['owner_name'],
+            'deputies' => $deputies,
+            'created_at' => $venue['created_at'],
         ];
-
-        $venues[] = $venue;
-        $this->store->save(self::STORE_KEY, $venues);
-
-        return $venue;
     }
 
     public function find(string $id): ?array
     {
-        foreach ($this->all() as $venue) {
-            if ($venue['id'] === $id) {
-                return $venue;
-            }
+        $venueId = (int) $id;
+        if ($venueId <= 0) {
+            return null;
         }
 
-        return null;
+        return $this->findById($venueId);
     }
 }
