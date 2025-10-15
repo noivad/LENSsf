@@ -1,0 +1,25 @@
+# Uploaded files
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Configuration with sensitive data
+config.php
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+cache/
