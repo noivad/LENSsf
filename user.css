@@ -1,0 +1,33 @@
+/* user.css */
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+.user-profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.user-profile-info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.user-profile-info label {
+  font-weight: bold;
+}
+
+.user-profile-info p {
+  margin: 0;
+}
+
+/* Add more styles for user-related components */
