@@ -204,8 +204,16 @@
     </div>
 
     <script>
-        async function apiRequest(endpoint, action, method = 'GET', data = null) {
-            const url = `${endpoint}?action=${action}`;
+        async function apiRequest(endpoint, action, method = 'GET', data = null, queryParams = {}) {
+            const url = new URL(endpoint, window.location.href);
+            url.searchParams.set('action', action);
+
+            Object.entries(queryParams).forEach(([key, value]) => {
+                if (value !== undefined && value !== null && value !== '') {
+                    url.searchParams.set(key, value);
+                }
+            });
+
             const options = {
                 method: method,
                 headers: {
@@ -218,7 +226,7 @@
             }
             
             try {
-                const response = await fetch(url, options);
+                const response = await fetch(url.toString(), options);
                 return await response.json();
             } catch (error) {
                 return { success: false, message: error.message };
@@ -247,7 +255,7 @@
 
         async function getEventTags() {
             const eventId = document.getElementById('event-id').value;
-            const result = await apiRequest(`api/tags.php?event_id=${eventId}`, 'get_event_tags');
+            const result = await apiRequest('api/tags.php', 'get_event_tags', 'GET', null, { event_id: eventId });
             displayResult('event-tags-result', result);
         }
 
@@ -267,7 +275,7 @@
 
         async function getVenueTags() {
             const venueId = document.getElementById('venue-id').value;
-            const result = await apiRequest(`api/tags.php?venue_id=${venueId}`, 'get_venue_tags');
+            const result = await apiRequest('api/tags.php', 'get_venue_tags', 'GET', null, { venue_id: venueId });
             displayResult('venue-tags-result', result);
         }
 
@@ -311,7 +319,7 @@
 
         async function searchTags() {
             const query = document.getElementById('tag-search').value;
-            const result = await apiRequest(`api/tags.php?query=${query}`, 'search_tags');
+            const result = await apiRequest('api/tags.php', 'search_tags', 'GET', null, { query: query });
             displayResult('tags-search-result', result);
         }
 
