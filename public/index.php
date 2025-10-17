@@ -19,8 +19,8 @@ $uploadDir = defined('UPLOAD_DIR') ? rtrim((string) UPLOAD_DIR, '/') : __DIR__ .
 $maxUploadSize = defined('MAX_UPLOAD_SIZE') ? (int) MAX_UPLOAD_SIZE : 5_242_880;
 
 $pdo = Database::connect();
-$eventManager = new EventManager($pdo);
-$venueManager = new VenueManager($pdo);
+$eventManager = new EventManager($pdo, $uploadDir);
+$venueManager = new VenueManager($pdo, $uploadDir);
 $photoManager = new PhotoManager($pdo, $uploadDir, $maxUploadSize);
 
 $page = $_GET['page'] ?? 'home';
@@ -81,7 +81,12 @@ function handleCreateEvent(EventManager $eventManager): void
         redirect('?page=events#create');
     }
 
-    $eventManager->create([
+    $imageFile = null;
+    if (!empty($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $imageFile = $_FILES['image'];
+    }
+
+    $event = $eventManager->create([
         'title' => $title,
         'description' => trim($_POST['description'] ?? ''),
         'event_date' => $eventDate,
@@ -89,9 +94,14 @@ function handleCreateEvent(EventManager $eventManager): void
         'venue_id' => $_POST['venue_id'] ?: null,
         'owner' => $owner,
         'deputies' => normalize_list_input($_POST['deputies'] ?? ''),
-    ]);
+    ], $imageFile);
 
-    set_flash('Event created successfully!');
+    if ($imageFile && (int) ($imageFile['error'] ?? UPLOAD_ERR_OK) === UPLOAD_ERR_OK && empty($event['image'])) {
+        set_flash('Event created, but the image could not be uploaded.', 'error');
+    } else {
+        set_flash('Event created successfully!');
+    }
+
     redirect('?page=events');
 }
 
@@ -105,7 +115,12 @@ function handleCreateVenue(VenueManager $venueManager): void
         redirect('?page=venues#create');
     }
 
-    $venueManager->create([
+    $imageFile = null;
+    if (!empty($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $imageFile = $_FILES['image'];
+    }
+
+    $venue = $venueManager->create([
         'name' => $name,
         'address' => trim($_POST['address'] ?? ''),
         'city' => trim($_POST['city'] ?? ''),
@@ -114,9 +129,14 @@ function handleCreateVenue(VenueManager $venueManager): void
         'description' => trim($_POST['description'] ?? ''),
         'owner' => $owner,
         'deputies' => normalize_list_input($_POST['deputies'] ?? ''),
-    ]);
+    ], $imageFile);
 
-    set_flash('Venue created successfully!');
+    if ($imageFile && (int) ($imageFile['error'] ?? UPLOAD_ERR_OK) === UPLOAD_ERR_OK && empty($venue['image'])) {
+        set_flash('Venue created, but the image could not be uploaded.', 'error');
+    } else {
+        set_flash('Venue created successfully!');
+    }
+
     redirect('?page=venues');
 }
 

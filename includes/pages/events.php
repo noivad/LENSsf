@@ -7,7 +7,8 @@
 
     <div class="card" id="create">
         <h3>Create New Event</h3>
-        <form method="post" class="form">
+        <p class="card-subtext">Prefer a dedicated workspace? <a href="add-event.php">Open the full add event page</a>.</p>
+        <form method="post" enctype="multipart/form-data" class="form">
             <input type="hidden" name="action" value="create_event">
 
             <div class="form-row">
@@ -21,6 +22,13 @@
                 <label>
                     Description
                     <textarea name="description" rows="4"></textarea>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <label>
+                    Event Image
+                    <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
                 </label>
             </div>
 
@@ -76,6 +84,12 @@
                         <h4><?= e($event['title']) ?></h4>
                         <span class="event-date"><?= format_date($event['event_date']) ?></span>
                     </div>
+
+                    <?php if (!empty($event['image'])): ?>
+                        <div class="event-image">
+                            <img src="uploads/<?= e($event['image']) ?>" alt="<?= e($event['title']) ?>">
+                        </div>
+                    <?php endif; ?>
 
                     <?php if (!empty($event['description'])): ?>
                         <p><?= e($event['description']) ?></p>

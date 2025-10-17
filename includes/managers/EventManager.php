@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 class EventManager
 {
-    public function __construct(private readonly PDO $db)
-    {
+    public function __construct(
+        private readonly PDO $db,
+        private readonly ?string $uploadPath = null
+    ) {
     }
 
     public function all(): array
@@ -42,6 +44,7 @@ class EventManager
                 'venue_name' => $event['venue_name'],
                 'owner' => $event['owner_name'],
                 'deputies' => $deputies,
+                'image' => $event['image'],
                 'calendar_entries' => $calendarEntries[$id] ?? [],
                 'shared_with' => $shares[$id] ?? [],
                 'created_at' => $event['created_at'],
@@ -66,7 +69,7 @@ class EventManager
         return array_slice(array_values($events), 0, $limit);
     }
 
-    public function create(array $data): ?array
+    public function create(array $data, ?array $imageFile = null): ?array
     {
         $title = trim($data['title'] ?? '');
         $eventDate = $data['event_date'] ?? null;
@@ -82,12 +85,17 @@ class EventManager
         $deputies = array_map('trim', $data['deputies'] ?? []);
         $deputies = array_values(array_filter(array_unique($deputies)));
 
+        $imageName = null;
+        if ($imageFile && $this->uploadPath) {
+            $imageName = $this->handleImageUpload($imageFile);
+        }
+
         try {
             $this->db->beginTransaction();
 
             $stmt = $this->db->prepare(
-                'INSERT INTO events (title, description, event_date, event_time, venue_id, owner_name, deputies)
-                 VALUES (:title, :description, :event_date, :event_time, :venue_id, :owner_name, :deputies)'
+                'INSERT INTO events (title, description, event_date, event_time, venue_id, owner_name, deputies, image)
+                 VALUES (:title, :description, :event_date, :event_time, :venue_id, :owner_name, :deputies, :image)'
             );
 
             $stmt->execute([
@@ -98,6 +106,7 @@ class EventManager
                 ':venue_id' => $venueId ?: null,
                 ':owner_name' => $owner,
                 ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
+                ':image' => $imageName,
             ]);
 
             $eventId = (int) $this->db->lastInsertId();
@@ -105,6 +114,9 @@ class EventManager
             $this->db->commit();
         } catch (Throwable $e) {
             $this->db->rollBack();
+            if ($imageName) {
+                $this->deleteImage($imageName);
+            }
             throw $e;
         }
 
@@ -198,6 +210,7 @@ class EventManager
             'venue_name' => $event['venue_name'],
             'owner' => $event['owner_name'],
             'deputies' => $deputies,
+            'image' => $event['image'],
             'calendar_entries' => $this->fetchCalendarEntries([$eventId])[$eventId] ?? [],
             'shared_with' => $this->fetchStringRelations('event_shares', 'event_id', 'shared_with', [$eventId])[$eventId] ?? [],
             'created_at' => $event['created_at'],
@@ -257,5 +270,75 @@ class EventManager
         $code = $e->getCode();
 
         return $code === '23000' || $code === '23505';
+    }
+
+    private function handleImageUpload(array $file): ?string
+    {
+        if (!$this->uploadPath) {
+            return null;
+        }
+
+        $error = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+        if ($error === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
+
+        if ($error !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        $size = (int) ($file['size'] ?? 0);
+        if ($size <= 0 || $size > 10_485_760) {
+            return null;
+        }
+
+        $tmpName = $file['tmp_name'] ?? '';
+        if ($tmpName === '' || !is_uploaded_file($tmpName)) {
+            return null;
+        }
+
+        $mimeType = mime_content_type($tmpName) ?: '';
+        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($mimeType, $allowed, true)) {
+            return null;
+        }
+
+        $extension = match ($mimeType) {
+            'image/png' => '.png',
+            'image/gif' => '.gif',
+            'image/webp' => '.webp',
+            default => '.jpg',
+        };
+
+        $filename = sanitize_filename(pathinfo($file['name'] ?? '', PATHINFO_FILENAME));
+        if ($filename === '') {
+            $filename = 'image';
+        }
+
+        $subDirectory = rtrim($this->uploadPath, '/') . '/events';
+        if (!is_dir($subDirectory)) {
+            mkdir($subDirectory, 0755, true);
+        }
+
+        $uniqueName = generate_id('event_') . '_' . $filename . $extension;
+        $destination = $subDirectory . '/' . $uniqueName;
+
+        if (!move_uploaded_file($tmpName, $destination)) {
+            return null;
+        }
+
+        return 'events/' . $uniqueName;
+    }
+
+    private function deleteImage(string $imageName): void
+    {
+        if (!$this->uploadPath || !$imageName) {
+            return;
+        }
+
+        $path = rtrim($this->uploadPath, '/') . '/' . $imageName;
+        if (file_exists($path)) {
+            unlink($path);
+        }
     }
 }

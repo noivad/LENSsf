@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Event - LENS Mockup</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .mockup-note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #856404;
+        }
+
+        .mockup-note strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-box {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-subtle);
+            background: #f8f9fa;
+            margin-top: 0.5rem;
+        }
+
+        .preview-box.has-image {
+            padding: 0;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .preview-box img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .form-hint {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-subtle);
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="index.php">Local Event Network Service</a></h1>
+            <nav>
+                <a href="index.php">Home</a>
+                <a href="index.php?page=events" class="active">Events</a>
+                <a href="index.php?page=calendar">Calendar</a>
+                <a href="index.php?page=venues">Venues</a>
+                <a href="index.php?page=photos">Photos</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="mockup-note">
+            <strong>🎨 Mockup Notice</strong>
+            This is a static HTML mockup demonstrating the Add Event page layout and functionality.
+            See <code>add-event.php</code> for the working implementation.
+        </div>
+
+        <section>
+            <h2>Add New Event</h2>
+
+            <div class="card">
+                <form class="form" onsubmit="event.preventDefault(); alert('This is a mockup. See add-event.php for the working version.');">
+                    <div class="form-row">
+                        <label>
+                            Event Title *
+                            <input type="text" name="title" required placeholder="e.g., Summer Music Festival">
+                        </label>
+                    </div>
+
+                    <div class="form-row">
+                        <label>
+                            Description
+                            <textarea name="description" rows="5" placeholder="Describe your event in detail...">Join us for an amazing evening of live music featuring local artists. Food trucks, craft beer, and family-friendly activities will be available.</textarea>
+                        </label>
+                    </div>
+
+                    <div class="form-row">
+                        <label>
+                            Event Image
+                            <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewImage(event)">
+                            <small class="form-hint">Max size: 10MB. Accepted formats: JPEG, PNG, GIF, WebP</small>
+                        </label>
+                        <div id="imagePreview" class="preview-box">
+                            📷 No image selected - Choose a file to preview
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-split">
+                            <label>
+                                Event Date *
+                                <input type="date" name="event_date" required value="2024-07-15">
+                            </label>
+                            <label>
+                                Start Time
+                                <input type="time" name="start_time" value="18:00">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>
+                            Venue
+                            <select name="venue_id">
+                                <option value="">— No venue —</option>
+                                <option value="1">City Park Amphitheater</option>
+                                <option value="2" selected>Downtown Community Center</option>
+                                <option value="3">Riverside Garden Plaza</option>
+                                <option value="4">The Grand Hall</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="form-row">
+                        <label>
+                            Event Owner Name *
+                            <input type="text" name="owner" required value="Jane Smith" placeholder="Your name">
+                        </label>
+                    </div>
+
+                    <div class="form-row">
+                        <label>
+                            Deputies (comma-separated names)
+                            <input type="text" name="deputies" placeholder="Alice Johnson, Bob Williams, Charlie Brown" value="Alex Morgan, Taylor Davis">
+                            <small class="form-hint">Deputies can help manage the event</small>
+                        </label>
+                    </div>
+
+                    <div class="form-row">
+                        <button type="submit" class="button">Create Event</button>
+                        <a href="index.php?page=events" class="button-small" style="margin-left: 1rem; background: var(--secondary-color);">Cancel</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <h3>Event Preview</h3>
+                <div class="event-item">
+                    <div class="event-header">
+                        <h4>Summer Music Festival</h4>
+                        <span class="event-date">July 15, 2024</span>
+                    </div>
+
+                    <div class="event-image">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='260' viewBox='0 0 800 260'%3E%3Crect fill='%23e2e8f0' width='800' height='260'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-size='18' fill='%2364748b'%3E%F0%9F%8E%B5 Event Image Placeholder %F0%9F%8E%B5%3C/text%3E%3C/svg%3E" alt="Summer Music Festival">
+                    </div>
+
+                    <p>Join us for an amazing evening of live music featuring local artists. Food trucks, craft beer, and family-friendly activities will be available.</p>
+
+                    <div class="event-details">
+                        <span><strong>Time:</strong> 6:00 PM</span>
+                        <span><strong>Venue:</strong> Downtown Community Center</span>
+                        <span><strong>Owner:</strong> Jane Smith</span>
+                        <span><strong>Deputies:</strong> Alex Morgan, Taylor Davis</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Local Event Network Service</p>
+        </div>
+    </footer>
+
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.className = 'preview-box has-image';
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                }
+                
+                reader.readAsDataURL(file);
+            } else {
+                preview.className = 'preview-box';
+                preview.innerHTML = '📷 No image selected - Choose a file to preview';
+            }
+        }
+    </script>
+</body>
+</html>
