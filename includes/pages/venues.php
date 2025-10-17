@@ -6,7 +6,7 @@
 
     <div class="card" id="create">
         <h3>Add New Venue</h3>
-        <form method="post" class="form">
+        <form method="post" enctype="multipart/form-data" class="form">
             <input type="hidden" name="action" value="create_venue">
 
             <div class="form-row">
@@ -20,6 +20,13 @@
                 <label>
                     Description
                     <textarea name="description" rows="3"></textarea>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <label>
+                    Venue Image
+                    <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
                 </label>
             </div>
 
@@ -72,6 +79,13 @@
                 <?php foreach ($venues as $venue): ?>
                     <div class="venue-item">
                         <h4><?= e($venue['name']) ?></h4>
+
+                        <?php if (!empty($venue['image'])): ?>
+                            <div class="venue-image">
+                                <img src="uploads/<?= e($venue['image']) ?>" alt="<?= e($venue['name']) ?>">
+                            </div>
+                        <?php endif; ?>
+
                         <?php if (!empty($venue['description'])): ?>
                             <p><?= e($venue['description']) ?></p>
                         <?php endif; ?>

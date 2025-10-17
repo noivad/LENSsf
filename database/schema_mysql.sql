@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS venues (
     zip_code VARCHAR(20),
     owner_name VARCHAR(255) NOT NULL,
     deputies TEXT,
+    image VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS events (
     venue_id INT,
     owner_name VARCHAR(255) NOT NULL,
     deputies TEXT,
+    image VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE SET NULL,
     INDEX idx_event_date (event_date),
