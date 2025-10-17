@@ -1,7 +1,7 @@
 # LENSsf
 Local Event Network Service
 
-This website—when completed—will allow users to create events, add events to their calendar, define the location/venue and act as a venue owner, have deputies for both venues and events where they can take care of most administration. The site will all users to upload photos, coment on photos, and share events with other users. It will also allow custom tags for events and venue. All tags are public, and events with tags from other users will be suggested by the tag entry pane.
+This website—when completed—will allow users to create events, add events to their calendar, define the location/venue and act as a location/venue owner. There will also be deputies for both locations/venues and events where they can take care of most administration. The site will allow users to upload photos, coment on photos, and share events with other users. It will also allow custom tags for events and venue. All tags are public, and events with tags from other users will be suggested by the tag entry pane. Tags will be searchable for other events sharing the same tag. Tags can be suggested from other users' events/venues as well as be custom input. 
 
 To keep things straightforward the application is built with plain PHP, HTML, CSS, and a sprinkle of vanilla JavaScript—no heavy frameworks or tooling required.
 
