@@ -28,9 +28,17 @@ ksort($eventsByDate);
                         <?php foreach ($items as $event): ?>
                             <div class="calendar-event-card">
                                 <h3><?= e($event['title']) ?></h3>
+
+                                <?php if (!empty($event['image'])): ?>
+                                    <div class="event-image">
+                                        <img src="uploads/<?= e($event['image']) ?>" alt="<?= e($event['title']) ?>">
+                                    </div>
+                                <?php endif; ?>
+
                                 <?php if (!empty($event['description'])): ?>
                                     <p><?= e($event['description']) ?></p>
                                 <?php endif; ?>
+
                                 <div class="calendar-event-meta">
                                     <?php if (!empty($event['start_time'])): ?>
                                         <span><strong>Starts:</strong> <?= format_time($event['start_time']) ?></span>
@@ -41,8 +49,26 @@ ksort($eventsByDate);
                                     <span><strong>Owner:</strong> <?= e($event['owner']) ?></span>
                                 </div>
 
+                                <?php if (!empty($event['tags'])): ?>
+                                    <div class="calendar-attendees">
+                                        <strong>Tags:</strong>
+                                        <?php foreach ($event['tags'] as $tag): ?>
+                                            <span class="badge">#<?= e($tag) ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+
                                 <div class="calendar-event-actions">
                                     <a class="button-small" href="?page=events#<?= e($event['id']) ?>">View Event</a>
+                                </div>
+
+                                <div class="action-form">
+                                    <form method="post" class="inline-form">
+                                        <input type="hidden" name="action" value="add_tag">
+                                        <input type="hidden" name="event_id" value="<?= e($event['id']) ?>">
+                                        <input type="text" name="tag" placeholder="Add a tag (e.g., jazz)" required>
+                                        <button type="submit" class="button-small">Add Tag</button>
+                                    </form>
                                 </div>
 
                                 <?php if (!empty($event['calendar_entries'])): ?>

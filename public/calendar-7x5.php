@@ -273,6 +273,10 @@ function buildDayClasses(array $eventsForDay): string
                                         <div class="event-popover">
                                             <?php foreach ($dayEvents as $event): ?>
                                                 <div class="event-item">
+                                                    <div class="event-media" style="margin-bottom: 0.6rem;">
+                                                        <?php $imgUrl = 'https://picsum.photos/seed/' . rawurlencode($event['title']) . '/360/200'; ?>
+                                                        <img src="<?php echo $imgUrl; ?>" alt="<?php echo htmlspecialchars($event['title'], ENT_QUOTES); ?> image" style="width:100%; border-radius:12px; border:1px solid var(--border-color);">
+                                                    </div>
                                                     <div class="event-title"><?php echo htmlspecialchars($event['title'], ENT_QUOTES); ?></div>
                                                     <div class="event-detail">📍 <?php echo htmlspecialchars($event['venue'], ENT_QUOTES); ?></div>
                                                     <div class="event-detail">🕐 <?php echo htmlspecialchars($event['start_time'] . ' - ' . $event['end_time'], ENT_QUOTES); ?></div>
@@ -319,6 +323,33 @@ function buildDayClasses(array $eventsForDay): string
                         <?php endforeach; ?>
                     </div>
                 </div>
+
+                <?php
+                $userUpcoming = array_values(array_filter($events, static function(array $e): bool {
+                    return !empty($e['is_creator']) && in_array($e['status'], ['upcoming', 'happening'], true);
+                }));
+                usort($userUpcoming, static function(array $a, array $b): int {
+                    return strcmp($a['date'], $b['date']);
+                });
+                ?>
+                <?php if (!empty($userUpcoming)): ?>
+                    <div class="event-images" style="margin-top: 1rem;">
+                        <h2 class="images-title">📅 Your Upcoming Events</h2>
+                        <div class="images-grid">
+                            <?php foreach ($userUpcoming as $e): ?>
+                                <?php $img = 'https://picsum.photos/seed/' . rawurlencode($e['title']) . '/400/400'; ?>
+                                <div class="image-card" style="aspect-ratio: auto;">
+                                    <img src="<?= $img ?>" alt="<?= htmlspecialchars($e['title'], ENT_QUOTES) ?>">
+                                    <div class="image-overlay">
+                                        <div class="image-caption">
+                                            <?= htmlspecialchars($e['title'], ENT_QUOTES) ?> — <?= htmlspecialchars(date('M j', strtotime($e['date'])), ENT_QUOTES) ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
         </main>
 

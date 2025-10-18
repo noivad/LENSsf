@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'venue_id' => $_POST['venue_id'] ?: null,
             'owner' => $owner,
             'deputies' => normalize_list_input($_POST['deputies'] ?? ''),
+            'tags' => normalize_list_input($_POST['tags'] ?? ''),
         ], $imageFile);
 
         if ($event) {
@@ -159,6 +160,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label>
                             Deputies (comma-separated names)
                             <input type="text" name="deputies" placeholder="Alice, Bob, Charlie" value="<?= e($_POST['deputies'] ?? '') ?>">
+                        </label>
+                    </div>
+
+                    <div class="form-row">
+                        <label>
+                            Tags (comma-separated)
+                            <input type="text" name="tags" placeholder="music, festival, family" value="<?= e($_POST['tags'] ?? '') ?>">
                         </label>
                     </div>
 

@@ -71,6 +71,13 @@
                 </label>
             </div>
 
+            <div class="form-row">
+                <label>
+                    Tags (comma-separated)
+                    <input type="text" name="tags" placeholder="music, festival, family">
+                </label>
+            </div>
+
             <button type="submit" class="button">Create Event</button>
         </form>
     </div>
