@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS venues (
     owner_name VARCHAR(255) NOT NULL,
     deputies TEXT,
     image VARCHAR(255),
+    open_times TEXT,
+    tags TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
