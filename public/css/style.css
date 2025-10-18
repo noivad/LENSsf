@@ -13,6 +13,37 @@
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Theme support */
+.theme-dark {
+    --primary-color: #60a5fa;
+    --primary-hover: #3b82f6;
+    --secondary-color: #94a3b8;
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --bg-color: #0f172a;
+    --card-bg: #111827;
+    --text-color: #e5e7eb;
+    --text-subtle: #94a3b8;
+    --border-color: #1f2937;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.theme-light {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary-color: #64748b;
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-color: #1e293b;
+    --text-subtle: #64748b;
+    --border-color: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 * {
     margin: 0;
     padding: 0;

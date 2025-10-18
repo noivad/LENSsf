@@ -57,6 +57,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'add_tag':
             handleAddTag($eventManager);
             break;
+        case 'set_theme':
+            handleSetTheme();
+            break;
+        case 'delete_photo':
+            handleDeletePhoto($pdo, $uploadDir);
+            break;
+        case 'update_photo_comment':
+            handleUpdatePhotoComment($pdo);
+            break;
+        case 'delete_photo_comment':
+            handleDeletePhotoComment($pdo);
+            break;
+        case 'update_event_comment':
+            handleUpdateEventComment($pdo);
+            break;
+        case 'delete_event_comment':
+            handleDeleteEventComment($pdo);
+            break;
     }
 }
 
@@ -65,6 +83,10 @@ $events = $eventManager->all();
 $photos = $photoManager->all();
 $upcomingEvents = $eventManager->upcoming(5);
 $siteName = SITE_NAME;
+
+// Theme handling (default to dark)
+$theme = (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'light') ? 'light' : 'dark';
+$bodyClass = $theme === 'light' ? 'theme-light' : 'theme-dark';
 
 function autoloadSession(): void
 {
@@ -241,6 +263,197 @@ function handleAddTag(EventManager $eventManager): void
     redirect('?page=calendar');
 }
 
+function handleSetTheme(): void
+{
+    $theme = $_POST['theme'] ?? 'dark';
+    $redirect = $_POST['redirect'] ?? '?page=account_settings';
+    $theme = $theme === 'light' ? 'light' : 'dark';
+    setcookie('theme', $theme, [
+        'expires' => time() + 60 * 60 * 24 * 365,
+        'path' => '/',
+        'httponly' => false,
+        'samesite' => 'Lax',
+    ]);
+    set_flash('Theme updated to ' . ucfirst($theme) . '.');
+    redirect($redirect);
+}
+
+function handleDeletePhoto(PDO $pdo, string $uploadDir): void
+{
+    $photoId = (int) ($_POST['photo_id'] ?? 0);
+    $redirect = $_POST['redirect'] ?? '?page=account&tab=photos';
+    $currentUser = $_SESSION['current_user'] ?? '';
+    if ($photoId <= 0) {
+        set_flash('Invalid photo.', 'error');
+        redirect($redirect);
+    }
+    $stmt = $pdo->prepare('SELECT filename, uploaded_by FROM photos WHERE id = :id');
+    $stmt->execute([':id' => $photoId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        set_flash('Photo not found.', 'error');
+        redirect($redirect);
+    }
+    if (($row['uploaded_by'] ?? '') !== $currentUser) {
+        set_flash('You can only delete your own photos.', 'error');
+        redirect($redirect);
+    }
+    $filepath = rtrim($uploadDir, '/') . '/' . $row['filename'];
+    if (is_file($filepath)) {
+        @unlink($filepath);
+    }
+    $del = $pdo->prepare('DELETE FROM photos WHERE id = :id');
+    $del->execute([':id' => $photoId]);
+    set_flash('Photo deleted.');
+    redirect($redirect);
+}
+
+function canModifyForEventDate(?string $date): bool
+{
+    if (!$date) {
+        return true;
+    }
+    $today = new DateTimeImmutable('today');
+    $eventDate = DateTimeImmutable::createFromFormat('Y-m-d', $date);
+    return $eventDate && $eventDate >= $today;
+}
+
+function handleUpdatePhotoComment(PDO $pdo): void
+{
+    $commentId = (int) ($_POST['comment_id'] ?? 0);
+    $text = trim($_POST['comment_text'] ?? '');
+    $redirect = $_POST['redirect'] ?? '?page=account&tab=comments';
+    $currentUser = $_SESSION['current_user'] ?? '';
+    if ($commentId <= 0 || $text === '') {
+        set_flash('Invalid comment data.', 'error');
+        redirect($redirect);
+    }
+    $stmt = $pdo->prepare('SELECT pc.name, e.event_date
+        FROM photo_comments pc
+        JOIN photos p ON p.id = pc.photo_id
+        LEFT JOIN events e ON e.id = p.event_id
+        WHERE pc.id = :id');
+    $stmt->execute([':id' => $commentId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        set_flash('Comment not found.', 'error');
+        redirect($redirect);
+    }
+    if (($row['name'] ?? '') !== $currentUser) {
+        set_flash('You can only edit your own comments.', 'error');
+        redirect($redirect);
+    }
+    if (!canModifyForEventDate($row['event_date'] ?? null)) {
+        set_flash('This event has passed. You cannot edit this comment.', 'error');
+        redirect($redirect);
+    }
+    $upd = $pdo->prepare('UPDATE photo_comments SET comment = :comment WHERE id = :id');
+    $upd->execute([':comment' => $text, ':id' => $commentId]);
+    set_flash('Comment updated.');
+    redirect($redirect);
+}
+
+function handleDeletePhotoComment(PDO $pdo): void
+{
+    $commentId = (int) ($_POST['comment_id'] ?? 0);
+    $redirect = $_POST['redirect'] ?? '?page=account&tab=comments';
+    $currentUser = $_SESSION['current_user'] ?? '';
+    if ($commentId <= 0) {
+        set_flash('Invalid comment.', 'error');
+        redirect($redirect);
+    }
+    $stmt = $pdo->prepare('SELECT pc.name, e.event_date
+        FROM photo_comments pc
+        JOIN photos p ON p.id = pc.photo_id
+        LEFT JOIN events e ON e.id = p.event_id
+        WHERE pc.id = :id');
+    $stmt->execute([':id' => $commentId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        set_flash('Comment not found.', 'error');
+        redirect($redirect);
+    }
+    if (($row['name'] ?? '') !== $currentUser) {
+        set_flash('You can only delete your own comments.', 'error');
+        redirect($redirect);
+    }
+    if (!canModifyForEventDate($row['event_date'] ?? null)) {
+        set_flash('This event has passed. You cannot delete this comment.', 'error');
+        redirect($redirect);
+    }
+    $del = $pdo->prepare('DELETE FROM photo_comments WHERE id = :id');
+    $del->execute([':id' => $commentId]);
+    set_flash('Comment deleted.');
+    redirect($redirect);
+}
+
+function handleUpdateEventComment(PDO $pdo): void
+{
+    $commentId = (int) ($_POST['comment_id'] ?? 0);
+    $text = trim($_POST['comment_text'] ?? '');
+    $redirect = $_POST['redirect'] ?? '?page=account&tab=comments';
+    $currentUser = $_SESSION['current_user'] ?? '';
+    if ($commentId <= 0 || $text === '') {
+        set_flash('Invalid comment data.', 'error');
+        redirect($redirect);
+    }
+    $stmt = $pdo->prepare('SELECT ec.name, e.event_date
+        FROM event_comments ec
+        JOIN events e ON e.id = ec.event_id
+        WHERE ec.id = :id');
+    $stmt->execute([':id' => $commentId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        set_flash('Comment not found.', 'error');
+        redirect($redirect);
+    }
+    if (($row['name'] ?? '') !== $currentUser) {
+        set_flash('You can only edit your own comments.', 'error');
+        redirect($redirect);
+    }
+    if (!canModifyForEventDate($row['event_date'] ?? null)) {
+        set_flash('This event has passed. You cannot edit this comment.', 'error');
+        redirect($redirect);
+    }
+    $upd = $pdo->prepare('UPDATE event_comments SET comment = :comment WHERE id = :id');
+    $upd->execute([':comment' => $text, ':id' => $commentId]);
+    set_flash('Comment updated.');
+    redirect($redirect);
+}
+
+function handleDeleteEventComment(PDO $pdo): void
+{
+    $commentId = (int) ($_POST['comment_id'] ?? 0);
+    $redirect = $_POST['redirect'] ?? '?page=account&tab=comments';
+    $currentUser = $_SESSION['current_user'] ?? '';
+    if ($commentId <= 0) {
+        set_flash('Invalid comment.', 'error');
+        redirect($redirect);
+    }
+    $stmt = $pdo->prepare('SELECT ec.name, e.event_date
+        FROM event_comments ec
+        JOIN events e ON e.id = ec.event_id
+        WHERE ec.id = :id');
+    $stmt->execute([':id' => $commentId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        set_flash('Comment not found.', 'error');
+        redirect($redirect);
+    }
+    if (($row['name'] ?? '') !== $currentUser) {
+        set_flash('You can only delete your own comments.', 'error');
+        redirect($redirect);
+    }
+    if (!canModifyForEventDate($row['event_date'] ?? null)) {
+        set_flash('This event has passed. You cannot delete this comment.', 'error');
+        redirect($redirect);
+    }
+    $del = $pdo->prepare('DELETE FROM event_comments WHERE id = :id');
+    $del->execute([':id' => $commentId]);
+    set_flash('Comment deleted.');
+    redirect($redirect);
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -250,7 +463,7 @@ function handleAddTag(EventManager $eventManager): void
     <title><?= e($siteName) ?></title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="<?= e($bodyClass) ?>">
     <header>
         <div class="container">
             <h1><a href="?"> <?= e($siteName) ?> </a></h1>
@@ -260,6 +473,8 @@ function handleAddTag(EventManager $eventManager): void
                 <a href="?page=calendar" class="<?= $page === 'calendar' ? 'active' : '' ?>">Calendar</a>
                 <a href="?page=venues" class="<?= $page === 'venues' ? 'active' : '' ?>">Venues</a>
                 <a href="?page=photos" class="<?= $page === 'photos' ? 'active' : '' ?>">Photos</a>
+                <a href="?page=account" class="<?= $page === 'account' ? 'active' : '' ?>">Account</a>
+                <a href="?page=account_settings" class="<?= $page === 'account_settings' ? 'active' : '' ?>">Settings</a>
             </nav>
         </div>
     </header>
@@ -287,6 +502,15 @@ function handleAddTag(EventManager $eventManager): void
                 break;
             case 'calendar':
                 include __DIR__ . '/../includes/pages/calendar.php';
+                break;
+            case 'account':
+                include __DIR__ . '/../includes/pages/account.php';
+                break;
+            case 'account_settings':
+                include __DIR__ . '/../includes/pages/account_settings.php';
+                break;
+            case 'account_events':
+                include __DIR__ . '/../includes/pages/account_events.php';
                 break;
             default:
                 include __DIR__ . '/../includes/pages/home.php';
