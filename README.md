@@ -151,3 +151,43 @@ Again, session authentication is required. A single share per sender/recipient i
 - `usage_count` on `tags` for surfacing popular tags.
 
 Ensure these migrations are applied before exercising the APIs.
+
+## Missing Pages Checklist
+
+The core site is already usable through the main router at `public/index.php` and a few standalone pages. Here’s what exists today and what’s still to build to match the feature plan.
+
+Already implemented
+- [x] Home dashboard — `includes/pages/home.php` (default route)
+- [x] Events list + create — `includes/pages/events.php`
+- [x] Event details — `includes/pages/event.php`
+- [x] Community calendar — `includes/pages/calendar.php`
+- [x] Venues list + create — `includes/pages/venues.php`
+- [x] Photo gallery + upload — `includes/pages/photos.php`
+- [x] Account (Overview/Photos/Comments) — `includes/pages/account.php`
+- [x] Account → My Events — `includes/pages/account_events.php`
+- [x] Account → Settings (theme) — `includes/pages/account_settings.php`
+- [x] Alternate add event workspace — `public/add-event.php`
+- [x] Alternate venues workspace with tags/map — `public/venue-info.php`
+- [x] 7×5 calendar demo — `public/calendar-7x5.php`
+
+Core gaps to build next
+- [ ] Venue details page integrated into the main router (e.g. `?page=venue&id=<id>`). Either adapt `public/venue-info.php` into `includes/pages/venue.php` and add a router case in `public/index.php`, or link to the standalone page consistently from venue listings.
+- [ ] Tags explorer page (e.g. `?page=tags`) to browse/search popular tags and show events/venues by tag using `/api/tags.php` (`search_tags`, `get_popular_tags`, `get_events_by_tag`, `get_venues_by_tag`).
+- [ ] “Shared with me” view under Account (new tab) to list events and venues shared with the current user using `/api/sharing.php?action=get_events_shared_with_me` and `get_venues_shared_with_me`.
+- [ ] “My shares” management (Account tab) to list items you’ve shared and allow revoking via `/api/sharing.php` (`get_event_shares`, `revoke_event_share`, `get_venue_shares`, `revoke_venue_share`).
+- [ ] Event edit flow (dedicated page or inline editing). The “Edit Event” link currently anchors back to Events; there’s no actual edit form yet.
+- [ ] Venue edit flow (dedicated page or inline editing) to update venue details after creation.
+- [ ] Optional: Add tag UI on the Venues list (inline add/remove) if not using the advanced `venue-info.php` page everywhere.
+- [ ] Optional: Add Login/Register links in the header (auth pages exist at `public/auth/`, but the site currently runs without authentication as noted above).
+
+Optional/advanced (defer until later)
+- [ ] Calendar settings view (a stub exists at `/calendar-settings.php`) integrated into the UI.
+- [ ] Admin pages (Users/Roles/Site settings) for future role-based features.
+- [ ] Notifications (settings and history) if/when reminders are introduced.
+- [ ] Sponsorship pages (offers/details/packages) if that feature is pursued.
+- [ ] Tag dashboards and richer discovery (trending, categories, etc.).
+- [ ] Media lightbox and gallery enhancements.
+
+Notes
+- Where a standalone page already exists (e.g. `public/venue-info.php`), you can either link to it from the router-based UI or port it into `includes/pages/*` for a single unified navigation experience.
+- Keep page structure and styling consistent with existing pages under `includes/pages/` and `public/css/style.css`.
