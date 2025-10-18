@@ -127,6 +127,7 @@
                     <?php endif; ?>
 
                     <div class="event-actions">
+                        <a class="button-small" href="?page=event&id=<?= e($event['id']) ?>">View Event</a>
                         <button class="button-small" onclick="showCalendarForm('<?= e($event['id']) ?>')">Add to Calendar</button>
                         <button class="button-small" onclick="showShareForm('<?= e($event['id']) ?>')">Share Event</button>
                     </div>

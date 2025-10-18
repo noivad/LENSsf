@@ -15,6 +15,13 @@ if (file_exists(__DIR__ . '/../config.php')) {
 autoloadSession();
 ensureSiteName();
 
+// Simple demo current user support
+if (isset($_GET['as'])) {
+    $_SESSION['current_user'] = trim((string) $_GET['as']);
+} elseif (!isset($_SESSION['current_user'])) {
+    $_SESSION['current_user'] = 'Alex Johnson';
+}
+
 $uploadDir = defined('UPLOAD_DIR') ? rtrim((string) UPLOAD_DIR, '/') : __DIR__ . '/uploads';
 $maxUploadSize = defined('MAX_UPLOAD_SIZE') ? (int) MAX_UPLOAD_SIZE : 5_242_880;
 
@@ -244,6 +251,9 @@ function handleShareEvent(EventManager $eventManager): void
         switch ($page) {
             case 'events':
                 include __DIR__ . '/../includes/pages/events.php';
+                break;
+            case 'event':
+                include __DIR__ . '/../includes/pages/event.php';
                 break;
             case 'venues':
                 include __DIR__ . '/../includes/pages/venues.php';

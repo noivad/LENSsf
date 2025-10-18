@@ -182,6 +182,135 @@ class EventManager
         }
     }
 
+    public function unshare(string $eventId, string $person): void
+    {
+        $eventId = trim($eventId);
+        $person = trim($person);
+        if ($eventId === '' || $person === '') {
+            return;
+        }
+
+        $stmt = $this->db->prepare(
+            'DELETE FROM event_shares WHERE event_id = :event_id AND shared_with = :person'
+        );
+        $stmt->execute([
+            ':event_id' => (int) $eventId,
+            ':person' => $person,
+        ]);
+    }
+
+    public function addDeputy(int $eventId, string $name): ?array
+    {
+        $name = trim($name);
+        if ($eventId <= 0 || $name === '') {
+            return null;
+        }
+
+        $event = $this->findById($eventId);
+        if (!$event) {
+            return null;
+        }
+
+        $deputies = $event['deputies'] ?? [];
+        $deputies[] = $name;
+        $deputies = array_values(array_filter(array_unique(array_map('trim', $deputies))));
+
+        $stmt = $this->db->prepare('UPDATE events SET deputies = :deputies WHERE id = :id');
+        $stmt->execute([
+            ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
+            ':id' => $eventId,
+        ]);
+
+        return $this->findById($eventId);
+    }
+
+    public function removeDeputy(int $eventId, string $name): ?array
+    {
+        $name = trim($name);
+        if ($eventId <= 0 || $name === '') {
+            return null;
+        }
+
+        $event = $this->findById($eventId);
+        if (!$event) {
+            return null;
+        }
+
+        $deputies = array_values(array_filter(($event['deputies'] ?? []), static fn(string $n): bool => $n !== $name));
+
+        $stmt = $this->db->prepare('UPDATE events SET deputies = :deputies WHERE id = :id');
+        $stmt->execute([
+            ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
+            ':id' => $eventId,
+        ]);
+
+        return $this->findById($eventId);
+    }
+
+    public function updateImage(int $eventId, array $imageFile): ?array
+    {
+        if ($eventId <= 0 || empty($imageFile)) {
+            return null;
+        }
+
+        $event = $this->findById($eventId);
+        if (!$event) {
+            return null;
+        }
+
+        $newName = $this->handleImageUpload($imageFile);
+        if (!$newName) {
+            return null;
+        }
+
+        $stmt = $this->db->prepare('UPDATE events SET image = :image WHERE id = :id');
+        $stmt->execute([
+            ':image' => $newName,
+            ':id' => $eventId,
+        ]);
+
+        // Optionally delete old image
+        if (!empty($event['image'])) {
+            $this->deleteImage($event['image']);
+        }
+
+        return $this->findById($eventId);
+    }
+
+    public function addEventComment(int $eventId, string $name, string $comment): ?array
+    {
+        $name = trim($name);
+        $comment = trim($comment);
+        if ($eventId <= 0 || $name === '' || $comment === '') {
+            return null;
+        }
+
+        $stmt = $this->db->prepare('INSERT INTO event_comments (event_id, name, comment) VALUES (:event_id, :name, :comment)');
+        $stmt->execute([
+            ':event_id' => $eventId,
+            ':name' => $name,
+            ':comment' => $comment,
+        ]);
+
+        $id = (int) $this->db->lastInsertId();
+        return [
+            'id' => $id,
+            'event_id' => $eventId,
+            'name' => $name,
+            'comment' => $comment,
+        ];
+    }
+
+    public function getEventComments(int $eventId): array
+    {
+        if ($eventId <= 0) {
+            return [];
+        }
+        $stmt = $this->db->prepare('SELECT id, name, comment, created_at FROM event_comments WHERE event_id = :event_id ORDER BY created_at ASC');
+        $stmt->execute([':event_id' => $eventId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
     public function findById(int $eventId): ?array
     {
         $stmt = $this->db->prepare(
