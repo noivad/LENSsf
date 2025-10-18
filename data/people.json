@@ -1,0 +1,12 @@
+[
+  {"display_name": "Alex Johnson", "handle": "alexj", "avatar": null, "interests": ["music", "art", "community"]},
+  {"display_name": "Brianna Lee", "handle": "bri", "avatar": null, "interests": ["food", "outdoors", "fitness"]},
+  {"display_name": "Carlos Martinez", "handle": "carlosm", "avatar": null, "interests": ["technology", "startups", "gaming"]},
+  {"display_name": "Danielle Smith", "handle": "dani", "avatar": null, "interests": ["music", "dance", "theater"]},
+  {"display_name": "Ethan Chen", "handle": "ethan", "avatar": null, "interests": ["photography", "art", "travel"]},
+  {"display_name": "Fatima Ali", "handle": "fatima", "avatar": null, "interests": ["community", "education", "volunteering"]},
+  {"display_name": "Grace Hopper", "handle": "grace", "avatar": null, "interests": ["technology", "science", "math"]},
+  {"display_name": "Hiro Tanaka", "handle": "hiro", "avatar": null, "interests": ["anime", "gaming", "music"]},
+  {"display_name": "Isabella Rossi", "handle": "izzy", "avatar": null, "interests": ["fashion", "art", "design"]},
+  {"display_name": "Jack Wilson", "handle": "jackw", "avatar": null, "interests": ["sports", "outdoors", "fitness"]}
+]
