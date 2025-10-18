@@ -40,6 +40,43 @@ $eventPhotos = array_values(array_filter($allPhotos, static function (array $p) 
         </div>
     </div>
 
+    <?php
+    // Compute popular tags across all events (top 3)
+    $allEvents = $eventManager->all();
+    $tagCounts = [];
+    foreach ($allEvents as $ev) {
+        foreach (($ev['tags'] ?? []) as $t) {
+            $tLower = strtolower((string) $t);
+            if ($tLower === '') continue;
+            $tagCounts[$tLower] = ($tagCounts[$tLower] ?? 0) + 1;
+        }
+    }
+    arsort($tagCounts);
+    $popularTags = array_slice(array_keys($tagCounts), 0, 3);
+    ?>
+
+    <?php if (!empty($event['tags'])): ?>
+        <div class="card-subsection">
+            <h3>Tags</h3>
+            <div>
+                <?php foreach ($event['tags'] as $tag): ?>
+                    <span class="badge">#<?= e(strtolower((string) $tag)) ?></span>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($popularTags)): ?>
+        <div class="card-subsection">
+            <h3>Popular tags</h3>
+            <div>
+                <?php foreach ($popularTags as $tag): ?>
+                    <span class="badge">#<?= e($tag) ?></span>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <div class="event-single-media">
         <?php if (!empty($event['image'])): ?>
             <div class="event-image"><img src="uploads/<?= e($event['image']) ?>" alt="<?= e($event['title']) ?>"></div>

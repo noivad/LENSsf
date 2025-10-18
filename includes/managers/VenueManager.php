@@ -10,6 +10,22 @@ class VenueManager
     ) {
     }
 
+    private function hasColumn(string $table, string $column): bool
+    {
+        static $cache = [];
+        $table = trim($table);
+        $column = trim($column);
+        if ($table === '' || $column === '') {
+            return false;
+        }
+        if (!isset($cache[$table])) {
+            $stmt = $this->db->query(sprintf('SHOW COLUMNS FROM `%s`', str_replace('`', '``', $table)));
+            $cols = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            $cache[$table] = array_map(static fn(array $c) => $c['Field'] ?? '', $cols);
+        }
+        return in_array($column, $cache[$table], true);
+    }
+
     public function all(): array
     {
         $stmt = $this->db->query(
@@ -18,9 +34,12 @@ class VenueManager
 
         $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(static function (array $venue): array {
-            $deputies = json_decode($venue['deputies'] ?? '[]', true) ?: [];
+        $hasTags = $this->hasColumn('venues', 'tags');
+        $hasOpenTimes = $this->hasColumn('venues', 'open_times');
 
+        return array_map(static function (array $venue) use ($hasTags, $hasOpenTimes): array {
+            $deputies = json_decode($venue['deputies'] ?? '[]', true) ?: [];
+            $tags = $hasTags ? (json_decode($venue['tags'] ?? '[]', true) ?: []) : [];
             return [
                 'id' => (int) $venue['id'],
                 'name' => $venue['name'],
@@ -32,6 +51,8 @@ class VenueManager
                 'owner' => $venue['owner_name'],
                 'deputies' => $deputies,
                 'image' => $venue['image'],
+                'open_times' => $hasOpenTimes ? ($venue['open_times'] ?? null) : null,
+                'tags' => $tags,
                 'created_at' => $venue['created_at'],
             ];
         }, $venues);
@@ -51,22 +72,25 @@ class VenueManager
         $state = trim($data['state'] ?? '') ?: null;
         $zipCode = trim($data['zip_code'] ?? '') ?: null;
         $description = trim($data['description'] ?? '') ?: null;
+        $openTimes = trim($data['open_times'] ?? '') ?: null;
 
         $deputies = array_map('trim', $data['deputies'] ?? []);
         $deputies = array_values(array_filter(array_unique($deputies)));
+
+        $tags = array_map(static fn($t) => strtolower(trim((string) $t)), $data['tags'] ?? []);
+        $tags = array_values(array_filter(array_unique($tags)));
 
         $imageName = null;
         if ($imageFile && $this->uploadPath) {
             $imageName = $this->handleImageUpload($imageFile);
         }
 
-        try {
-            $stmt = $this->db->prepare(
-                'INSERT INTO venues (name, address, city, state, zip_code, description, owner_name, deputies, image)
-                 VALUES (:name, :address, :city, :state, :zip_code, :description, :owner_name, :deputies, :image)'
-            );
+        $hasTags = $this->hasColumn('venues', 'tags');
+        $hasOpenTimes = $this->hasColumn('venues', 'open_times');
 
-            $stmt->execute([
+        try {
+            $columns = ['name','address','city','state','zip_code','description','owner_name','deputies','image'];
+            $params = [
                 ':name' => $name,
                 ':address' => $address,
                 ':city' => $city,
@@ -76,7 +100,35 @@ class VenueManager
                 ':owner_name' => $owner,
                 ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
                 ':image' => $imageName,
-            ]);
+            ];
+
+            if ($hasOpenTimes) {
+                $columns[] = 'open_times';
+                $params[':open_times'] = $openTimes;
+            }
+            if ($hasTags) {
+                $columns[] = 'tags';
+                $params[':tags'] = json_encode($tags, JSON_THROW_ON_ERROR);
+            }
+
+            $placeholders = array_map(static fn(string $c) => ':' . $c, $columns);
+            // Map placeholders keys to actual params keys (already set above with col names)
+            $sql = sprintf(
+                'INSERT INTO venues (%s) VALUES (%s)',
+                implode(', ', $columns),
+                implode(', ', $placeholders)
+            );
+
+            $stmt = $this->db->prepare($sql);
+
+            // Ensure placeholder keys match param keys
+            $execParams = [];
+            foreach ($columns as $c) {
+                $key = ':' . $c;
+                $execParams[$key] = $params[$key] ?? null;
+            }
+
+            $stmt->execute($execParams);
 
             $venueId = (int) $this->db->lastInsertId();
 
@@ -100,6 +152,8 @@ class VenueManager
         }
 
         $deputies = json_decode($venue['deputies'] ?? '[]', true) ?: [];
+        $hasTags = $this->hasColumn('venues', 'tags');
+        $hasOpenTimes = $this->hasColumn('venues', 'open_times');
 
         return [
             'id' => (int) $venue['id'],
@@ -112,6 +166,8 @@ class VenueManager
             'owner' => $venue['owner_name'],
             'deputies' => $deputies,
             'image' => $venue['image'],
+            'open_times' => $hasOpenTimes ? ($venue['open_times'] ?? null) : null,
+            'tags' => $hasTags ? (json_decode($venue['tags'] ?? '[]', true) ?: []) : [],
             'created_at' => $venue['created_at'],
         ];
     }
@@ -123,6 +179,27 @@ class VenueManager
             return null;
         }
 
+        return $this->findById($venueId);
+    }
+
+    public function addTagPublic(int $venueId, string $tag): ?array
+    {
+        $tag = strtolower(trim($tag));
+        if ($venueId <= 0 || $tag === '' || !$this->hasColumn('venues', 'tags')) {
+            return null;
+        }
+        $venue = $this->findById($venueId);
+        if (!$venue) {
+            return null;
+        }
+        $tags = $venue['tags'] ?? [];
+        $tags[] = $tag;
+        $tags = array_values(array_filter(array_unique($tags)));
+        $stmt = $this->db->prepare('UPDATE venues SET tags = :tags WHERE id = :id');
+        $stmt->execute([
+            ':tags' => json_encode($tags, JSON_THROW_ON_ERROR),
+            ':id' => $venueId,
+        ]);
         return $this->findById($venueId);
     }
 
