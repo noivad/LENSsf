@@ -54,6 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'share_event':
             handleShareEvent($eventManager);
             break;
+        case 'add_tag':
+            handleAddTag($eventManager);
+            break;
     }
 }
 
@@ -101,6 +104,7 @@ function handleCreateEvent(EventManager $eventManager): void
         'venue_id' => $_POST['venue_id'] ?: null,
         'owner' => $owner,
         'deputies' => normalize_list_input($_POST['deputies'] ?? ''),
+        'tags' => normalize_list_input($_POST['tags'] ?? ''),
     ], $imageFile);
 
     if ($imageFile && (int) ($imageFile['error'] ?? UPLOAD_ERR_OK) === UPLOAD_ERR_OK && empty($event['image'])) {
@@ -215,6 +219,26 @@ function handleShareEvent(EventManager $eventManager): void
     $eventManager->share($eventId, $people);
     set_flash('Event shared successfully!');
     redirect('?page=events');
+}
+
+function handleAddTag(EventManager $eventManager): void
+{
+    $eventId = (int) ($_POST['event_id'] ?? 0);
+    $tag = trim($_POST['tag'] ?? '');
+
+    if ($eventId <= 0 || $tag === '') {
+        set_flash('Please provide a tag to add.', 'error');
+        redirect('?page=calendar');
+    }
+
+    $updated = $eventManager->addTag($eventId, $tag);
+    if ($updated === null) {
+        set_flash('Could not add tag. Please try again.', 'error');
+    } else {
+        set_flash('Tag added successfully!');
+    }
+
+    redirect('?page=calendar');
 }
 
 ?>

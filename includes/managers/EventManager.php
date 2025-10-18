@@ -33,6 +33,7 @@ class EventManager
         return array_map(function (array $event) use ($calendarEntries, $shares): array {
             $id = (int) $event['id'];
             $deputies = json_decode($event['deputies'] ?? '[]', true) ?: [];
+            $tags = json_decode($event['tags'] ?? '[]', true) ?: [];
 
             return [
                 'id' => $id,
@@ -45,6 +46,7 @@ class EventManager
                 'owner' => $event['owner_name'],
                 'deputies' => $deputies,
                 'image' => $event['image'],
+                'tags' => $tags,
                 'calendar_entries' => $calendarEntries[$id] ?? [],
                 'shared_with' => $shares[$id] ?? [],
                 'created_at' => $event['created_at'],
@@ -85,6 +87,9 @@ class EventManager
         $deputies = array_map('trim', $data['deputies'] ?? []);
         $deputies = array_values(array_filter(array_unique($deputies)));
 
+        $tags = array_map('trim', $data['tags'] ?? []);
+        $tags = array_values(array_filter(array_unique($tags)));
+
         $imageName = null;
         if ($imageFile && $this->uploadPath) {
             $imageName = $this->handleImageUpload($imageFile);
@@ -93,21 +98,40 @@ class EventManager
         try {
             $this->db->beginTransaction();
 
-            $stmt = $this->db->prepare(
-                'INSERT INTO events (title, description, event_date, event_time, venue_id, owner_name, deputies, image)
-                 VALUES (:title, :description, :event_date, :event_time, :venue_id, :owner_name, :deputies, :image)'
-            );
+            if ($this->hasColumn('events', 'tags')) {
+                $stmt = $this->db->prepare(
+                    'INSERT INTO events (title, description, event_date, event_time, venue_id, owner_name, deputies, image, tags)
+                     VALUES (:title, :description, :event_date, :event_time, :venue_id, :owner_name, :deputies, :image, :tags)'
+                );
 
-            $stmt->execute([
-                ':title' => $title,
-                ':description' => $description,
-                ':event_date' => $eventDate,
-                ':event_time' => $startTime ?: null,
-                ':venue_id' => $venueId ?: null,
-                ':owner_name' => $owner,
-                ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
-                ':image' => $imageName,
-            ]);
+                $stmt->execute([
+                    ':title' => $title,
+                    ':description' => $description,
+                    ':event_date' => $eventDate,
+                    ':event_time' => $startTime ?: null,
+                    ':venue_id' => $venueId ?: null,
+                    ':owner_name' => $owner,
+                    ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
+                    ':image' => $imageName,
+                    ':tags' => json_encode($tags, JSON_THROW_ON_ERROR),
+                ]);
+            } else {
+                $stmt = $this->db->prepare(
+                    'INSERT INTO events (title, description, event_date, event_time, venue_id, owner_name, deputies, image)
+                     VALUES (:title, :description, :event_date, :event_time, :venue_id, :owner_name, :deputies, :image)'
+                );
+
+                $stmt->execute([
+                    ':title' => $title,
+                    ':description' => $description,
+                    ':event_date' => $eventDate,
+                    ':event_time' => $startTime ?: null,
+                    ':venue_id' => $venueId ?: null,
+                    ':owner_name' => $owner,
+                    ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
+                    ':image' => $imageName,
+                ]);
+            }
 
             $eventId = (int) $this->db->lastInsertId();
 
@@ -340,6 +364,7 @@ class EventManager
             'owner' => $event['owner_name'],
             'deputies' => $deputies,
             'image' => $event['image'],
+            'tags' => json_decode($event['tags'] ?? '[]', true) ?: [],
             'calendar_entries' => $this->fetchCalendarEntries([$eventId])[$eventId] ?? [],
             'shared_with' => $this->fetchStringRelations('event_shares', 'event_id', 'shared_with', [$eventId])[$eventId] ?? [],
             'created_at' => $event['created_at'],
@@ -392,6 +417,47 @@ class EventManager
         }
 
         return $result;
+    }
+
+    public function addTag(int $eventId, string $tag): ?array
+    {
+        $tag = trim($tag);
+        if ($eventId <= 0 || $tag === '' || !$this->hasColumn('events', 'tags')) {
+            return null;
+        }
+
+        $event = $this->findById($eventId);
+        if (!$event) {
+            return null;
+        }
+
+        $tags = $event['tags'] ?? [];
+        $tags[] = $tag;
+        $tags = array_values(array_filter(array_unique(array_map('trim', $tags))));
+
+        $stmt = $this->db->prepare('UPDATE events SET tags = :tags WHERE id = :id');
+        $stmt->execute([
+            ':tags' => json_encode($tags, JSON_THROW_ON_ERROR),
+            ':id' => $eventId,
+        ]);
+
+        return $this->findById($eventId);
+    }
+
+    private function hasColumn(string $table, string $column): bool
+    {
+        static $cache = [];
+        $table = trim($table);
+        $column = trim($column);
+        if ($table === '' || $column === '') {
+            return false;
+        }
+        if (!isset($cache[$table])) {
+            $stmt = $this->db->query(sprintf('SHOW COLUMNS FROM `%s`', str_replace('`', '``', $table)));
+            $cols = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            $cache[$table] = array_map(static fn(array $c) => $c['Field'] ?? '', $cols);
+        }
+        return in_array($column, $cache[$table], true);
     }
 
     private function isDuplicateException(PDOException $e): bool
