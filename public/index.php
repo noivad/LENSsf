@@ -63,6 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'delete_photo':
             handleDeletePhoto($pdo, $uploadDir);
             break;
+        case 'delete_venue_image':
+            handleDeleteVenueImage($pdo, $uploadDir);
+            break;
         case 'update_photo_comment':
             handleUpdatePhotoComment($pdo);
             break;
@@ -74,6 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
         case 'delete_event_comment':
             handleDeleteEventComment($pdo);
+            break;
+        case 'kick_user':
+            handleKickUser($pdo);
             break;
     }
 }
@@ -287,15 +293,21 @@ function handleDeletePhoto(PDO $pdo, string $uploadDir): void
         set_flash('Invalid photo.', 'error');
         redirect($redirect);
     }
-    $stmt = $pdo->prepare('SELECT filename, uploaded_by FROM photos WHERE id = :id');
+    $stmt = $pdo->prepare('SELECT p.filename, p.uploaded_by, e.owner_name, e.deputies FROM photos p LEFT JOIN events e ON e.id = p.event_id WHERE p.id = :id');
     $stmt->execute([':id' => $photoId]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$row) {
         set_flash('Photo not found.', 'error');
         redirect($redirect);
     }
-    if (($row['uploaded_by'] ?? '') !== $currentUser) {
-        set_flash('You can only delete your own photos.', 'error');
+    $isOwner = strcasecmp((string)($row['owner_name'] ?? ''), $currentUser) === 0;
+    $isDeputy = false;
+    if (!empty($row['deputies'])) {
+        $deps = json_decode((string)$row['deputies'], true);
+        $isDeputy = is_array($deps) && in_array($currentUser, $deps, true);
+    }
+    if (($row['uploaded_by'] ?? '') !== $currentUser && !$isOwner && !$isDeputy && !is_admin($currentUser)) {
+        set_flash('You can only delete your own photos or photos for events you manage.', 'error');
         redirect($redirect);
     }
     $filepath = rtrim($uploadDir, '/') . '/' . $row['filename'];
@@ -305,6 +317,44 @@ function handleDeletePhoto(PDO $pdo, string $uploadDir): void
     $del = $pdo->prepare('DELETE FROM photos WHERE id = :id');
     $del->execute([':id' => $photoId]);
     set_flash('Photo deleted.');
+    redirect($redirect);
+}
+
+function handleDeleteVenueImage(PDO $pdo, string $uploadDir): void
+{
+    $venueId = (int) ($_POST['venue_id'] ?? 0);
+    $redirect = '?page=venue&id=' . $venueId;
+    $currentUser = $_SESSION['current_user'] ?? '';
+    if ($venueId <= 0) {
+        set_flash('Invalid venue.', 'error');
+        redirect('?page=venues');
+    }
+    $stmt = $pdo->prepare('SELECT image, owner_name, deputies FROM venues WHERE id = :id');
+    $stmt->execute([':id' => $venueId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        set_flash('Venue not found.', 'error');
+        redirect('?page=venues');
+    }
+    $isOwner = strcasecmp((string)($row['owner_name'] ?? ''), $currentUser) === 0;
+    $isDeputy = false;
+    if (!empty($row['deputies'])) {
+        $deps = json_decode((string)$row['deputies'], true);
+        $isDeputy = is_array($deps) && in_array($currentUser, $deps, true);
+    }
+    if (!$isOwner && !$isDeputy && !is_admin($currentUser)) {
+        set_flash('You do not have permission to modify this venue.', 'error');
+        redirect($redirect);
+    }
+    if (!empty($row['image'])) {
+        $filepath = rtrim($uploadDir, '/') . '/' . $row['image'];
+        if (is_file($filepath)) {
+            @unlink($filepath);
+        }
+    }
+    $upd = $pdo->prepare('UPDATE venues SET image = NULL WHERE id = :id');
+    $upd->execute([':id' => $venueId]);
+    set_flash('Venue image removed.');
     redirect($redirect);
 }
 
@@ -318,6 +368,41 @@ function canModifyForEventDate(?string $date): bool
     return $eventDate && $eventDate >= $today;
 }
 
+function handleKickUser(PDO $pdo): void
+{
+    $identifier = trim((string) ($_POST['user_identifier'] ?? ''));
+    $duration = (int) ($_POST['duration'] ?? 0);
+    $unit = strtolower(trim((string) ($_POST['unit'] ?? 'hours')));
+    $redirect = '?page=admin';
+    $currentUser = $_SESSION['current_user'] ?? '';
+    if (!is_admin($currentUser)) {
+        set_flash('Only admins can perform this action.', 'error');
+        redirect($redirect);
+    }
+    if ($identifier === '' || $duration <= 0) {
+        set_flash('Please provide a user identifier and a valid duration.', 'error');
+        redirect($redirect);
+    }
+    $dt = new DateTimeImmutable('now');
+    switch ($unit) {
+        case 'months':
+        case 'month':
+            $ends = $dt->modify('+' . $duration . ' months');
+            break;
+        case 'days':
+        case 'day':
+            $ends = $dt->modify('+' . $duration . ' days');
+            break;
+        default:
+            $ends = $dt->modify('+' . $duration . ' hours');
+            break;
+    }
+    $stmt = $pdo->prepare('INSERT INTO banned_users (user_identifier, ends_at) VALUES (:u, :ends)');
+    $stmt->execute([':u' => $identifier, ':ends' => $ends->format('Y-m-d H:i:s')]);
+    set_flash('User kicked until ' . $ends->format('Y-m-d H:i'), 'success');
+    redirect($redirect);
+}
+
 function handleUpdatePhotoComment(PDO $pdo): void
 {
     $commentId = (int) ($_POST['comment_id'] ?? 0);
@@ -328,7 +413,7 @@ function handleUpdatePhotoComment(PDO $pdo): void
         set_flash('Invalid comment data.', 'error');
         redirect($redirect);
     }
-    $stmt = $pdo->prepare('SELECT pc.name, e.event_date
+    $stmt = $pdo->prepare('SELECT pc.name, e.event_date, e.owner_name, e.deputies
         FROM photo_comments pc
         JOIN photos p ON p.id = pc.photo_id
         LEFT JOIN events e ON e.id = p.event_id
@@ -339,11 +424,17 @@ function handleUpdatePhotoComment(PDO $pdo): void
         set_flash('Comment not found.', 'error');
         redirect($redirect);
     }
-    if (($row['name'] ?? '') !== $currentUser) {
-        set_flash('You can only edit your own comments.', 'error');
+    $isOwner = strcasecmp((string)($row['owner_name'] ?? ''), $currentUser) === 0;
+    $isDeputy = false;
+    if (!empty($row['deputies'])) {
+        $deps = json_decode((string)$row['deputies'], true);
+        $isDeputy = is_array($deps) && in_array($currentUser, $deps, true);
+    }
+    if (($row['name'] ?? '') !== $currentUser && !$isOwner && !$isDeputy && !is_admin($currentUser)) {
+        set_flash('You can only edit your own comments or comments on events you manage.', 'error');
         redirect($redirect);
     }
-    if (!canModifyForEventDate($row['event_date'] ?? null)) {
+    if (!is_admin($currentUser) && !canModifyForEventDate($row['event_date'] ?? null)) {
         set_flash('This event has passed. You cannot edit this comment.', 'error');
         redirect($redirect);
     }
@@ -362,7 +453,7 @@ function handleDeletePhotoComment(PDO $pdo): void
         set_flash('Invalid comment.', 'error');
         redirect($redirect);
     }
-    $stmt = $pdo->prepare('SELECT pc.name, e.event_date
+    $stmt = $pdo->prepare('SELECT pc.name, e.event_date, e.owner_name, e.deputies
         FROM photo_comments pc
         JOIN photos p ON p.id = pc.photo_id
         LEFT JOIN events e ON e.id = p.event_id
@@ -373,11 +464,17 @@ function handleDeletePhotoComment(PDO $pdo): void
         set_flash('Comment not found.', 'error');
         redirect($redirect);
     }
-    if (($row['name'] ?? '') !== $currentUser) {
-        set_flash('You can only delete your own comments.', 'error');
+    $isOwner = strcasecmp((string)($row['owner_name'] ?? ''), $currentUser) === 0;
+    $isDeputy = false;
+    if (!empty($row['deputies'])) {
+        $deps = json_decode((string)$row['deputies'], true);
+        $isDeputy = is_array($deps) && in_array($currentUser, $deps, true);
+    }
+    if (($row['name'] ?? '') !== $currentUser && !$isOwner && !$isDeputy && !is_admin($currentUser)) {
+        set_flash('You can only delete your own comments or comments on events you manage.', 'error');
         redirect($redirect);
     }
-    if (!canModifyForEventDate($row['event_date'] ?? null)) {
+    if (!is_admin($currentUser) && !canModifyForEventDate($row['event_date'] ?? null)) {
         set_flash('This event has passed. You cannot delete this comment.', 'error');
         redirect($redirect);
     }
@@ -397,7 +494,7 @@ function handleUpdateEventComment(PDO $pdo): void
         set_flash('Invalid comment data.', 'error');
         redirect($redirect);
     }
-    $stmt = $pdo->prepare('SELECT ec.name, e.event_date
+    $stmt = $pdo->prepare('SELECT ec.name, e.event_date, e.owner_name, e.deputies
         FROM event_comments ec
         JOIN events e ON e.id = ec.event_id
         WHERE ec.id = :id');
@@ -407,11 +504,17 @@ function handleUpdateEventComment(PDO $pdo): void
         set_flash('Comment not found.', 'error');
         redirect($redirect);
     }
-    if (($row['name'] ?? '') !== $currentUser) {
-        set_flash('You can only edit your own comments.', 'error');
+    $isOwner = strcasecmp((string)($row['owner_name'] ?? ''), $currentUser) === 0;
+    $isDeputy = false;
+    if (!empty($row['deputies'])) {
+        $deps = json_decode((string)$row['deputies'], true);
+        $isDeputy = is_array($deps) && in_array($currentUser, $deps, true);
+    }
+    if (($row['name'] ?? '') !== $currentUser && !$isOwner && !$isDeputy && !is_admin($currentUser)) {
+        set_flash('You can only edit your own comments or comments on events you manage.', 'error');
         redirect($redirect);
     }
-    if (!canModifyForEventDate($row['event_date'] ?? null)) {
+    if (!is_admin($currentUser) && !canModifyForEventDate($row['event_date'] ?? null)) {
         set_flash('This event has passed. You cannot edit this comment.', 'error');
         redirect($redirect);
     }
@@ -430,7 +533,7 @@ function handleDeleteEventComment(PDO $pdo): void
         set_flash('Invalid comment.', 'error');
         redirect($redirect);
     }
-    $stmt = $pdo->prepare('SELECT ec.name, e.event_date
+    $stmt = $pdo->prepare('SELECT ec.name, e.event_date, e.owner_name, e.deputies
         FROM event_comments ec
         JOIN events e ON e.id = ec.event_id
         WHERE ec.id = :id');
@@ -440,11 +543,17 @@ function handleDeleteEventComment(PDO $pdo): void
         set_flash('Comment not found.', 'error');
         redirect($redirect);
     }
-    if (($row['name'] ?? '') !== $currentUser) {
-        set_flash('You can only delete your own comments.', 'error');
+    $isOwner = strcasecmp((string)($row['owner_name'] ?? ''), $currentUser) === 0;
+    $isDeputy = false;
+    if (!empty($row['deputies'])) {
+        $deps = json_decode((string)$row['deputies'], true);
+        $isDeputy = is_array($deps) && in_array($currentUser, $deps, true);
+    }
+    if (($row['name'] ?? '') !== $currentUser && !$isOwner && !$isDeputy && !is_admin($currentUser)) {
+        set_flash('You can only delete your own comments or comments on events you manage.', 'error');
         redirect($redirect);
     }
-    if (!canModifyForEventDate($row['event_date'] ?? null)) {
+    if (!is_admin($currentUser) && !canModifyForEventDate($row['event_date'] ?? null)) {
         set_flash('This event has passed. You cannot delete this comment.', 'error');
         redirect($redirect);
     }
@@ -472,6 +581,7 @@ function handleDeleteEventComment(PDO $pdo): void
                 <a href="?page=events" class="<?= $page === 'events' ? 'active' : '' ?>">Events</a>
                 <a href="?page=calendar" class="<?= $page === 'calendar' ? 'active' : '' ?>">Calendar</a>
                 <a href="?page=venues" class="<?= $page === 'venues' ? 'active' : '' ?>">Venues</a>
+                <a href="?page=tags" class="<?= $page === 'tags' ? 'active' : '' ?>">Tags</a>
                 <a href="?page=photos" class="<?= $page === 'photos' ? 'active' : '' ?>">Photos</a>
                 <a href="?page=account" class="<?= $page === 'account' ? 'active' : '' ?>">Account</a>
                 <a href="?page=account_settings" class="<?= $page === 'account_settings' ? 'active' : '' ?>">Settings</a>
@@ -494,6 +604,9 @@ function handleDeleteEventComment(PDO $pdo): void
             case 'event':
                 include __DIR__ . '/../includes/pages/event.php';
                 break;
+            case 'venue':
+                include __DIR__ . '/../includes/pages/venue.php';
+                break;
             case 'venues':
                 include __DIR__ . '/../includes/pages/venues.php';
                 break;
@@ -503,6 +616,9 @@ function handleDeleteEventComment(PDO $pdo): void
             case 'calendar':
                 include __DIR__ . '/../includes/pages/calendar.php';
                 break;
+            case 'tags':
+                include __DIR__ . '/../includes/pages/tags.php';
+                break;
             case 'account':
                 include __DIR__ . '/../includes/pages/account.php';
                 break;
@@ -511,6 +627,9 @@ function handleDeleteEventComment(PDO $pdo): void
                 break;
             case 'account_events':
                 include __DIR__ . '/../includes/pages/account_events.php';
+                break;
+            case 'admin':
+                include __DIR__ . '/../includes/pages/admin.php';
                 break;
             default:
                 include __DIR__ . '/../includes/pages/home.php';

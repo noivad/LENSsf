@@ -3,11 +3,13 @@
   if (!root) return;
   const eventId = parseInt(root.getAttribute('data-event-id'), 10);
   const currentUser = root.getAttribute('data-current-user') || 'You';
+  const isEditor = (root.getAttribute('data-is-editor') === '1');
 
   const shareBtn = document.getElementById('share-btn');
   const sharePopover = document.getElementById('share-popover');
   const shareInput = document.getElementById('share-input');
   const shareSuggestions = document.getElementById('share-suggestions');
+  const shareMessageInput = document.getElementById('share-message-input');
 
   const deputyBtn = document.getElementById('add-deputy-btn');
   const deputyPopover = document.getElementById('deputy-popover');
@@ -86,12 +88,14 @@
 
   async function addShare(person){
     if (!person) return;
+    const message = (shareMessageInput?.value || '').trim();
     await fetch('event_api.php?action=share', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event_id: eventId, person })
+      body: JSON.stringify({ event_id: eventId, person, message })
     });
     shareInput.value = '';
+    if (shareMessageInput) shareMessageInput.value = '';
     await loadShares();
   }
 
@@ -155,7 +159,7 @@
       avatar.textContent = initials(s.display_name);
       const label = document.createElement('div');
       label.className = 'shared-name';
-      label.innerHTML = `${s.display_name}${s.handle ? ' <span class="shared-handle">(@'+s.handle+')</span>' : ''}`;
+      label.innerHTML = `${s.display_name}${s.handle ? ' <span class="shared-handle">(@'+s.handle+')</span>' : ''}` + (s.message ? `<div class="subtle">Message: ${s.message}</div>` : '');
       left.appendChild(avatar);
       left.appendChild(label);
 
@@ -246,9 +250,37 @@
     }
     const div = document.createElement('div');
     div.className = 'comment';
-    div.innerHTML = `<span class="comment-author">${name}:</span> <span class="comment-text"> ${comment}</span>`;
+    div.innerHTML = `<span class=\"comment-author\">${name}:</span> <span class=\"comment-text\"> ${comment}</span>` + (isEditor ? ` <button class=\"button-small delete-photo-comment\">Delete</button>` : '');
     comments.appendChild(div);
   });
+
+  if (isEditor){
+    delegate(document, '.delete-photo', 'click', async (e, btn)=>{
+      const photoId = parseInt(btn.getAttribute('data-photo-id'), 10);
+      if (!confirm('Delete this photo?')) return;
+      await fetch('event_api.php?action=delete_photo', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ photo_id: photoId }) });
+      const card = btn.closest('.photo-card');
+      if (card) card.remove();
+    });
+
+    delegate(document, '.delete-photo-comment', 'click', async (e, btn)=>{
+      const commentEl = btn.closest('.comment');
+      const commentId = parseInt(btn.getAttribute('data-comment-id') || commentEl?.getAttribute('data-comment-id') || '0', 10);
+      if (!commentId) return;
+      if (!confirm('Delete this comment?')) return;
+      await fetch('event_api.php?action=delete_photo_comment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ comment_id: commentId }) });
+      if (commentEl) commentEl.remove();
+    });
+
+    const removeEventImageBtn = document.getElementById('remove-event-image-btn');
+    if (removeEventImageBtn){
+      removeEventImageBtn.addEventListener('click', async ()=>{
+        if (!confirm('Remove event image?')) return;
+        await fetch('event_api.php?action=delete_event_image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ event_id: eventId }) });
+        window.location.reload();
+      });
+    }
+  }
 
   async function loadEventComments(){
     if (!eventCommentsList) return;
@@ -268,8 +300,20 @@
     comments.forEach(c => {
       const div = document.createElement('div');
       div.className = 'comment';
-      div.innerHTML = `<span class="comment-author">${c.name}:</span> <span class="comment-text"> ${c.comment}</span>`;
+      div.setAttribute('data-comment-id', String(c.id));
+      div.innerHTML = `<span class=\"comment-author\">${c.name}:</span> <span class=\"comment-text\"> ${c.comment}</span>` + (isEditor ? ` <button class=\"button-small delete-event-comment\">Delete</button>` : '');
       eventCommentsList.appendChild(div);
+    });
+  }
+
+  if (isEditor){
+    delegate(document, '.delete-event-comment', 'click', async (e, btn)=>{
+      const row = btn.closest('.comment');
+      const id = parseInt(row?.getAttribute('data-comment-id') || '0', 10);
+      if (!id) return;
+      if (!confirm('Delete this comment?')) return;
+      await fetch('event_api.php?action=delete_event_comment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ comment_id: id }) });
+      row?.remove();
     });
   }
 

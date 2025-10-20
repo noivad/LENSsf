@@ -78,7 +78,7 @@
             <div class="venue-list">
                 <?php foreach ($venues as $venue): ?>
                     <div class="venue-item">
-                        <h4><?= e($venue['name']) ?></h4>
+                        <h4><a href="?page=venue&id=<?= e((string) $venue['id']) ?>"><?= e($venue['name']) ?></a></h4>
 
                         <?php if (!empty($venue['image'])): ?>
                             <div class="venue-image">

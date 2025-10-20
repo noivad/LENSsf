@@ -14,15 +14,20 @@ class TagController {
     public function handleRequest(): void {
         header('Content-Type: application/json');
 
-        if (!isset($_SESSION['user_id'])) {
-            http_response_code(401);
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-            return;
-        }
-
-        $userId = (int) $_SESSION['user_id'];
-        $method = $_SERVER['REQUEST_METHOD'];
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $action = $_GET['action'] ?? '';
+
+        $requiresAuth = in_array($action, ['add_event_tag','add_venue_tag','remove_event_tag','remove_venue_tag'], true);
+
+        $userId = 0;
+        if ($requiresAuth) {
+            if (!isset($_SESSION['user_id'])) {
+                http_response_code(401);
+                echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+                return;
+            }
+            $userId = (int) ($_SESSION['user_id'] ?? 0);
+        }
 
         switch ($action) {
             case 'add_event_tag':
