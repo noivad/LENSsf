@@ -115,3 +115,36 @@ function sanitize_filename(string $name): string
 
     return strtolower(trim($name, '-')) ?: 'file';
 }
+
+/**
+ * Determine if the given user is a site admin.
+ * Reads from ADMIN_USERS (constant or env) as a comma-separated list of names.
+ */
+function is_admin(?string $user): bool
+{
+    $user = trim((string) $user);
+    if ($user === '') {
+        return false;
+    }
+    $list = [];
+    if (defined('ADMIN_USERS')) {
+        $val = ADMIN_USERS;
+        if (is_array($val)) {
+            $list = $val;
+        } else {
+            $list = explode(',', (string) $val);
+        }
+    } else {
+        $env = getenv('ADMIN_USERS') ?: '';
+        if ($env !== '') {
+            $list = explode(',', $env);
+        }
+    }
+    $list = array_filter(array_map('trim', $list));
+    foreach ($list as $name) {
+        if (strcasecmp($name, $user) === 0) {
+            return true;
+        }
+    }
+    return false;
+}

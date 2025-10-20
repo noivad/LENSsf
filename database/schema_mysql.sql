@@ -54,6 +54,17 @@ CREATE TABLE IF NOT EXISTS event_shares (
     INDEX idx_event (event_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Optional messages attached to event shares
+CREATE TABLE IF NOT EXISTS event_share_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    event_id INT NOT NULL,
+    shared_with VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    INDEX idx_es_msg_event (event_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS photos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     event_id INT,
@@ -99,4 +110,14 @@ CREATE TABLE IF NOT EXISTS users (
     UNIQUE KEY uniq_username (username),
     UNIQUE KEY uniq_email (email),
     INDEX idx_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bans/Kicks
+CREATE TABLE IF NOT EXISTS banned_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_identifier VARCHAR(255) NOT NULL,
+    ends_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_ban_user (user_identifier),
+    INDEX idx_ban_ends (ends_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

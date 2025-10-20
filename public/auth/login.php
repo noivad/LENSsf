@@ -79,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = (int) $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['display_name'] = $user['display_name'];
+            $_SESSION['current_user'] = $user['display_name'];
             // Redirect to the calendar 7x5 page on successful login
             redirect('../calendar-7x5.php');
         }
@@ -147,6 +148,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <button type="submit" class="button">Login</button>
             </form>
+
+            <div class="card" style="margin-top:1rem;padding:1rem">
+                <h3>Or sign in with</h3>
+                <div class="actions" style="gap:0.5rem;display:flex;flex-wrap:wrap">
+                    <a class="button-small" href="oauth_start.php?provider=google">Google</a>
+                    <a class="button-small" href="oauth_start.php?provider=facebook">Facebook</a>
+                    <a class="button-small" href="oauth_start.php?provider=apple">Apple</a>
+                </div>
+            </div>
         </div>
     </main>
 

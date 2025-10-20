@@ -80,6 +80,11 @@ $eventPhotos = array_values(array_filter($allPhotos, static function (array $p) 
     <div class="event-single-media">
         <?php if (!empty($event['image'])): ?>
             <div class="event-image"><img src="uploads/<?= e($event['image']) ?>" alt="<?= e($event['title']) ?>"></div>
+            <?php if ($isEditor): ?>
+                <div style="margin-top:0.5rem">
+                    <button id="remove-event-image-btn" class="button-small" type="button">Remove image</button>
+                </div>
+            <?php endif; ?>
         <?php else: ?>
             <div class="image-placeholder <?php if(!$isEditor) echo 'readonly'; ?>">
                 <?php if ($isEditor): ?>
@@ -100,6 +105,7 @@ $eventPhotos = array_values(array_filter($allPhotos, static function (array $p) 
         <div class="popover-body">
             <input type="text" id="share-input" class="popover-input" placeholder="Type a display name...">
             <div id="share-suggestions" class="suggestions"></div>
+            <textarea id="share-message-input" rows="2" class="popover-input" placeholder="Optional message to include with the invite..."></textarea>
             <small class="subtle">Press Enter to add. Field clears for another entry.</small>
         </div>
     </div>
@@ -144,15 +150,21 @@ $eventPhotos = array_values(array_filter($allPhotos, static function (array $p) 
                         <div class="comments">
                             <strong>Comments:</strong>
                             <?php foreach ($photo['comments'] as $comment): ?>
-                                <div class="comment">
+                                <div class="comment" data-comment-id="<?= e((string) ($comment['id'] ?? '')) ?>">
                                     <span class="comment-author"><?= e($comment['name']) ?>:</span>
                                     <span class="comment-text"> <?= e($comment['comment']) ?></span>
+                                    <?php if ($isEditor): ?>
+                                        <button class="button-small delete-photo-comment" data-comment-id="<?= e((string) ($comment['id'] ?? '')) ?>">Delete</button>
+                                    <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
                     <div class="photo-card-actions">
                         <button class="button-small add-photo-comment" data-photo-id="<?= e((string) $photo['id']) ?>">Add Comment</button>
+                        <?php if ($isEditor): ?>
+                            <button class="button-small delete-photo" data-photo-id="<?= e((string) $photo['id']) ?>">Delete Photo</button>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
