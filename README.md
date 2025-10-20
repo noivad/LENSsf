@@ -71,21 +71,73 @@ mysql -u your_user -p lensf < database/schema.sql
 
 ```
 .
-├── public/               # Document root
-│   ├── index.php        # Router + layout
-│   ├── css/             # Stylesheets
-│   ├── js/              # JavaScript helpers
-│   └── uploads/         # Photo uploads (gitignored)
+├── public/                       # Web root
+│   ├── index.php                 # Router + layout + main nav
+│   ├── add-event.php             # Alternate add-event workspace
+│   ├── calendar-7x5.php          # 7×5 demo calendar
+│   ├── venue-info.php            # Advanced venue details (standalone)
+│   ├── event_api.php             # Legacy event API/demo
+│   ├── auth/
+│   │   ├── login.php
+│   │   ├── register.php
+│   │   ├── oauth_start.php
+│   │   └── oauth_callback.php
+│   ├── css/
+│   │   ├── style.css
+│   │   └── calendar-7x5.css
+│   ├── js/
+│   │   ├── main.js
+│   │   ├── event.js
+│   │   ├── venue-info.js
+│   │   └── calendar-7x5.js
+│   ├── uploads/                  # Photo uploads (gitignored)
+│   └── [mockups]
+│       ├── account-mockup.html
+│       ├── account-events-mockup.html
+│       ├── account-settings-mockup.html
+│       ├── add-event-mockup.html
+│       ├── calendar-7x5-mockup.html
+│       └── venue-info-mockup.html
 ├── includes/
-│   ├── helpers.php      # Common helper functions
-│   ├── DataStore.php    # JSON persistence layer
-│   ├── db.php           # Optional PDO database helper
-│   ├── managers/        # Domain services (events, venues, photos)
-│   └── pages/           # Page templates (home, events, calendar, venues, photos)
-├── data/                # JSON data files (tracked)
-├── database/            # SQL schema for relational storage
-├── setup.sh             # Convenience setup script
-├── config.example.php   # Sample configuration
+│   ├── helpers.php               # Common helper functions
+│   ├── db.php                    # MySQL connection + auto schema init
+│   ├── managers/                 # Domain services (events, venues, photos)
+│   │   ├── EventManager.php
+│   │   ├── VenueManager.php
+│   │   └── PhotoManager.php
+│   └── pages/                    # Router pages (ALL available pages)
+│       ├── home.php
+│       ├── events.php
+│       ├── event.php
+│       ├── venues.php
+│       ├── venue.php
+│       ├── calendar.php
+│       ├── tags.php
+│       ├── photos.php
+│       ├── account.php
+│       ├── account_events.php
+│       ├── account_settings.php
+│       └── admin.php
+├── api/
+│   ├── tags.php                  # Tags API (routes to backend/controllers/TagController.php)
+│   └── sharing.php               # Sharing API (routes to backend/controllers/SharingController.php)
+├── backend/
+│   ├── controllers/
+│   │   ├── TagController.php
+│   │   └── SharingController.php
+│   ├── repositories/             # DB access layer
+│   └── services/                 # Business logic
+├── database/
+│   ├── schema_mysql.sql          # Auto-applied MySQL schema
+│   └── README.md
+├── [prototypes at repo root]
+│   ├── calendar-view.php
+│   ├── calendar-crud.php
+│   ├── calendar-settings.php
+│   ├── LENSsf6.html
+│   └── tag-and-share-demo.html
+├── setup.sh
+├── config.example.php
 └── README.md
 ```
 
@@ -154,40 +206,45 @@ Ensure these migrations are applied before exercising the APIs.
 
 ## Missing Pages Checklist
 
-The core site is already usable through the main router at `public/index.php` and a few standalone pages. Here’s what exists today and what’s still to build to match the feature plan.
+The site is router-driven via `public/index.php`. All current pages are enumerated in the Project Structure above. Here’s the status and what remains to build to match the feature plan.
 
 Already implemented
-- [x] Home dashboard — `includes/pages/home.php` (default route)
+- [x] Home — `includes/pages/home.php`
 - [x] Events list + create — `includes/pages/events.php`
 - [x] Event details — `includes/pages/event.php`
 - [x] Community calendar — `includes/pages/calendar.php`
 - [x] Venues list + create — `includes/pages/venues.php`
+- [x] Venue details — `includes/pages/venue.php`
+- [x] Tags explorer — `includes/pages/tags.php`
 - [x] Photo gallery + upload — `includes/pages/photos.php`
 - [x] Account (Overview/Photos/Comments) — `includes/pages/account.php`
 - [x] Account → My Events — `includes/pages/account_events.php`
 - [x] Account → Settings (theme) — `includes/pages/account_settings.php`
-- [x] Alternate add event workspace — `public/add-event.php`
-- [x] Alternate venues workspace with tags/map — `public/venue-info.php`
+- [x] Admin (basic moderation) — `includes/pages/admin.php`
+- [x] Alternate add-event workspace — `public/add-event.php`
+- [x] Advanced venue workspace — `public/venue-info.php`
 - [x] 7×5 calendar demo — `public/calendar-7x5.php`
+- [x] Auth forms (not wired into header) — `public/auth/login.php`, `public/auth/register.php`
 
-Core gaps to build next
-- [ ] Venue details page integrated into the main router (e.g. `?page=venue&id=<id>`). Either adapt `public/venue-info.php` into `includes/pages/venue.php` and add a router case in `public/index.php`, or link to the standalone page consistently from venue listings.
-- [ ] Tags explorer page (e.g. `?page=tags`) to browse/search popular tags and show events/venues by tag using `/api/tags.php` (`search_tags`, `get_popular_tags`, `get_events_by_tag`, `get_venues_by_tag`).
-- [ ] “Shared with me” view under Account (new tab) to list events and venues shared with the current user using `/api/sharing.php?action=get_events_shared_with_me` and `get_venues_shared_with_me`.
-- [ ] “My shares” management (Account tab) to list items you’ve shared and allow revoking via `/api/sharing.php` (`get_event_shares`, `revoke_event_share`, `get_venue_shares`, `revoke_venue_share`).
-- [ ] Event edit flow (dedicated page or inline editing). The “Edit Event” link currently anchors back to Events; there’s no actual edit form yet.
-- [ ] Venue edit flow (dedicated page or inline editing) to update venue details after creation.
-- [ ] Optional: Add tag UI on the Venues list (inline add/remove) if not using the advanced `venue-info.php` page everywhere.
-- [ ] Optional: Add Login/Register links in the header (auth pages exist at `public/auth/`, but the site currently runs without authentication as noted above).
+Pages to build next
+- [ ] Account → Shared with me — `includes/pages/account_shared.php`
+      Lists events and venues shared with the current user using `/api/sharing.php?action=get_events_shared_with_me` and `get_venues_shared_with_me`. Add a new tab in Account navigation.
+- [ ] Account → My shares — `includes/pages/account_shares.php`
+      Shows items you’ve shared and allows revoking via `/api/sharing.php` (`get_event_shares`, `revoke_event_share`, `get_venue_shares`, `revoke_venue_share`).
+- [ ] Event edit — `includes/pages/event_edit.php` (or inline editing on `event.php`)
+      Full edit form for event fields and image.
+- [ ] Venue edit — `includes/pages/venue_edit.php` (or inline editing on `venue.php`)
+      Update venue fields and image.
 
 Optional/advanced (defer until later)
-- [ ] Calendar settings view (a stub exists at `/calendar-settings.php`) integrated into the UI.
-- [ ] Admin pages (Users/Roles/Site settings) for future role-based features.
-- [ ] Notifications (settings and history) if/when reminders are introduced.
-- [ ] Sponsorship pages (offers/details/packages) if that feature is pursued.
-- [ ] Tag dashboards and richer discovery (trending, categories, etc.).
-- [ ] Media lightbox and gallery enhancements.
+- [ ] Integrate Calendar settings into the UI (wire `calendar-settings.php` under Settings or Calendar)
+- [ ] Add Login/Register links in the header (auth exists under `public/auth/`)
+- [ ] Inline tag UI on the Venues list if not relying on `venue-info.php`
+- [ ] Admin subpages (Users/Roles/Site settings) for future role-based features
+- [ ] Notifications (settings and history) if/when reminders are introduced
+- [ ] Tag dashboards and richer discovery (trending, categories, etc.)
+- [ ] Media lightbox and gallery enhancements
 
 Notes
-- Where a standalone page already exists (e.g. `public/venue-info.php`), you can either link to it from the router-based UI or port it into `includes/pages/*` for a single unified navigation experience.
+- Where a standalone page already exists (e.g. `public/venue-info.php`), you can either link to it from the router-based UI or port it into `includes/pages/*` for a unified navigation experience.
 - Keep page structure and styling consistent with existing pages under `includes/pages/` and `public/css/style.css`.
