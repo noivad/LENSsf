@@ -15,6 +15,14 @@ if (file_exists(__DIR__ . '/../config.php')) {
 autoloadSession();
 ensureSiteName();
 
+// Basic role handling for guest accounts
+if (isset($_GET['role'])) {
+    $role = strtolower(trim((string) $_GET['role']));
+    $_SESSION['role'] = in_array($role, ['guest','member','admin'], true) ? $role : 'guest';
+} elseif (!isset($_SESSION['role'])) {
+    $_SESSION['role'] = 'guest';
+}
+
 // Simple demo current user support
 if (isset($_GET['as'])) {
     $_SESSION['current_user'] = trim((string) $_GET['as']);
@@ -580,11 +588,13 @@ function handleDeleteEventComment(PDO $pdo): void
                 <a href="?" class="<?= $page === 'home' ? 'active' : '' ?>">Home</a>
                 <a href="?page=events" class="<?= $page === 'events' ? 'active' : '' ?>">Events</a>
                 <a href="?page=calendar" class="<?= $page === 'calendar' ? 'active' : '' ?>">Calendar</a>
-                <a href="?page=venues" class="<?= $page === 'venues' ? 'active' : '' ?>">Venues</a>
-                <a href="?page=tags" class="<?= $page === 'tags' ? 'active' : '' ?>">Tags</a>
-                <a href="?page=photos" class="<?= $page === 'photos' ? 'active' : '' ?>">Photos</a>
-                <a href="?page=account" class="<?= $page === 'account' ? 'active' : '' ?>">Account</a>
-                <a href="?page=account_settings" class="<?= $page === 'account_settings' ? 'active' : '' ?>">Settings</a>
+                <?php if (!is_guest()): ?>
+                    <a href="?page=venues" class="<?= $page === 'venues' ? 'active' : '' ?>">Venues</a>
+                    <a href="?page=tags" class="<?= $page === 'tags' ? 'active' : '' ?>">Tags</a>
+                    <a href="?page=photos" class="<?= $page === 'photos' ? 'active' : '' ?>">Photos</a>
+                    <a href="?page=account" class="<?= $page === 'account' ? 'active' : '' ?>">Account</a>
+                    <a href="?page=account_settings" class="<?= $page === 'account_settings' ? 'active' : '' ?>">Settings</a>
+                <?php endif; ?>
             </nav>
         </div>
     </header>

@@ -148,3 +148,12 @@ function is_admin(?string $user): bool
     }
     return false;
 }
+
+/**
+ * Determine if the current session is a guest (restricted) account.
+ */
+function is_guest(): bool
+{
+    $role = strtolower(trim((string) ($_SESSION['role'] ?? 'guest')));
+    return $role === 'guest';
+}
