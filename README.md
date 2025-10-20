@@ -71,21 +71,56 @@ mysql -u your_user -p lensf < database/schema.sql
 
 ```
 .
-├── public/               # Document root
-│   ├── index.php        # Router + layout
-│   ├── css/             # Stylesheets
-│   ├── js/              # JavaScript helpers
-│   └── uploads/         # Photo uploads (gitignored)
+├── public/                 # Document root
+│   ├── index.php           # Router + layout
+│   ├── add-event.php       # Full add-event workspace
+│   ├── venue-info.php      # Standalone venue page (advanced)
+│   ├── calendar-7x5.php    # 7×5 calendar demo
+│   ├── event_api.php       # Event endpoints for JS
+│   ├── auth/               # Auth stubs (not wired into nav)
+│   │   ├── login.php
+│   │   ├── register.php
+│   │   ├── oauth_start.php
+│   │   └── oauth_callback.php
+│   ├── css/
+│   │   ├── style.css
+│   │   └── calendar-7x5.css
+│   ├── js/
+│   │   ├── main.js
+│   │   ├── event.js
+│   │   ├── calendar-7x5.js
+│   │   └── venue-info.js
+│   └── uploads/            # Photo uploads (gitignored)
 ├── includes/
-│   ├── helpers.php      # Common helper functions
-│   ├── DataStore.php    # JSON persistence layer
-│   ├── db.php           # Optional PDO database helper
-│   ├── managers/        # Domain services (events, venues, photos)
-│   └── pages/           # Page templates (home, events, calendar, venues, photos)
-├── data/                # JSON data files (tracked)
-├── database/            # SQL schema for relational storage
-├── setup.sh             # Convenience setup script
-├── config.example.php   # Sample configuration
+│   ├── helpers.php
+│   ├── db.php              # MySQL connection + schema init
+│   ├── managers/           # Domain services
+│   │   ├── EventManager.php
+│   │   ├── VenueManager.php
+│   │   ├── PhotoManager.php
+│   │   └── UserManager.php
+│   └── pages/              # Router pages
+│       ├── home.php
+│       ├── events.php
+│       ├── event.php
+│       ├── venues.php
+│       ├── venue.php
+│       ├── photos.php
+│       ├── calendar.php
+│       ├── tags.php
+│       ├── account.php
+│       ├── account_events.php
+│       ├── account_settings.php
+│       └── admin.php
+├── api/
+│   ├── tags.php
+│   └── sharing.php
+├── database/
+│   ├── schema_mysql.sql
+│   └── README.md
+├── data/                   # Example seed JSON (e.g., people.json)
+├── config.example.php
+├── setup.sh
 └── README.md
 ```
 
