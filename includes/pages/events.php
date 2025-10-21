@@ -5,6 +5,36 @@
 <section>
     <h2>Events</h2>
 
+    <div class="card">
+        <h3>Search</h3>
+        <form method="get" class="form">
+            <input type="hidden" name="page" value="events">
+            <div class="form-row">
+                <input type="text" name="q" placeholder="Search by title, venue, description or #tag" value="<?= e((string)($_GET['q'] ?? '')) ?>">
+            </div>
+            <div class="form-row">
+                <label><input type="checkbox" name="show_past" value="1" <?= !empty($_GET['show_past']) ? 'checked' : '' ?>> Include past events</label>
+            </div>
+            <button type="submit" class="button-small">Search</button>
+        </form>
+    </div>
+
+    <?php
+    $query = strtolower(trim((string)($_GET['q'] ?? '')));
+    $includePast = !empty($_GET['show_past']);
+    $today = new DateTimeImmutable('today');
+    $events = array_values(array_filter($events, static function(array $e) use ($query, $includePast, $today): bool {
+        $date = DateTimeImmutable::createFromFormat('Y-m-d', $e['event_date'] ?? '') ?: null;
+        if (!$includePast && $date instanceof DateTimeImmutable && $date < $today) {
+            return false;
+        }
+        if ($query === '') return true;
+        $haystack = strtolower(trim(($e['title'] ?? '') . ' ' . ($e['description'] ?? '') . ' ' . ($e['venue_name'] ?? '') . ' ' . implode(' ', $e['tags'] ?? [])));
+        return strpos($haystack, $query) !== false;
+    }));
+    ?>
+
+    <?php if (!is_guest()): ?>
     <div class="card" id="create">
         <h3>Create New Event</h3>
         <p class="card-subtext">Prefer a dedicated workspace? <a href="add-event.php">Open the full add event page</a>.</p>
@@ -81,6 +111,7 @@
             <button type="submit" class="button">Create Event</button>
         </form>
     </div>
+    <?php endif; ?>
 
     <div class="card">
         <h3>All Events</h3>
@@ -115,16 +146,21 @@
                         <?php endif; ?>
                     </div>
 
-                    <?php if (!empty($event['calendar_entries'])): ?>
+                    <?php if (!is_guest() && !empty($event['calendar_entries'])): ?>
                         <div class="calendar-entries">
                             <strong>On Calendars:</strong>
                             <?php foreach ($event['calendar_entries'] as $entry): ?>
                                 <span class="badge"><?= e($entry['name']) ?></span>
                             <?php endforeach; ?>
                         </div>
+                    <?php elseif (is_guest() && !empty($event['calendar_entries'])): ?>
+                        <div class="calendar-entries">
+                            <strong>On Calendars:</strong>
+                            <span class="badge"><?= count($event['calendar_entries']) ?> added</span>
+                        </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($event['shared_with'])): ?>
+                    <?php if (!is_guest() && !empty($event['shared_with'])): ?>
                         <div class="shared-with">
                             <strong>Shared With:</strong>
                             <?php foreach ($event['shared_with'] as $person): ?>
@@ -135,10 +171,13 @@
 
                     <div class="event-actions">
                         <a class="button-small" href="?page=event&id=<?= e($event['id']) ?>">View Event</a>
-                        <button class="button-small" onclick="showCalendarForm('<?= e($event['id']) ?>')">Add to Calendar</button>
-                        <button class="button-small" onclick="showShareForm('<?= e($event['id']) ?>')">Share Event</button>
+                        <?php if (!is_guest()): ?>
+                            <button class="button-small" onclick="showCalendarForm('<?= e($event['id']) ?>')">Add to Calendar</button>
+                            <button class="button-small" onclick="showShareForm('<?= e($event['id']) ?>')">Share Event</button>
+                        <?php endif; ?>
                     </div>
 
+                    <?php if (!is_guest()): ?>
                     <div id="calendar-form-<?= e($event['id']) ?>" class="hidden action-form">
                         <form method="post" class="inline-form">
                             <input type="hidden" name="action" value="add_to_calendar">
@@ -156,6 +195,7 @@
                             <button type="submit" class="button-small">Share</button>
                         </form>
                     </div>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>

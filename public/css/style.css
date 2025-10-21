@@ -710,3 +710,19 @@ textarea:focus {
         justify-content: space-between;
     }
 }
+
+/* Home upcoming + mini calendar */
+.home-upcoming { display: grid; grid-template-columns: 1fr 260px; gap: 1rem; align-items: start; }
+.mini-calendar { border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 0.5rem; background: var(--card-bg); }
+.mini-cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom: 0.25rem; font-weight: 600; }
+.mini-cal-title { font-size: 0.9rem; }
+.mini-cal-grid { display:grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.mini-cal-weekday { text-align:center; font-size: 0.75rem; color: var(--text-subtle); padding: 0.25rem 0; }
+.mini-cal-cell { height: 32px; display:flex; align-items:center; justify-content:center; font-size: 0.85rem; background: transparent; border-radius: 0.25rem; position: relative; }
+.mini-cal-cell.has-event { background: var(--bg-color); }
+.mini-cal-cell .dot { position:absolute; bottom: 4px; width:6px; height:6px; border-radius:50%; background: var(--primary-color); }
+.mini-cal-cell.dim { opacity: 0.35; }
+@media (max-width: 768px) {
+  .home-upcoming { grid-template-columns: 1fr; }
+  .mini-calendar { width: 100%; }
+}

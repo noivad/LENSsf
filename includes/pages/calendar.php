@@ -14,7 +14,13 @@ ksort($eventsByDate);
 ?>
 <section>
     <h2>Community Calendar</h2>
-    <p class="subtle">Browse upcoming events and see who has already added them to their calendar.</p>
+    <p class="subtle">
+        <?php if (function_exists('is_guest') && is_guest()): ?>
+            Browse upcoming events.
+        <?php else: ?>
+            Browse upcoming events and see who has already added them to their calendar.
+        <?php endif; ?>
+    </p>
 
     <?php if ($eventsByDate): ?>
         <div class="calendar-list">
@@ -62,6 +68,7 @@ ksort($eventsByDate);
                                     <a class="button-small" href="?page=events#<?= e($event['id']) ?>">View Event</a>
                                 </div>
 
+                                <?php if (!is_guest()): ?>
                                 <div class="action-form">
                                     <form method="post" class="inline-form">
                                         <input type="hidden" name="action" value="add_tag">
@@ -70,13 +77,19 @@ ksort($eventsByDate);
                                         <button type="submit" class="button-small">Add Tag</button>
                                     </form>
                                 </div>
+                                <?php endif; ?>
 
-                                <?php if (!empty($event['calendar_entries'])): ?>
+                                <?php if (!is_guest() && !empty($event['calendar_entries'])): ?>
                                     <div class="calendar-attendees">
                                         <strong>On calendars:</strong>
                                         <?php foreach ($event['calendar_entries'] as $entry): ?>
                                             <span class="badge"><?= e($entry['name']) ?></span>
                                         <?php endforeach; ?>
+                                    </div>
+                                <?php elseif (is_guest() && !empty($event['calendar_entries'])): ?>
+                                    <div class="calendar-attendees">
+                                        <strong>On calendars:</strong>
+                                        <span class="badge"><?= count($event['calendar_entries']) ?> added</span>
                                     </div>
                                 <?php else: ?>
                                     <div class="calendar-attendees empty">
