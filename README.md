@@ -162,6 +162,8 @@ Already implemented
 - [x] Event details — `includes/pages/event.php`
 - [x] Community calendar — `includes/pages/calendar.php`
 - [x] Venues list + create — `includes/pages/venues.php`
+- [x] Venue details — `includes/pages/venue.php` (router: `?page=venue&id=<id>`)
+- [x] Tags explorer — `includes/pages/tags.php` (router: `?page=tags`, uses `/api/tags.php`)
 - [x] Photo gallery + upload — `includes/pages/photos.php`
 - [x] Account (Overview/Photos/Comments) — `includes/pages/account.php`
 - [x] Account → My Events — `includes/pages/account_events.php`
@@ -171,8 +173,6 @@ Already implemented
 - [x] 7×5 calendar demo — `public/calendar-7x5.php`
 
 Core gaps to build next
-- [ ] Venue details page integrated into the main router (e.g. `?page=venue&id=<id>`). Either adapt `public/venue-info.php` into `includes/pages/venue.php` and add a router case in `public/index.php`, or link to the standalone page consistently from venue listings.
-- [ ] Tags explorer page (e.g. `?page=tags`) to browse/search popular tags and show events/venues by tag using `/api/tags.php` (`search_tags`, `get_popular_tags`, `get_events_by_tag`, `get_venues_by_tag`).
 - [ ] “Shared with me” view under Account (new tab) to list events and venues shared with the current user using `/api/sharing.php?action=get_events_shared_with_me` and `get_venues_shared_with_me`.
 - [ ] “My shares” management (Account tab) to list items you’ve shared and allow revoking via `/api/sharing.php` (`get_event_shares`, `revoke_event_share`, `get_venue_shares`, `revoke_venue_share`).
 - [ ] Event edit flow (dedicated page or inline editing). The “Edit Event” link currently anchors back to Events; there’s no actual edit form yet.
