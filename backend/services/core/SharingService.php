@@ -77,6 +77,22 @@ class SharingService {
         }
     }
 
+    public function getMyEventShares(int $userId): array {
+        try {
+            return $this->sharingRepository->getMyEventShares($userId);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public function getMyVenueShares(int $userId): array {
+        try {
+            return $this->sharingRepository->getMyVenueShares($userId);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     public function revokeVenueShare(int $venueId, int $sharedBy, int $sharedWith): array {
         try {
             $success = $this->sharingRepository->revokeVenueShare($venueId, $sharedBy, $sharedWith);

@@ -89,6 +89,22 @@ class SharingController {
                 $this->getVenuesSharedWithUser($userId);
                 break;
 
+            case 'get_my_event_shares':
+                if ($method !== 'GET') {
+                    $this->methodNotAllowed();
+                    return;
+                }
+                $this->getMyEventShares($userId);
+                break;
+
+            case 'get_my_venue_shares':
+                if ($method !== 'GET') {
+                    $this->methodNotAllowed();
+                    return;
+                }
+                $this->getMyVenueShares($userId);
+                break;
+
             default:
                 http_response_code(404);
                 echo json_encode(['success' => false, 'message' => 'Action not found']);
@@ -144,6 +160,11 @@ class SharingController {
         echo json_encode(['success' => true, 'events' => $events]);
     }
 
+    private function getMyEventShares(int $userId): void {
+        $shares = $this->sharingService->getMyEventShares($userId);
+        echo json_encode(['success' => true, 'shares' => $shares]);
+    }
+
     private function shareVenue(int $userId): void {
         $data = json_decode(file_get_contents('php://input'), true);
         $venueId = (int) ($data['venue_id'] ?? 0);
@@ -191,6 +212,11 @@ class SharingController {
     private function getVenuesSharedWithUser(int $userId): void {
         $venues = $this->sharingService->getVenuesSharedWithUser($userId);
         echo json_encode(['success' => true, 'venues' => $venues]);
+    }
+
+    private function getMyVenueShares(int $userId): void {
+        $shares = $this->sharingService->getMyVenueShares($userId);
+        echo json_encode(['success' => true, 'shares' => $shares]);
     }
 
     private function methodNotAllowed(): void {

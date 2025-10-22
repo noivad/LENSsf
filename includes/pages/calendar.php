@@ -1,8 +1,41 @@
 <?php
 /** @var array $events */
 
+$currentUser = $_SESSION['current_user'] ?? 'Demo User';
+
+// Gather user's tags
+$userTags = [];
+foreach ($events as $ev) {
+    if (($ev['owner'] ?? '') === $currentUser) {
+        foreach (($ev['tags'] ?? []) as $tag) {
+            $tagLower = strtolower(trim((string) $tag));
+            if ($tagLower !== '') {
+                $userTags[$tagLower] = true;
+            }
+        }
+    }
+}
+$userTags = array_keys($userTags);
+
+// Sample public tags
+$sampleTags = ['Music', 'Professional Development', 'Night Clubs'];
+
+// Filter events by user's tags if they have any, otherwise show all
+$filteredEvents = $events;
+if (!empty($userTags)) {
+    $filteredEvents = array_values(array_filter($events, static function(array $e) use ($userTags): bool {
+        $eventTags = array_map('strtolower', array_map('trim', ($e['tags'] ?? [])));
+        foreach ($userTags as $userTag) {
+            if (in_array($userTag, $eventTags, true)) {
+                return true;
+            }
+        }
+        return false;
+    }));
+}
+
 $eventsByDate = [];
-foreach ($events as $event) {
+foreach ($filteredEvents as $event) {
     if (empty($event['event_date'])) {
         continue;
     }
@@ -21,6 +54,28 @@ ksort($eventsByDate);
             Browse upcoming events and see who has already added them to their calendar.
         <?php endif; ?>
     </p>
+
+    <?php if (!empty($userTags)): ?>
+        <div class="card">
+            <h3>Your Tags</h3>
+            <p class="subtle">Showing events filtered by tags you've used:</p>
+            <div>
+                <?php foreach ($userTags as $tag): ?>
+                    <span class="badge">#<?= e($tag) ?></span>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="card">
+            <h3>Popular Tags</h3>
+            <p class="subtle">You haven't used any tags yet. Here are some sample public tags:</p>
+            <div>
+                <?php foreach ($sampleTags as $tag): ?>
+                    <span class="badge">#<?= e(strtolower($tag)) ?></span>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    <?php endif; ?>
 
     <?php if ($eventsByDate): ?>
         <div class="calendar-list">

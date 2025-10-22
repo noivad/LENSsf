@@ -592,6 +592,7 @@ function handleDeleteEventComment(PDO $pdo): void
                     <a href="?page=venues" class="<?= $page === 'venues' ? 'active' : '' ?>">Venues</a>
                     <a href="?page=tags" class="<?= $page === 'tags' ? 'active' : '' ?>">Tags</a>
                     <a href="?page=photos" class="<?= $page === 'photos' ? 'active' : '' ?>">Photos</a>
+                    <a href="?page=shared" class="<?= $page === 'shared' ? 'active' : '' ?>">Shared</a>
                     <a href="?page=account" class="<?= $page === 'account' ? 'active' : '' ?>">Account</a>
                     <a href="?page=account_settings" class="<?= $page === 'account_settings' ? 'active' : '' ?>">Settings</a>
                 <?php endif; ?>
@@ -628,6 +629,9 @@ function handleDeleteEventComment(PDO $pdo): void
                 break;
             case 'tags':
                 include __DIR__ . '/../includes/pages/tags.php';
+                break;
+            case 'shared':
+                include __DIR__ . '/../includes/pages/shared.php';
                 break;
             case 'account':
                 include __DIR__ . '/../includes/pages/account.php';

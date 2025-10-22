@@ -26,6 +26,9 @@ if ($nextMonth > 12) {
     $nextYear++;
 }
 
+$previousYearSameMonth = $year - 1;
+$nextYearSameMonth = $year + 1;
+
 $events = [
     [
         'title' => 'Jazz Night',
@@ -233,9 +236,16 @@ function buildDayClasses(array $eventsForDay): string
         <main class="main-content">
             <div class="calendar-wrapper">
                 <div class="calendar-header">
-                    <a class="calendar-btn" href="?month=<?php echo $previousMonth; ?>&amp;year=<?php echo $previousYear; ?>">← Previous</a>
-                    <div class="month-display"><?php echo htmlspecialchars($monthLabel, ENT_QUOTES); ?></div>
-                    <a class="calendar-btn" href="?month=<?php echo $nextMonth; ?>&amp;year=<?php echo $nextYear; ?>">Next →</a>
+                    <div class="year-nav">
+                        <a class="calendar-btn" href="?month=<?php echo $month; ?>&amp;year=<?php echo $previousYearSameMonth; ?>">« <?php echo $previousYearSameMonth; ?></a>
+                        <div class="year-display"><?php echo $year; ?></div>
+                        <a class="calendar-btn" href="?month=<?php echo $month; ?>&amp;year=<?php echo $nextYearSameMonth; ?>"><?php echo $nextYearSameMonth; ?> »</a>
+                    </div>
+                    <div class="month-nav">
+                        <a class="calendar-btn" href="?month=<?php echo $previousMonth; ?>&amp;year=<?php echo $previousYear; ?>">← Previous</a>
+                        <div class="month-display"><?php echo htmlspecialchars($monthLabel, ENT_QUOTES); ?></div>
+                        <a class="calendar-btn" href="?month=<?php echo $nextMonth; ?>&amp;year=<?php echo $nextYear; ?>">Next →</a>
+                    </div>
                 </div>
 
                 <div class="calendar-grid-container">
