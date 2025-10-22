@@ -6,7 +6,7 @@
     <title>LENS Calendar - Event Network</title>
     <link rel="stylesheet" href="css/calendar-7x5.css">
 </head>
-<body data-theme="dark">
+<body data-theme="dark" class="calendar-public">
     <div class="app-container">
         <nav class="sidebar-nav">
             <div class="nav-logo">LENS</div>
@@ -18,61 +18,43 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="calendar-7x5.php" class="nav-link active">
+                    <a href="calendar-7x5.html" class="nav-link active">
                         <span class="nav-icon">📅</span>
                         <span>Calendar</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">🎉</span>
-                        <span>Events</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="venue-info.html" class="nav-link">
                         <span class="nav-icon">📍</span>
                         <span>Venues</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">📸</span>
-                        <span>Photos</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="nav-icon">🏷️</span>
-                        <span>Tags</span>
                     </a>
                 </li>
             </ul>
         </nav>
 
         <header class="top-header">
-            <h1 class="header-title">My Calendar</h1>
+            <h1 class="header-title">Community Calendar</h1>
             <div class="user-controls">
+                <div class="searchbar">
+                    <input id="calendar-search" type="text" placeholder="Search events/venues/descriptions or #tag" />
+                </div>
                 <button class="theme-toggle" onclick="toggleTheme()">
                     <span id="theme-icon">☀️</span> Toggle Theme
                 </button>
                 <div class="user-profile">
-                    <img src="https://i.pravatar.cc/150?img=33" alt="User Avatar" class="user-avatar" onclick="toggleUserDropdown()">
+                    <img src="https://i.pravatar.cc/150?img=45" alt="Guest Avatar" class="user-avatar" onclick="toggleUserDropdown()">
                     <div class="user-dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="alert('Contact Info')">
+                        <div class="dropdown-item" onclick="alert('Public account tools appear here.')">
                             📧 Contact Info
                         </div>
-                        <div class="dropdown-item" onclick="alert('Notifications')">
+                        <div class="dropdown-item" onclick="alert('Notifications panel coming soon.')">
                             🔔 Notifications
                         </div>
-                        <div class="dropdown-item" onclick="alert('Account Info')">
+                        <div class="dropdown-item" onclick="alert('Sign in to manage settings.')">
                             ⚙️ Account Info
                         </div>
-                        <div class="dropdown-item" onclick="alert('My Past Events')">
-                            📜 My Past Events
-                        </div>
-                        <div class="dropdown-item" onclick="alert('Logout')">
-                            🚪 Logout
+                        <div class="dropdown-item" onclick="alert('Upgrade to personalize this calendar.')">
+                            ⭐ Upgrade
                         </div>
                     </div>
                 </div>
@@ -82,9 +64,16 @@
         <main class="main-content">
             <div class="calendar-wrapper">
                 <div class="calendar-header">
-                    <button class="calendar-btn" onclick="previousMonth()">← Previous</button>
-                    <div class="month-display">October 2025</div>
-                    <button class="calendar-btn" onclick="nextMonth()">Next →</button>
+                    <div class="year-nav">
+                        <a class="calendar-btn" href="#">« 2024</a>
+                        <div class="year-display">2025</div>
+                        <a class="calendar-btn" href="#">2026 »</a>
+                    </div>
+                    <div class="month-nav">
+                        <a class="calendar-btn" href="#">← Previous</a>
+                        <div class="month-display">October 2025</div>
+                        <a class="calendar-btn" href="#">Next →</a>
+                    </div>
                 </div>
 
                 <div class="calendar-grid-container">
@@ -99,258 +88,492 @@
                     </div>
 
                     <div class="calendar-grid">
-                        <!-- Week 1 -->
                         <div class="calendar-day"></div>
                         <div class="calendar-day"></div>
                         <div class="calendar-day"></div>
-                        <div class="calendar-day">
-                            <div class="day-number">1</div>
-                        </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-01" data-event-count="0"></div>
+                        <div class="calendar-day" data-date="2025-10-02" data-event-count="0">
                             <div class="day-number">2</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-03" data-event-count="0">
                             <div class="day-number">3</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-04" data-event-count="0">
                             <div class="day-number">4</div>
                         </div>
 
-                        <!-- Week 2 -->
-                        <div class="calendar-day has-event past-event">
+                        <div class="calendar-day has-event past-event" data-date="2025-10-05" data-event-count="1" data-count-label="">
                             <div class="day-number">5</div>
-                            <div class="flag-row">
-                                <span class="event-flag past"></span>
+                            <div class="flag-row" data-event-count="1" data-count-label="">
+                                <span class="event-flag past" data-event-id="evt-jazz-night" title="Toggle details"></span>
                             </div>
                             <div class="event-popover">
-                                <div class="event-item">
-                                    <div class="event-title">🎸 Jazz Night</div>
-                                    <div class="event-detail">📍 Blue Note Club</div>
-                                    <div class="event-detail">🕐 7:00 PM - 11:00 PM</div>
-                                    <div class="event-detail">👤 Created by: Alice Johnson</div>
-                                    <div class="event-detail emphasis">🗓️ Past Event</div>
-                                    <div class="event-actions">
-                                        <button class="event-action-btn" onclick="shareEvent('Jazz Night')">📤 Share Event</button>
+                                <article class="event-item" data-event-id="evt-jazz-night" data-event-url="events-list-add-info.php#evt_101" data-venue-url="venue-info.html" data-description="An evening of improvisation featuring local legends." data-tags="jazz,music,live" data-event-date="2025-10-05">
+                                    <div class="event-media" style="margin-bottom: 0.6rem;">
+                                        <img src="https://picsum.photos/seed/evt-jazz-night/360/200" alt="Jazz Night image" style="width:100%; border-radius:12px; border:1px solid var(--border-color);">
                                     </div>
-                                </div>
+                                    <header class="event-popover-header">
+                                        <a class="event-title" href="events-list-add-info.php#evt_101">Jazz Night</a>
+                                        <span class="visibility-badge visibility-public">Public</span>
+                                    </header>
+                                    <div class="event-detail event-location">
+                                        <a href="venue-info.html" data-location="Blue Note Club, San Francisco, CA">📍 Blue Note Club <small style="opacity:.7">(hover for map)</small></a>
+                                    </div>
+                                    <div class="event-detail">🕐 7:00 PM – 11:00 PM</div>
+                                    <div class="event-detail">🔁 Repeats on the first Friday of every month</div>
+                                    <div class="event-detail">👤 Created by: Alice Johnson</div>
+                                    <div class="event-detail">🛈 An evening of improvisation featuring local legends.</div>
+                                    <div class="tag-chips">
+                                        <span class="tag-chip">#jazz</span>
+                                        <span class="tag-chip">#music</span>
+                                        <span class="tag-chip">#live</span>
+                                    </div>
+                                    <div class="mini-map" style="display:none"></div>
+                                    <div class="event-status">Past Event</div>
+                                    <div class="event-actions">
+                                        <button class="event-action-btn" type="button" onclick="shareEvent('Jazz Night')">📤 Share Event</button>
+                                        <a class="event-action-btn" href="events-list-add-info.php#evt_101">View details</a>
+                                    </div>
+                                </article>
                             </div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-06" data-event-count="0">
                             <div class="day-number">6</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-07" data-event-count="0">
                             <div class="day-number">7</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-08" data-event-count="0">
                             <div class="day-number">8</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-09" data-event-count="0">
                             <div class="day-number">9</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-10" data-event-count="0">
                             <div class="day-number">10</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-11" data-event-count="0">
                             <div class="day-number">11</div>
                         </div>
 
-                        <!-- Week 3 -->
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-12" data-event-count="0">
                             <div class="day-number">12</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-13" data-event-count="0">
                             <div class="day-number">13</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-14" data-event-count="0">
                             <div class="day-number">14</div>
                         </div>
-                        <div class="calendar-day has-event">
+                        <div class="calendar-day has-event" data-date="2025-10-15" data-event-count="2" data-count-label="+1">
                             <div class="day-number">15</div>
-                            <div class="flag-row">
-                                <span class="event-flag"></span>
-                                <span class="event-flag"></span>
+                            <div class="flag-row" data-event-count="2" data-count-label="+1">
+                                <span class="event-flag" data-event-id="evt-art-exhibition" title="Toggle details"></span>
+                                <span class="event-flag" data-event-id="evt-pizza-party" title="Toggle details"></span>
                             </div>
                             <div class="event-popover">
-                                <div class="event-item">
-                                    <div class="event-title">🎨 Art Exhibition Opening</div>
-                                    <div class="event-detail">📍 Modern Art Gallery</div>
-                                    <div class="event-detail">🕐 6:00 PM - 9:00 PM</div>
-                                    <div class="event-detail">👤 Created by: You</div>
-                                    <div class="event-detail emphasis">🚀 Upcoming Event</div>
-                                    <div class="event-actions">
-                                        <button class="event-action-btn" onclick="shareEvent('Art Exhibition')">📤 Share Event</button>
-                                        <button class="event-action-btn" onclick="editEvent('Art Exhibition')">✏️ Edit Event</button>
-                                        <button class="event-action-btn delete" onclick="confirmDelete('Art Exhibition')">🗑️ Delete Event</button>
+                                <article class="event-item" data-event-id="evt-art-exhibition" data-event-url="events-list-add-info.php#evt_102" data-venue-url="venue-info.html" data-description="Celebrate the launch of the &quot;Lightscapes&quot; collection with the artists." data-tags="art,gallery,opening" data-event-date="2025-10-15">
+                                    <div class="event-media" style="margin-bottom: 0.6rem;">
+                                        <img src="https://picsum.photos/seed/evt-art-exhibition/360/200" alt="Art Exhibition Opening image" style="width:100%; border-radius:12px; border:1px solid var(--border-color);">
                                     </div>
-                                </div>
-                                <div class="event-item">
-                                    <div class="event-title">🍕 Pizza Party</div>
-                                    <div class="event-detail">📍 Tony's Pizzeria</div>
-                                    <div class="event-detail">🕐 7:30 PM - 10:00 PM</div>
+                                    <header class="event-popover-header">
+                                        <a class="event-title" href="events-list-add-info.php#evt_102">Art Exhibition Opening</a>
+                                        <span class="visibility-badge visibility-public">Public</span>
+                                    </header>
+                                    <div class="event-detail event-location">
+                                        <a href="venue-info.html" data-location="Modern Art Gallery, San Francisco, CA">📍 Modern Art Gallery <small style="opacity:.7">(hover for map)</small></a>
+                                    </div>
+                                    <div class="event-detail">🕐 6:00 PM – 9:00 PM</div>
+                                    <div class="event-detail">🔁 Every third Wednesday</div>
+                                    <div class="event-detail">👤 Created by: Morgan</div>
+                                    <div class="event-detail">🛈 Celebrate the launch of the "Lightscapes" collection with the artists.</div>
+                                    <div class="tag-chips">
+                                        <span class="tag-chip">#art</span>
+                                        <span class="tag-chip">#gallery</span>
+                                        <span class="tag-chip">#opening</span>
+                                    </div>
+                                    <div class="mini-map" style="display:none"></div>
+                                    <div class="event-status">Upcoming Event</div>
+                                    <div class="event-actions">
+                                        <button class="event-action-btn" type="button" onclick="shareEvent('Art Exhibition Opening')">📤 Share Event</button>
+                                        <a class="event-action-btn" href="events-list-add-info.php#evt_102">View details</a>
+                                    </div>
+                                </article>
+                                <article class="event-item" data-event-id="evt-pizza-party" data-event-url="events-list-add-info.php#evt_103" data-venue-url="venue-info.html" data-description="Community-organized meetup to celebrate the fall menu launch." data-tags="food,pizza,community" data-event-date="2025-10-15">
+                                    <div class="event-media" style="margin-bottom: 0.6rem;">
+                                        <img src="https://picsum.photos/seed/evt-pizza-party/360/200" alt="Pizza Party image" style="width:100%; border-radius:12px; border:1px solid var(--border-color);">
+                                    </div>
+                                    <header class="event-popover-header">
+                                        <a class="event-title" href="events-list-add-info.php#evt_103">Pizza Party</a>
+                                        <span class="visibility-badge visibility-invitation-only">Invitation only</span>
+                                    </header>
+                                    <div class="event-detail event-location">
+                                        <a href="venue-info.html" data-location="Tony's Pizzeria, San Francisco, CA">📍 Tony's Pizzeria <small style="opacity:.7">(hover for map)</small></a>
+                                    </div>
+                                    <div class="event-detail">🕐 7:30 PM – 10:00 PM</div>
+                                    <div class="event-detail">🔁 Second Tuesday of every month</div>
                                     <div class="event-detail">👤 Created by: Bob Smith</div>
-                                    <div class="event-detail emphasis">🚀 Upcoming Event</div>
-                                    <div class="event-actions">
-                                        <button class="event-action-btn" onclick="shareEvent('Pizza Party')">📤 Share Event</button>
+                                    <div class="event-detail">🛈 Community-organized meetup to celebrate the fall menu launch.</div>
+                                    <div class="tag-chips">
+                                        <span class="tag-chip">#food</span>
+                                        <span class="tag-chip">#pizza</span>
+                                        <span class="tag-chip">#community</span>
                                     </div>
-                                </div>
+                                    <div class="mini-map" style="display:none"></div>
+                                    <div class="event-status">Upcoming Event</div>
+                                    <div class="event-actions">
+                                        <button class="event-action-btn" type="button" onclick="shareEvent('Pizza Party')">📤 Share Event</button>
+                                        <a class="event-action-btn" href="events-list-add-info.php#evt_103">Request invite</a>
+                                    </div>
+                                </article>
                             </div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-16" data-event-count="0">
                             <div class="day-number">16</div>
                         </div>
-                        <div class="calendar-day has-event happening-now">
+                        <div class="calendar-day has-event happening-now" data-date="2025-10-17" data-event-count="1" data-count-label="">
                             <div class="day-number">17</div>
-                            <div class="flag-row">
-                                <span class="event-flag happening"></span>
+                            <div class="flag-row" data-event-count="1" data-count-label="">
+                                <span class="event-flag happening" data-event-id="evt-tech-conference" title="Toggle details"></span>
                             </div>
                             <div class="event-popover">
-                                <div class="event-item">
-                                    <div class="event-title">💻 Tech Conference</div>
-                                    <div class="event-detail">📍 Convention Center</div>
-                                    <div class="event-detail">🕐 9:00 AM - 6:00 PM</div>
-                                    <div class="event-detail emphasis">⚡ Happening Now!</div>
-                                    <div class="event-detail">👤 Created by: Tech Corp</div>
-                                    <div class="event-actions">
-                                        <button class="event-action-btn" onclick="shareEvent('Tech Conference')">📤 Share Event</button>
+                                <article class="event-item" data-event-id="evt-tech-conference" data-event-url="events-list-add-info.php#evt_104" data-venue-url="venue-info.html" data-description="Keynotes on emerging AI systems plus hands-on futuristic demos." data-tags="tech,conference,ai" data-event-date="2025-10-17">
+                                    <div class="event-media" style="margin-bottom: 0.6rem;">
+                                        <img src="https://picsum.photos/seed/evt-tech-conference/360/200" alt="Tech Conference image" style="width:100%; border-radius:12px; border:1px solid var(--border-color);">
                                     </div>
-                                </div>
+                                    <header class="event-popover-header">
+                                        <a class="event-title" href="events-list-add-info.php#evt_104">Tech Conference</a>
+                                        <span class="visibility-badge visibility-public">Public</span>
+                                    </header>
+                                    <div class="event-detail event-location">
+                                        <a href="venue-info.html" data-location="Central Convention Center, San Francisco, CA">📍 Central Convention Center <small style="opacity:.7">(hover for map)</small></a>
+                                    </div>
+                                    <div class="event-detail">🕐 9:00 AM – 6:00 PM</div>
+                                    <div class="event-detail">🔁 Annual conference (same weekend each year)</div>
+                                    <div class="event-detail">👤 Created by: Tech Corp</div>
+                                    <div class="event-detail">🛈 Keynotes on emerging AI systems plus hands-on futuristic demos.</div>
+                                    <div class="tag-chips">
+                                        <span class="tag-chip">#tech</span>
+                                        <span class="tag-chip">#conference</span>
+                                        <span class="tag-chip">#ai</span>
+                                    </div>
+                                    <div class="mini-map" style="display:none"></div>
+                                    <div class="event-status">Happening Now</div>
+                                    <div class="event-actions">
+                                        <button class="event-action-btn" type="button" onclick="shareEvent('Tech Conference')">📤 Share Event</button>
+                                        <a class="event-action-btn" href="events-list-add-info.php#evt_104">View details</a>
+                                    </div>
+                                </article>
                             </div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-18" data-event-count="0">
                             <div class="day-number">18</div>
                         </div>
-
-                        <!-- Week 4 -->
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-19" data-event-count="0">
                             <div class="day-number">19</div>
                         </div>
-                        <div class="calendar-day has-event">
+                        <div class="calendar-day" data-date="2025-10-20" data-event-count="0">
                             <div class="day-number">20</div>
-                            <div class="flag-row">
-                                <span class="event-flag"></span>
-                            </div>
-                            <div class="event-popover">
-                                <div class="event-item">
-                                    <div class="event-title">🎭 Theater Performance</div>
-                                    <div class="event-detail">📍 City Theater</div>
-                                    <div class="event-detail">🕐 8:00 PM - 10:30 PM</div>
-                                    <div class="event-detail">👤 Created by: You</div>
-                                    <div class="event-detail emphasis">🚀 Upcoming Event</div>
-                                    <div class="event-actions">
-                                        <button class="event-action-btn" onclick="shareEvent('Theater Performance')">📤 Share Event</button>
-                                        <button class="event-action-btn" onclick="editEvent('Theater Performance')">✏️ Edit Event</button>
-                                        <button class="event-action-btn delete" onclick="confirmDelete('Theater Performance')">🗑️ Delete Event</button>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-21" data-event-count="0">
                             <div class="day-number">21</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-22" data-event-count="0">
                             <div class="day-number">22</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-23" data-event-count="0">
                             <div class="day-number">23</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-24" data-event-count="0">
                             <div class="day-number">24</div>
                         </div>
-                        <div class="calendar-day has-event">
+
+                        <div class="calendar-day has-event" data-date="2025-10-25" data-event-count="1" data-count-label="">
                             <div class="day-number">25</div>
-                            <div class="flag-row">
-                                <span class="event-flag"></span>
+                            <div class="flag-row" data-event-count="1" data-count-label="">
+                                <span class="event-flag" data-event-id="evt-marathon" title="Toggle details"></span>
                             </div>
                             <div class="event-popover">
-                                <div class="event-item">
-                                    <div class="event-title">🏃 Marathon Event</div>
-                                    <div class="event-detail">📍 City Park</div>
-                                    <div class="event-detail">🕐 6:00 AM - 12:00 PM</div>
-                                    <div class="event-detail">👤 Created by: Sports Club</div>
-                                    <div class="event-detail emphasis">🚀 Upcoming Event</div>
-                                    <div class="event-actions">
-                                        <button class="event-action-btn" onclick="shareEvent('Marathon Event')">📤 Share Event</button>
+                                <article class="event-item" data-event-id="evt-marathon" data-event-url="events-list-add-info.php#evt_105" data-venue-url="venue-info.html" data-description="City-wide marathon following the Skyline Nebula route." data-tags="sports,marathon,outdoor" data-event-date="2025-10-25">
+                                    <div class="event-media" style="margin-bottom: 0.6rem;">
+                                        <img src="https://picsum.photos/seed/evt-marathon/360/200" alt="Marathon Event image" style="width:100%; border-radius:12px; border:1px solid var(--border-color);">
                                     </div>
-                                </div>
+                                    <header class="event-popover-header">
+                                        <a class="event-title" href="events-list-add-info.php#evt_105">Marathon Event</a>
+                                        <span class="visibility-badge visibility-public">Public</span>
+                                    </header>
+                                    <div class="event-detail event-location">
+                                        <a href="venue-info.html" data-location="Eon City Park, San Francisco, CA">📍 Eon City Park <small style="opacity:.7">(hover for map)</small></a>
+                                    </div>
+                                    <div class="event-detail">🕐 6:00 AM – 12:00 PM</div>
+                                    <div class="event-detail">🔁 Fourth Sunday of October every year</div>
+                                    <div class="event-detail">👤 Created by: Sports Club</div>
+                                    <div class="event-detail">🛈 City-wide marathon following the Skyline Nebula route.</div>
+                                    <div class="tag-chips">
+                                        <span class="tag-chip">#sports</span>
+                                        <span class="tag-chip">#marathon</span>
+                                        <span class="tag-chip">#outdoor</span>
+                                    </div>
+                                    <div class="mini-map" style="display:none"></div>
+                                    <div class="event-status">Upcoming Event</div>
+                                    <div class="event-actions">
+                                        <button class="event-action-btn" type="button" onclick="shareEvent('Marathon Event')">📤 Share Event</button>
+                                        <a class="event-action-btn" href="events-list-add-info.php#evt_105">View details</a>
+                                    </div>
+                                </article>
                             </div>
                         </div>
-
-                        <!-- Week 5 -->
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-26" data-event-count="0">
                             <div class="day-number">26</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-27" data-event-count="0">
                             <div class="day-number">27</div>
                         </div>
-                        <div class="calendar-day has-event">
+                        <div class="calendar-day has-event" data-date="2025-10-28" data-event-count="1" data-count-label="">
                             <div class="day-number">28</div>
-                            <div class="flag-row">
-                                <span class="event-flag"></span>
+                            <div class="flag-row" data-event-count="1" data-count-label="">
+                                <span class="event-flag" data-event-id="evt-halloween" title="Toggle details"></span>
                             </div>
                             <div class="event-popover">
-                                <div class="event-item">
-                                    <div class="event-title">🎃 Halloween Party</div>
-                                    <div class="event-detail">📍 Community Center</div>
-                                    <div class="event-detail">🕐 7:00 PM - 12:00 AM</div>
-                                    <div class="event-detail">👤 Created by: You</div>
-                                    <div class="event-detail emphasis">🚀 Upcoming Event</div>
-                                    <div class="event-actions">
-                                        <button class="event-action-btn" onclick="shareEvent('Halloween Party')">📤 Share Event</button>
-                                        <button class="event-action-btn" onclick="editEvent('Halloween Party')">✏️ Edit Event</button>
-                                        <button class="event-action-btn delete" onclick="confirmDelete('Halloween Party')">🗑️ Delete Event</button>
+                                <article class="event-item" data-event-id="evt-halloween" data-event-url="events-list-add-info.php#evt_106" data-venue-url="venue-info.html" data-description="Costumes, synthwave DJs, and an augmented reality haunted maze." data-tags="halloween,party,costumes" data-event-date="2025-10-28">
+                                    <div class="event-media" style="margin-bottom: 0.6rem;">
+                                        <img src="https://picsum.photos/seed/evt-halloween/360/200" alt="Halloween Party image" style="width:100%; border-radius:12px; border:1px solid var(--border-color);">
                                     </div>
-                                </div>
+                                    <header class="event-popover-header">
+                                        <a class="event-title" href="events-list-add-info.php#evt_106">Halloween Party</a>
+                                        <span class="visibility-badge visibility-public">Public</span>
+                                    </header>
+                                    <div class="event-detail event-location">
+                                        <a href="venue-info.html" data-location="Community Center, San Francisco, CA">📍 Community Center <small style="opacity:.7">(hover for map)</small></a>
+                                    </div>
+                                    <div class="event-detail">🕐 7:00 PM – 12:00 AM</div>
+                                    <div class="event-detail">🔁 Every October 28th</div>
+                                    <div class="event-detail">👤 Created by: Local Hosts</div>
+                                    <div class="event-detail">🛈 Costumes, synthwave DJs, and an augmented reality haunted maze.</div>
+                                    <div class="tag-chips">
+                                        <span class="tag-chip">#halloween</span>
+                                        <span class="tag-chip">#party</span>
+                                        <span class="tag-chip">#costumes</span>
+                                    </div>
+                                    <div class="mini-map" style="display:none"></div>
+                                    <div class="event-status">Upcoming Event</div>
+                                    <div class="event-actions">
+                                        <button class="event-action-btn" type="button" onclick="shareEvent('Halloween Party')">📤 Share Event</button>
+                                        <a class="event-action-btn" href="events-list-add-info.php#evt_106">View details</a>
+                                    </div>
+                                </article>
                             </div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-29" data-event-count="0">
                             <div class="day-number">29</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-30" data-event-count="0">
                             <div class="day-number">30</div>
                         </div>
-                        <div class="calendar-day">
+                        <div class="calendar-day" data-date="2025-10-31" data-event-count="0">
                             <div class="day-number">31</div>
                         </div>
                     </div>
                 </div>
 
+                <section class="calendar-event-feed" id="event-list">
+                    <header class="calendar-event-feed__header">
+                        <h2>Events for October 2025</h2>
+                        <p class="subtle">Hover over any pip to preview details or click the date block to jump to the listings below.</p>
+                    </header>
+
+                    <div class="event-day-group" data-event-date="2025-10-05">
+                        <div class="event-day-heading">
+                            <span class="event-day-weekday">Sunday</span>
+                            <span class="event-day-date">October 5, 2025</span>
+                        </div>
+                        <article class="event-card" id="event-card-evt-jazz-night" data-event-id="evt-jazz-night" data-event-date="2025-10-05">
+                            <header class="event-card__header">
+                                <h3><a href="events-list-add-info.php#evt_101">Jazz Night</a></h3>
+                                <span class="visibility-badge visibility-public">Public</span>
+                            </header>
+                            <ul class="event-card__meta">
+                                <li>🕐 7:00 PM – 11:00 PM</li>
+                                <li>📍 <a href="venue-info.html">Blue Note Club</a></li>
+                                <li>🔁 Repeats on the first Friday of every month</li>
+                                <li class="status">Past Event</li>
+                            </ul>
+                            <p class="event-card__description">An evening of improvisation featuring local legends.</p>
+                            <div class="tag-chips">
+                                <span class="tag-chip">#jazz</span>
+                                <span class="tag-chip">#music</span>
+                                <span class="tag-chip">#live</span>
+                            </div>
+                            <div class="event-card__actions">
+                                <a class="event-action-btn" href="events-list-add-info.php#evt_101">View details</a>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="event-day-group" data-event-date="2025-10-15">
+                        <div class="event-day-heading">
+                            <span class="event-day-weekday">Wednesday</span>
+                            <span class="event-day-date">October 15, 2025</span>
+                        </div>
+                        <article class="event-card" id="event-card-evt-art-exhibition" data-event-id="evt-art-exhibition" data-event-date="2025-10-15">
+                            <header class="event-card__header">
+                                <h3><a href="events-list-add-info.php#evt_102">Art Exhibition Opening</a></h3>
+                                <span class="visibility-badge visibility-public">Public</span>
+                            </header>
+                            <ul class="event-card__meta">
+                                <li>🕐 6:00 PM – 9:00 PM</li>
+                                <li>📍 <a href="venue-info.html">Modern Art Gallery</a></li>
+                                <li>🔁 Every third Wednesday</li>
+                                <li class="status">Upcoming Event</li>
+                            </ul>
+                            <p class="event-card__description">Celebrate the launch of the "Lightscapes" collection with the artists.</p>
+                            <div class="tag-chips">
+                                <span class="tag-chip">#art</span>
+                                <span class="tag-chip">#gallery</span>
+                                <span class="tag-chip">#opening</span>
+                            </div>
+                            <div class="event-card__actions">
+                                <a class="event-action-btn" href="events-list-add-info.php#evt_102">View details</a>
+                            </div>
+                        </article>
+                        <article class="event-card" id="event-card-evt-pizza-party" data-event-id="evt-pizza-party" data-event-date="2025-10-15">
+                            <header class="event-card__header">
+                                <h3><a href="events-list-add-info.php#evt_103">Pizza Party</a></h3>
+                                <span class="visibility-badge visibility-invitation-only">Invitation only</span>
+                            </header>
+                            <ul class="event-card__meta">
+                                <li>🕐 7:30 PM – 10:00 PM</li>
+                                <li>📍 <a href="venue-info.html">Tony's Pizzeria</a></li>
+                                <li>🔁 Second Tuesday of every month</li>
+                                <li class="status">Upcoming Event</li>
+                            </ul>
+                            <p class="event-card__description">Community-organized meetup to celebrate the fall menu launch.</p>
+                            <div class="tag-chips">
+                                <span class="tag-chip">#food</span>
+                                <span class="tag-chip">#pizza</span>
+                                <span class="tag-chip">#community</span>
+                            </div>
+                            <div class="event-card__actions">
+                                <a class="event-action-btn" href="events-list-add-info.php#evt_103">Request invite</a>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="event-day-group" data-event-date="2025-10-17">
+                        <div class="event-day-heading">
+                            <span class="event-day-weekday">Friday</span>
+                            <span class="event-day-date">October 17, 2025</span>
+                        </div>
+                        <article class="event-card" id="event-card-evt-tech-conference" data-event-id="evt-tech-conference" data-event-date="2025-10-17">
+                            <header class="event-card__header">
+                                <h3><a href="events-list-add-info.php#evt_104">Tech Conference</a></h3>
+                                <span class="visibility-badge visibility-public">Public</span>
+                            </header>
+                            <ul class="event-card__meta">
+                                <li>🕐 9:00 AM – 6:00 PM</li>
+                                <li>📍 <a href="venue-info.html">Central Convention Center</a></li>
+                                <li>🔁 Annual conference (same weekend each year)</li>
+                                <li class="status">Happening Now</li>
+                            </ul>
+                            <p class="event-card__description">Keynotes on emerging AI systems plus hands-on futuristic demos.</p>
+                            <div class="tag-chips">
+                                <span class="tag-chip">#tech</span>
+                                <span class="tag-chip">#conference</span>
+                                <span class="tag-chip">#ai</span>
+                            </div>
+                            <div class="event-card__actions">
+                                <a class="event-action-btn" href="events-list-add-info.php#evt_104">View details</a>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="event-day-group" data-event-date="2025-10-25">
+                        <div class="event-day-heading">
+                            <span class="event-day-weekday">Saturday</span>
+                            <span class="event-day-date">October 25, 2025</span>
+                        </div>
+                        <article class="event-card" id="event-card-evt-marathon" data-event-id="evt-marathon" data-event-date="2025-10-25">
+                            <header class="event-card__header">
+                                <h3><a href="events-list-add-info.php#evt_105">Marathon Event</a></h3>
+                                <span class="visibility-badge visibility-public">Public</span>
+                            </header>
+                            <ul class="event-card__meta">
+                                <li>🕐 6:00 AM – 12:00 PM</li>
+                                <li>📍 <a href="venue-info.html">Eon City Park</a></li>
+                                <li>🔁 Fourth Sunday of October every year</li>
+                                <li class="status">Upcoming Event</li>
+                            </ul>
+                            <p class="event-card__description">City-wide marathon following the Skyline Nebula route.</p>
+                            <div class="tag-chips">
+                                <span class="tag-chip">#sports</span>
+                                <span class="tag-chip">#marathon</span>
+                                <span class="tag-chip">#outdoor</span>
+                            </div>
+                            <div class="event-card__actions">
+                                <a class="event-action-btn" href="events-list-add-info.php#evt_105">View details</a>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="event-day-group" data-event-date="2025-10-28">
+                        <div class="event-day-heading">
+                            <span class="event-day-weekday">Tuesday</span>
+                            <span class="event-day-date">October 28, 2025</span>
+                        </div>
+                        <article class="event-card" id="event-card-evt-halloween" data-event-id="evt-halloween" data-event-date="2025-10-28">
+                            <header class="event-card__header">
+                                <h3><a href="events-list-add-info.php#evt_106">Halloween Party</a></h3>
+                                <span class="visibility-badge visibility-public">Public</span>
+                            </header>
+                            <ul class="event-card__meta">
+                                <li>🕐 7:00 PM – 12:00 AM</li>
+                                <li>📍 <a href="venue-info.html">Community Center</a></li>
+                                <li>🔁 Every October 28th</li>
+                                <li class="status">Upcoming Event</li>
+                            </ul>
+                            <p class="event-card__description">Costumes, synthwave DJs, and an augmented reality haunted maze.</p>
+                            <div class="tag-chips">
+                                <span class="tag-chip">#halloween</span>
+                                <span class="tag-chip">#party</span>
+                                <span class="tag-chip">#costumes</span>
+                            </div>
+                            <div class="event-card__actions">
+                                <a class="event-action-btn" href="events-list-add-info.php#evt_106">View details</a>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="calendar-notifications" aria-live="polite">
+                    <h3>Latest Updates</h3>
+                    <div id="calendar-notifications"></div>
+                </section>
+
                 <div class="event-images">
-                    <h2 class="images-title">🌟 Photos from Your Past Events</h2>
+                    <h2 class="images-title">🌟 Photos from Around the Community</h2>
                     <div class="images-grid">
                         <div class="image-card">
-                            <img src="https://picsum.photos/400/400?random=1" alt="Event Photo 1">
+                            <img src="https://picsum.photos/400/400?random=20" alt="Event Photo 1">
                             <div class="image-overlay">
-                                <div class="image-caption">Jazz Night @ Blue Note</div>
+                                <div class="image-caption">Jazz Night Highlights</div>
                             </div>
                         </div>
                         <div class="image-card">
-                            <img src="https://picsum.photos/400/400?random=2" alt="Event Photo 2">
+                            <img src="https://picsum.photos/400/400?random=21" alt="Event Photo 2">
                             <div class="image-overlay">
-                                <div class="image-caption">Summer Festival 2024</div>
+                                <div class="image-caption">Autumn Gallery Walk</div>
                             </div>
                         </div>
                         <div class="image-card">
-                            <img src="https://picsum.photos/400/400?random=3" alt="Event Photo 3">
+                            <img src="https://picsum.photos/400/400?random=22" alt="Event Photo 3">
                             <div class="image-overlay">
-                                <div class="image-caption">Tech Meetup</div>
+                                <div class="image-caption">Tech Expo Floor</div>
                             </div>
                         </div>
                         <div class="image-card">
-                            <img src="https://picsum.photos/400/400?random=4" alt="Event Photo 4">
+                            <img src="https://picsum.photos/400/400?random=23" alt="Event Photo 4">
                             <div class="image-overlay">
-                                <div class="image-caption">Art Workshop</div>
-                            </div>
-                        </div>
-                        <div class="image-card">
-                            <img src="https://picsum.photos/400/400?random=5" alt="Event Photo 5">
-                            <div class="image-overlay">
-                                <div class="image-caption">Food Festival</div>
-                            </div>
-                        </div>
-                        <div class="image-card">
-                            <img src="https://picsum.photos/400/400?random=6" alt="Event Photo 6">
-                            <div class="image-overlay">
-                                <div class="image-caption">Concert Night</div>
+                                <div class="image-caption">City Marathon Start Line</div>
                             </div>
                         </div>
                     </div>
@@ -374,6 +597,112 @@
         </div>
     </div>
 
+    <script>
+      window.__CAL_EVENTS__ = [
+        {
+          "id": "evt-jazz-night",
+          "title": "Jazz Night",
+          "venue": "Blue Note Club",
+          "venue_url": "venue-info.html",
+          "venue_location_query": "Blue Note Club, San Francisco, CA",
+          "date": "2025-10-05",
+          "start_time": "19:00",
+          "end_time": "23:00",
+          "creator": "Alice Johnson",
+          "is_creator": false,
+          "status": "past",
+          "visibility": "public",
+          "description": "An evening of improvisation featuring local legends.",
+          "tags": ["jazz","music","live"],
+          "recurrence": {"label": "Repeats on the first Friday of every month"}
+        },
+        {
+          "id": "evt-art-exhibition",
+          "title": "Art Exhibition Opening",
+          "venue": "Modern Art Gallery",
+          "venue_url": "venue-info.html",
+          "venue_location_query": "Modern Art Gallery, San Francisco, CA",
+          "date": "2025-10-15",
+          "start_time": "18:00",
+          "end_time": "21:00",
+          "creator": "Morgan",
+          "is_creator": false,
+          "status": "upcoming",
+          "visibility": "public",
+          "description": "Celebrate the launch of the \"Lightscapes\" collection with the artists.",
+          "tags": ["art","gallery","opening"],
+          "recurrence": {"label": "Every third Wednesday"}
+        },
+        {
+          "id": "evt-pizza-party",
+          "title": "Pizza Party",
+          "venue": "Tony's Pizzeria",
+          "venue_url": "venue-info.html",
+          "venue_location_query": "Tony's Pizzeria, San Francisco, CA",
+          "date": "2025-10-15",
+          "start_time": "19:30",
+          "end_time": "22:00",
+          "creator": "Bob Smith",
+          "is_creator": false,
+          "status": "upcoming",
+          "visibility": "invitation-only",
+          "description": "Community-organized meetup to celebrate the fall menu launch.",
+          "tags": ["food","pizza","community"],
+          "recurrence": {"label": "Second Tuesday of every month"}
+        },
+        {
+          "id": "evt-tech-conference",
+          "title": "Tech Conference",
+          "venue": "Central Convention Center",
+          "venue_url": "venue-info.html",
+          "venue_location_query": "Central Convention Center, San Francisco, CA",
+          "date": "2025-10-17",
+          "start_time": "09:00",
+          "end_time": "18:00",
+          "creator": "Tech Corp",
+          "is_creator": false,
+          "status": "happening",
+          "visibility": "public",
+          "description": "Keynotes on emerging AI systems plus hands-on futuristic demos.",
+          "tags": ["tech","conference","ai"],
+          "recurrence": {"label": "Annual conference (same weekend each year)"}
+        },
+        {
+          "id": "evt-marathon",
+          "title": "Marathon Event",
+          "venue": "Eon City Park",
+          "venue_url": "venue-info.html",
+          "venue_location_query": "Eon City Park, San Francisco, CA",
+          "date": "2025-10-25",
+          "start_time": "06:00",
+          "end_time": "12:00",
+          "creator": "Sports Club",
+          "is_creator": false,
+          "status": "upcoming",
+          "visibility": "public",
+          "description": "City-wide marathon following the Skyline Nebula route.",
+          "tags": ["sports","marathon","outdoor"],
+          "recurrence": {"label": "Fourth Sunday of October every year"}
+        },
+        {
+          "id": "evt-halloween",
+          "title": "Halloween Party",
+          "venue": "Community Center",
+          "venue_url": "venue-info.html",
+          "venue_location_query": "Community Center, San Francisco, CA",
+          "date": "2025-10-28",
+          "start_time": "19:00",
+          "end_time": "00:00",
+          "creator": "Local Hosts",
+          "is_creator": false,
+          "status": "upcoming",
+          "visibility": "public",
+          "description": "Costumes, synthwave DJs, and an augmented reality haunted maze.",
+          "tags": ["halloween","party","costumes"],
+          "recurrence": {"label": "Every October 28th"}
+        }
+      ];
+    </script>
     <script src="js/calendar-7x5.js"></script>
 </body>
 </html>
