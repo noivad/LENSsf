@@ -5,8 +5,8 @@
   --ctx-shadow: var(--shadow-md);
 }
 
-.mockup-wrap{display:grid;grid-template-columns: 340px 1fr;gap:1rem;align-items:start}
-@media (max-width: 900px){.mockup-wrap{grid-template-columns:1fr}}
+.events-wrap{display:grid;grid-template-columns: 340px 1fr;gap:1rem;align-items:start}
+@media (max-width: 900px){.events-wrap{grid-template-columns:1fr}}
 
 .sticky-top{position:sticky;top:70px;z-index:10}
 
