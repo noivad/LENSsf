@@ -198,37 +198,4 @@ $tab = $_GET['tab'] ?? 'shared_with_me';
 })();
 </script>
 
-<style>
-.shared-item {
-    padding: 1rem;
-    border: 1px solid var(--border-color, #ccc);
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    background: var(--bg-secondary, #f9f9f9);
-}
 
-.share-recipients {
-    margin-top: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.share-recipient {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem;
-    background: var(--bg-tertiary, #fff);
-    border-radius: 6px;
-}
-
-.loading {
-    color: var(--text-secondary, #666);
-    font-style: italic;
-}
-
-.error {
-    color: #d9534f;
-}
-</style>

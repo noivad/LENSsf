@@ -1,0 +1,212 @@
+/* Extracted styles from standalone demo pages */
+
+body.page-tag-share {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.page-tag-share .container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-tag-share h1 {
+    color: #333333;
+}
+
+.page-tag-share h2 {
+    color: #666666;
+    border-bottom: 2px solid #eeeeee;
+    padding-bottom: 10px;
+}
+
+.page-tag-share .form-group {
+    margin-bottom: 15px;
+}
+
+.page-tag-share label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555555;
+}
+
+.page-tag-share input[type="text"],
+.page-tag-share input[type="number"],
+.page-tag-share textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.page-tag-share button {
+    background-color: #4caf50;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.page-tag-share button:hover {
+    background-color: #45a049;
+}
+
+.page-tag-share button.secondary {
+    background-color: #2196f3;
+}
+
+.page-tag-share button.secondary:hover {
+    background-color: #0b7dda;
+}
+
+.page-tag-share button.danger {
+    background-color: #f44336;
+}
+
+.page-tag-share button.danger:hover {
+    background-color: #da190b;
+}
+
+.page-tag-share .result {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.page-tag-share .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.page-tag-share .tag {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-tag-share .tag .remove {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.page-tag-share .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .page-tag-share .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.page-account-settings .-note {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #856404;
+}
+
+.page-help .wrap {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.page-help .result {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    background: var(--card-bg);
+}
+
+.page-help .muted {
+    color: var(--text-subtle);
+}
+
+.page-add-event .-note {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #856404;
+}
+
+.page-add-event .-note strong {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.page-add-event .preview-box {
+    border: 2px dashed var(--border-color);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-subtle);
+    background: #f8f9fa;
+    margin-top: 0.5rem;
+}
+
+.page-add-event .preview-box.has-image {
+    padding: 0;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.page-add-event .preview-box img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+}
+
+.page-add-event .form-hint {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-subtle);
+    margin-top: 0.25rem;
+}
+
+.page-account-events .-note,
+.page-account .-note {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #856404;
+}
+
+.page-account .mock-tabs a {
+    margin-right: 1rem;
+}
+
+.page-account .placeholder {
+    padding: 1rem;
+    border: 2px dashed var(--border-color);
+    border-radius: 0.5rem;
+    color: var(--text-subtle);
+}

@@ -658,11 +658,46 @@ textarea:focus {
 /* Shares list */
 .card-subsection { margin-top: 1.25rem; }
 .shared-list { display: flex; flex-direction: column; gap: 0.5rem; }
-.shared-item { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
+.shared-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+}
 .shared-left { display: inline-flex; align-items: center; gap: 0.5rem; }
 .shared-avatar { width: 36px; height: 36px; border-radius: 50%; background: #dbeafe; color: #1e40af; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
 .shared-name { font-weight: 500; }
 .shared-handle { color: var(--text-subtle); font-size: 0.875rem; margin-left: 0.35rem; }
+
+.share-recipients {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.share-recipient {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-color);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.loading {
+    color: var(--text-subtle);
+    font-style: italic;
+}
+
+.error {
+    color: #d9534f;
+}
 
 /* Photo card actions */
 .photo-card-actions { padding: 0 1rem 1rem 1rem; }
@@ -672,6 +707,45 @@ textarea:focus {
 .comment-form input, .comment-form textarea { flex: 1; }
 
 /* Responsive tweaks */
+.tag-list.lines .badge {
+    display: block;
+    margin: 0.15rem 0;
+}
+
+.venue-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 900px) {
+    .venue-popover-body {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 1rem;
+        align-items: start;
+    }
+}
+
+.mini-map {
+    height: 260px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.overlay-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(2px);
+    display: none;
+    z-index: 49;
+}
+
+.overlay-mask.visible {
+    display: block;
+}
+
 @media (max-width: 768px) {
     header .container {
         flex-direction: column;
