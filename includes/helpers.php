@@ -157,3 +157,23 @@ function is_guest(): bool
     $role = strtolower(trim((string) ($_SESSION['role'] ?? 'guest')));
     return $role === 'guest';
 }
+
+/**
+ * Start session if not already started.
+ */
+function autoloadSession(): void
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+}
+
+/**
+ * Ensure SITE_NAME constant is defined.
+ */
+function ensureSiteName(): void
+{
+    if (!defined('SITE_NAME')) {
+        define('SITE_NAME', 'Local Event Network Service');
+    }
+}

@@ -759,16 +759,13 @@ function handleDeleteVenue(VenueManager $venueManager): void
             <h1><a href="?"> <?= e($siteName) ?> </a></h1>
             <nav>
                 <a href="?" class="<?= $page === 'home' ? 'active' : '' ?>">Home</a>
-                <a href="?page=events" class="<?= $page === 'events' ? 'active' : '' ?>">Events</a>
-                <a href="?page=calendar" class="<?= $page === 'calendar' ? 'active' : '' ?>">Calendar</a>
+                <a href="event-list.php" class="<?= $page === 'events' ? 'active' : '' ?>">Events</a>
+                <a href="calendar-7x5.php" class="<?= $page === 'calendar' ? 'active' : '' ?>">Calendar</a>
+                <a href="venue-info.php" class="<?= $page === 'venues' ? 'active' : '' ?>">Venues</a>
+                <a href="tags.php" class="<?= $page === 'tags' ? 'active' : '' ?>">Tags</a>
                 <?php if (!is_guest()): ?>
-                    <a href="?page=venues" class="<?= $page === 'venues' ? 'active' : '' ?>">Venues</a>
-                    <a href="?page=tags" class="<?= $page === 'tags' ? 'active' : '' ?>">Tags</a>
-                    <a href="?page=photos" class="<?= $page === 'photos' ? 'active' : '' ?>">Photos</a>
-                    <a href="?page=shared" class="<?= $page === 'shared' ? 'active' : '' ?>">Shared</a>
-                    <a href="?page=account" class="<?= $page === 'account' ? 'active' : '' ?>">Account</a>
-                    <a href="?page=account_info" class="<?= $page === 'account_info' ? 'active' : '' ?>">Account Info</a>
-                    <a href="?page=account_settings" class="<?= $page === 'account_settings' ? 'active' : '' ?>">Settings</a>
+                    <a href="account.php" class="<?= $page === 'account' ? 'active' : '' ?>">Account</a>
+                    <a href="add-event.php">Add Event</a>
                 <?php endif; ?>
             </nav>
         </div>

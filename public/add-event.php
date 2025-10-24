@@ -80,10 +80,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1><a href="index.php"><?= e($siteName) ?></a></h1>
             <nav>
                 <a href="index.php">Home</a>
-                <a href="index.php?page=events">Events</a>
-                <a href="index.php?page=calendar">Calendar</a>
-                <a href="index.php?page=venues">Venues</a>
-                <a href="index.php?page=photos">Photos</a>
+                <a href="event-list.php">Events</a>
+                <a href="calendar-7x5.php">Calendar</a>
+                <a href="venue-info.php">Venues</a>
+                <a href="tags.php">Tags</a>
+                <a href="account.php">Account</a>
+                <a href="add-event.php" class="active">Add Event</a>
             </nav>
         </div>
     </header>
