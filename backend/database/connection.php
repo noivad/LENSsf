@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 function getDbConnection(): mysqli {
-    $host = getenv('DB_HOST') ?: '127.0.0.1';
+    $host = getenv('DB_HOST') ?: 'mysql.cyberdrunktank.com';
     $port = getenv('DB_PORT') ?: '3306';
-    $database = getenv('DB_DATABASE') ?: 'lens';
-    $username = getenv('DB_USERNAME') ?: 'root';
-    $password = getenv('DB_PASSWORD') ?: '';
+    $database = getenv('DB_DATABASE') ?: 'lenssf';
+    $username = getenv('DB_USERNAME') ?: 'lenssfadmin';
+    $password = getenv('DB_PASSWORD') ?: 'squads@dinah3darlin_twisting';
 
     $mysqli = new mysqli($host, $username, $password, $database, (int) $port);
 
