@@ -350,7 +350,7 @@ body {
 .calendar-day:hover,
 .calendar-day:focus-within,
 .calendar-day.sticky {
-    z-index: 15;
+    z-index: 10000;
 }
 
 .calendar-day:hover {
@@ -431,7 +431,7 @@ body {
     min-width: 320px;
     box-shadow: var(--shadow-strong);
     display: none;
-    z-index: 9999;
+    z-index: 10001;
 }
 
 .calendar-day:hover .event-popover,

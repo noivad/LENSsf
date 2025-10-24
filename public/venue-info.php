@@ -163,7 +163,7 @@ $venues = $venueManager ? $venueManager->all() : [];
                         <?php endif; ?>
                         <div class="venue-meta" style="margin-top:0.5rem">
                             <span><strong>Owner:</strong> <?= e((string)$v['owner']) ?></span>
-                            <button class="button-small open-venue" style="margin-left:auto">Open</button>
+                            <a href="venue-detail.php?venue=<?= urlencode($v['name']) ?>" class="button-small" style="margin-left:auto; text-decoration: none; display: inline-block;">View Details</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
