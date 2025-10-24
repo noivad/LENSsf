@@ -173,6 +173,14 @@ function buildDayClasses(array $eventsForDay): string
         .calendar-day.sticky .event-popover{display:block}
         .event-location{cursor:pointer}
         .mini-map{height:180px;border:1px solid var(--border-color);border-radius:12px;margin-top:0.5rem}
+        .upcoming-events-list{display:flex;flex-direction:column;gap:1.5rem;margin-top:1rem}
+        .upcoming-event-card{display:flex;gap:1.5rem;background:var(--bg-secondary);border-radius:18px;border:1px solid var(--border-color);padding:1.2rem;transition:all 0.25s ease}
+        .upcoming-event-card:hover{transform:translateY(-3px);box-shadow:0 0 24px var(--hover-glow);border-color:var(--accent-cyan)}
+        .event-card-img{width:200px;height:150px;object-fit:cover;border-radius:12px;border:1px solid var(--border-color);flex-shrink:0}
+        .event-card-content{flex:1;display:flex;flex-direction:column;gap:0.4rem}
+        .event-card-title{font-size:1.35rem;font-weight:600;color:var(--accent-cyan);margin:0}
+        .event-card-detail{font-size:0.9rem;color:var(--text-secondary)}
+        .event-card-desc{font-size:0.9rem;color:var(--text-secondary);margin:0.5rem 0 0;line-height:1.5}
     </style>
 </head>
 <body data-theme="dark">
@@ -338,7 +346,7 @@ function buildDayClasses(array $eventsForDay): string
                                                         </a>
                                                     </div>
                                                     <div class="event-detail event-location" data-location="<?php echo htmlspecialchars($event['venue'] . ', San Francisco, CA', ENT_QUOTES); ?>">
-                                                        <a href="venue-info.php?venue=<?php echo urlencode($event['venue']); ?>" style="color: inherit; text-decoration: none;">
+                                                        <a href="venue-detail.php?venue=<?php echo urlencode($event['venue']); ?>" style="color: inherit; text-decoration: none;">
                                                             📍 <?php echo htmlspecialchars($event['venue'], ENT_QUOTES); ?>
                                                         </a>
                                                         <small style="opacity:.7">(hover to preview map)</small>
@@ -380,39 +388,56 @@ function buildDayClasses(array $eventsForDay): string
                     </div>
                 </div>
 
-                <div class="event-images">
-                    <h2 class="images-title">🌟 Photos from Your Past Events</h2>
-                    <div class="images-grid">
-                        <?php foreach ($eventImages as $image): ?>
-                            <div class="image-card">
-                                <img src="<?php echo htmlspecialchars($image['src'], ENT_QUOTES); ?>" alt="<?php echo htmlspecialchars($image['caption'], ENT_QUOTES); ?>">
-                                <div class="image-overlay">
-                                    <div class="image-caption"><?php echo htmlspecialchars($image['caption'], ENT_QUOTES); ?></div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
                 <?php
-                $userUpcoming = array_values(array_filter($events, static function(array $e): bool {
-                    return !empty($e['is_creator']) && in_array($e['status'], ['upcoming', 'happening'], true);
+                // User's 3 main tags (in a real app, these would come from user preferences/history)
+                $userMainTags = ['jazz', 'art', 'tech'];
+                
+                // Get upcoming events filtered by user's main tags
+                $tagFilteredUpcoming = array_values(array_filter($events, static function(array $e) use ($userMainTags): bool {
+                    if (!in_array($e['status'], ['upcoming', 'happening'], true)) {
+                        return false;
+                    }
+                    $eventTags = array_map('strtolower', $e['tags'] ?? []);
+                    foreach ($userMainTags as $mainTag) {
+                        if (in_array(strtolower($mainTag), $eventTags, true)) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }));
-                usort($userUpcoming, static function(array $a, array $b): int {
+                
+                usort($tagFilteredUpcoming, static function(array $a, array $b): int {
                     return strcmp($a['date'], $b['date']);
                 });
                 ?>
-                <?php if (!empty($userUpcoming)): ?>
+                <?php if (!empty($tagFilteredUpcoming)): ?>
                     <div class="event-images" style="margin-top: 1rem;">
-                        <h2 class="images-title">📅 Your Upcoming Events</h2>
-                        <div class="images-grid">
-                            <?php foreach ($userUpcoming as $e): ?>
-                                <?php $img = 'https://picsum.photos/seed/' . rawurlencode($e['title']) . '/400/400'; ?>
-                                <div class="image-card" style="aspect-ratio: auto;">
-                                    <img src="<?= $img ?>" alt="<?= htmlspecialchars($e['title'], ENT_QUOTES) ?>">
-                                    <div class="image-overlay">
-                                        <div class="image-caption">
-                                            <?= htmlspecialchars($e['title'], ENT_QUOTES) ?> — <?= htmlspecialchars(date('M j', strtotime($e['date'])), ENT_QUOTES) ?>
+                        <h2 class="images-title">🎯 Upcoming Events Based on Your Top Tags (<?php echo implode(', ', array_map(function($t) { return '#' . $t; }, $userMainTags)); ?>)</h2>
+                        <div class="upcoming-events-list">
+                            <?php foreach ($tagFilteredUpcoming as $e): ?>
+                                <?php $img = 'https://picsum.photos/seed/' . rawurlencode($e['title']) . '/400/300'; ?>
+                                <div class="upcoming-event-card">
+                                    <img src="<?= $img ?>" alt="<?= htmlspecialchars($e['title'], ENT_QUOTES) ?>" class="event-card-img">
+                                    <div class="event-card-content">
+                                        <h3 class="event-card-title">
+                                            <a href="events-list-add-info.php?event=<?php echo urlencode($e['title']); ?>" style="color: inherit; text-decoration: none;">
+                                                <?= htmlspecialchars($e['title'], ENT_QUOTES) ?>
+                                            </a>
+                                        </h3>
+                                        <div class="event-card-detail">📅 <?= htmlspecialchars(date('F j, Y', strtotime($e['date'])), ENT_QUOTES) ?></div>
+                                        <div class="event-card-detail">🕐 <?= htmlspecialchars($e['start_time'] . ' - ' . $e['end_time'], ENT_QUOTES) ?></div>
+                                        <div class="event-card-detail">
+                                            <a href="venue-detail.php?venue=<?php echo urlencode($e['venue']); ?>" style="color: inherit; text-decoration: none;">
+                                                📍 <?= htmlspecialchars($e['venue'], ENT_QUOTES) ?>
+                                            </a>
+                                        </div>
+                                        <?php if (!empty($e['description'])): ?>
+                                            <p class="event-card-desc"><?= htmlspecialchars($e['description'], ENT_QUOTES) ?></p>
+                                        <?php endif; ?>
+                                        <div class="tag-chips" style="margin-top: 0.5rem;">
+                                            <?php foreach (($e['tags'] ?? []) as $tg): ?>
+                                                <span class="tag-chip">#<?php echo htmlspecialchars(strtolower((string)$tg), ENT_QUOTES); ?></span>
+                                            <?php endforeach; ?>
                                         </div>
                                     </div>
                                 </div>
