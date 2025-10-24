@@ -119,20 +119,6 @@ $siteName = SITE_NAME;
 $theme = (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'light') ? 'light' : 'dark';
 $bodyClass = $theme === 'light' ? 'theme-light' : 'theme-dark';
 
-function autoloadSession(): void
-{
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-}
-
-function ensureSiteName(): void
-{
-    if (!defined('SITE_NAME')) {
-        define('SITE_NAME', 'Local Event Network Service');
-    }
-}
-
 function handleCreateEvent(EventManager $eventManager): void
 {
     $title = trim($_POST['title'] ?? '');
