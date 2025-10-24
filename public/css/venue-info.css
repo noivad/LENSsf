@@ -1,0 +1,38 @@
+.tag-list.lines .badge {
+    display: block;
+    margin: 0.15rem 0;
+}
+
+.venue-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media(min-width:900px) {
+    .venue-popover-body {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 1rem;
+        align-items: start;
+    }
+}
+
+.mini-map {
+    height: 260px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.overlay-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.35);
+    backdrop-filter: blur(2px);
+    display: none;
+    z-index: 49;
+}
+
+.overlay-mask.visible {
+    display: block;
+}
