@@ -108,15 +108,8 @@ $venues = $venueManager ? $venueManager->all() : [];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venues - <?= e($siteName) ?></title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/venue-info.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <style>
-        .tag-list.lines .badge{display:block;margin:0.15rem 0;}
-        .venue-grid{display:grid;grid-template-columns:1fr;gap:1rem}
-        @media(min-width:900px){.venue-popover-body{display:grid;grid-template-columns:1fr 320px;gap:1rem;align-items:start}}
-        .mini-map{height:260px;border:1px solid var(--border-color);border-radius:8px}
-        .overlay-mask{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(2px);display:none;z-index:49}
-        .overlay-mask.visible{display:block}
-    </style>
 </head>
 <body>
 <header>

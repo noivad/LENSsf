@@ -93,12 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
     <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/auth.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/longbow.slidercaptcha@1.1.0/dist/slidercaptcha.min.css" />
-    <style>
-        .auth-card { max-width: 520px; margin: 2rem auto; }
-        .note { color: var(--text-subtle); font-size: 0.9rem; }
-        .captcha-group { display: grid; gap: 1rem; }
-    </style>
 </head>
 <body>
     <header>

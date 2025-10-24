@@ -162,26 +162,6 @@ function buildDayClasses(array $eventsForDay): string
     <title>LENS Calendar - Dynamic PHP View</title>
     <link rel="stylesheet" href="css/calendar-7x5.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <style>
-        .tag-chips{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.4rem}
-        .tag-chip{background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary);padding:0.15rem 0.5rem;border-radius:8px;font-size:0.78rem}
-        .day-tags{display:flex;flex-wrap:wrap;gap:0.25rem;margin-top:0.25rem}
-        .day-tags .tag-chip{opacity:0.8}
-        .searchbar{display:flex;gap:0.5rem;align-items:center}
-        .searchbar input{flex:1;background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary);padding:0.5rem 0.75rem;border-radius:10px}
-        .calendar-day.dim{opacity:0.35;filter:grayscale(0.3)}
-        .calendar-day.sticky .event-popover{display:block}
-        .event-location{cursor:pointer}
-        .mini-map{height:180px;border:1px solid var(--border-color);border-radius:12px;margin-top:0.5rem}
-        .upcoming-events-list{display:flex;flex-direction:column;gap:1.5rem;margin-top:1rem}
-        .upcoming-event-card{display:flex;gap:1.5rem;background:var(--bg-secondary);border-radius:18px;border:1px solid var(--border-color);padding:1.2rem;transition:all 0.25s ease}
-        .upcoming-event-card:hover{transform:translateY(-3px);box-shadow:0 0 24px var(--hover-glow);border-color:var(--accent-cyan)}
-        .event-card-img{width:200px;height:150px;object-fit:cover;border-radius:12px;border:1px solid var(--border-color);flex-shrink:0}
-        .event-card-content{flex:1;display:flex;flex-direction:column;gap:0.4rem}
-        .event-card-title{font-size:1.35rem;font-weight:600;color:var(--accent-cyan);margin:0}
-        .event-card-detail{font-size:0.9rem;color:var(--text-secondary)}
-        .event-card-desc{font-size:0.9rem;color:var(--text-secondary);margin:0.5rem 0 0;line-height:1.5}
-    </style>
 </head>
 <body data-theme="dark">
     <div class="app-container">
@@ -189,21 +169,15 @@ function buildDayClasses(array $eventsForDay): string
             <div class="nav-logo">LENS</div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="index.php" class="nav-link">
+                    <a href="calendar-7x5.php" class="nav-link active">
                         <span class="nav-icon">🏠</span>
                         <span>Home</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="calendar-7x5.php" class="nav-link active">
-                        <span class="nav-icon">📅</span>
-                        <span>Calendar</span>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="event-list.php" class="nav-link">
-                        <span class="nav-icon">🎉</span>
-                        <span>Events</span>
+                        <span class="nav-icon">📋</span>
+                        <span>All Events</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -347,7 +321,7 @@ function buildDayClasses(array $eventsForDay): string
                                                         <img src="<?php echo $imgUrl; ?>" alt="<?php echo htmlspecialchars($event['title'], ENT_QUOTES); ?> image" style="width:100%; border-radius:12px; border:1px solid var(--border-color);">
                                                     </div>
                                                     <div class="event-title">
-                                                        <a href="events-list-add-info.php?event=<?php echo urlencode($event['title']); ?>" style="color: inherit; text-decoration: none;">
+                                                        <a href="event-info.php?event=<?php echo urlencode($event['title']); ?>" style="color: inherit; text-decoration: none;">
                                                             <?php echo htmlspecialchars($event['title'], ENT_QUOTES); ?>
                                                         </a>
                                                     </div>
@@ -426,7 +400,7 @@ function buildDayClasses(array $eventsForDay): string
                                     <img src="<?= $img ?>" alt="<?= htmlspecialchars($e['title'], ENT_QUOTES) ?>" class="event-card-img">
                                     <div class="event-card-content">
                                         <h3 class="event-card-title">
-                                            <a href="events-list-add-info.php?event=<?php echo urlencode($e['title']); ?>" style="color: inherit; text-decoration: none;">
+                                            <a href="event-info.php?event=<?php echo urlencode($e['title']); ?>" style="color: inherit; text-decoration: none;">
                                                 <?= htmlspecialchars($e['title'], ENT_QUOTES) ?>
                                             </a>
                                         </h3>
@@ -472,84 +446,8 @@ function buildDayClasses(array $eventsForDay): string
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-      // Expose for search filtering
       window.__CAL_EVENTS__ = <?php echo json_encode($events, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
     </script>
     <script src="js/calendar-7x5.js"></script>
-    <script>
-      // Sticky popover + map preview + search
-      (function(){
-        const grid = document.querySelector('.calendar-grid');
-        function closestDay(el){ return el.closest('.calendar-day'); }
-        document.addEventListener('click', (e) => {
-          if (e.target.classList.contains('event-flag')){
-            const day = closestDay(e.target);
-            if (day) day.classList.toggle('sticky');
-          } else if (!e.target.closest('.event-popover')){
-            // Click outside popovers collapses all
-            document.querySelectorAll('.calendar-day.sticky').forEach(d => d.classList.remove('sticky'));
-          }
-        });
-
-        // Minimap on location hover (sticky within popover until it closes)
-        const mapCache = new Map();
-        async function geocode(q){
-          const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(q);
-          try{ const r = await fetch(url); if(!r.ok) return null; const j = await r.json(); if (j && j[0]) return {lat: parseFloat(j[0].lat), lng: parseFloat(j[0].lon)}; }catch(_){return null}
-          return null;
-        }
-        document.addEventListener('mouseenter', async (e) => {
-          const loc = e.target.closest('.event-location');
-          if (!loc) return;
-          const item = loc.closest('.event-item');
-          const mapEl = item && item.querySelector('.mini-map');
-          if (!mapEl) return;
-          mapEl.style.display = 'block';
-          const q = loc.getAttribute('data-location');
-          if (!q) return;
-          const cacheKey = q;
-          if (!mapCache.has(cacheKey)){
-            const pos = await geocode(q);
-            mapCache.set(cacheKey, pos);
-          }
-          const pos = mapCache.get(cacheKey) || {lat:37.773972,lng:-122.431297};
-          if (!mapEl._map){
-            const m = L.map(mapEl).setView([pos.lat, pos.lng], 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(m);
-            L.marker([pos.lat, pos.lng]).addTo(m);
-            mapEl._map = m;
-          } else {
-            mapEl._map.setView([pos.lat, pos.lng], 14);
-          }
-        }, true);
-
-        // Search
-        const input = document.getElementById('calendar-search');
-        function applySearch(){
-          const q = (input.value||'').trim();
-          const isTag = q.startsWith('#');
-          const tag = isTag ? q.slice(1).toLowerCase() : '';
-          document.querySelectorAll('.calendar-day').forEach((day) => {
-            const items = day.querySelectorAll('.event-item');
-            let matchDay = false;
-            items.forEach((it) => {
-              const title = (it.getAttribute('data-title')||'').toLowerCase();
-              const venue = (it.getAttribute('data-venue')||'').toLowerCase();
-              const desc = (it.getAttribute('data-description')||'').toLowerCase();
-              const tags = (it.getAttribute('data-tags')||'').toLowerCase();
-              let match = false;
-              if (isTag){ match = tags.split(',').includes(tag); }
-              else if (q){ match = title.includes(q.toLowerCase()) || venue.includes(q.toLowerCase()) || desc.includes(q.toLowerCase()); }
-              else { match = true; }
-              if (match) matchDay = true;
-              it.style.display = match ? '' : 'none';
-            });
-            if (q){ day.classList.toggle('dim', !matchDay); } else { day.classList.remove('dim'); }
-          });
-        }
-        input?.addEventListener('input', (e) => { applySearch(); });
-        input?.addEventListener('keydown', (e) => { if (e.key==='Enter'){ e.preventDefault(); applySearch(); }});
-      })();
-    </script>
 </body>
 </html>

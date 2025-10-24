@@ -80,104 +80,7 @@ usort($filteredEvents, function ($a, $b) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Events - <?= e($siteName) ?></title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .events-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        .event-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: box-shadow 0.2s ease;
-        }
-        .event-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .event-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-        .event-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 0 0 0.5rem 0;
-        }
-        .event-image {
-            width: 150px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-left: 1rem;
-        }
-        .event-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-        .tag-badge {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-        .tag-badge:hover {
-            background: var(--primary-hover);
-        }
-        .event-description {
-            color: var(--text-secondary);
-            margin-bottom: 0.75rem;
-        }
-        .event-meta {
-            display: flex;
-            gap: 1.5rem;
-            color: var(--text-subtle);
-            font-size: 0.9rem;
-        }
-        .filter-bar {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-        .active-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        .filter-badge {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .filter-badge button {
-            background: transparent;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 0;
-            line-height: 1;
-        }
-        .no-events {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-subtle);
-        }
-    </style>
+    <link rel="stylesheet" href="css/event-list.css">
 </head>
 <body>
     <header>
@@ -280,15 +183,8 @@ usort($filteredEvents, function ($a, $b) {
     </footer>
 
     <script>
-        function removeTagFilter(tag) {
-            const currentTags = <?= json_encode($filterTags) ?>;
-            const newTags = currentTags.filter(t => t !== tag);
-            if (newTags.length > 0) {
-                window.location.href = 'event-list.php?tags=' + encodeURIComponent(newTags.join(','));
-            } else {
-                window.location.href = 'event-list.php';
-            }
-        }
+        window.__CURRENT_FILTER_TAGS__ = <?= json_encode($filterTags) ?>;
     </script>
+    <script src="js/event-list.js"></script>
 </body>
 </html>

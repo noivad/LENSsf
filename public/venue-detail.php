@@ -208,32 +208,8 @@ usort($pastEvents, function($a, $b) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($venue['name'], ENT_QUOTES); ?> - LENS</title>
     <link rel="stylesheet" href="css/calendar-7x5.css">
+    <link rel="stylesheet" href="css/venue-detail.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <style>
-        .venue-hero{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
-        .venue-image{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:18px;border:2px solid var(--border-color)}
-        .venue-map{width:100%;aspect-ratio:3/2;border-radius:18px;border:2px solid var(--border-color)}
-        .venue-name{font-size:2.5rem;font-weight:700;margin:1rem 0;color:var(--accent-cyan)}
-        .venue-info-section{background:var(--bg-secondary);border-radius:18px;border:1px solid var(--border-color);padding:1.5rem;margin-bottom:1.5rem}
-        .venue-description{font-size:1.1rem;line-height:1.7;color:var(--text-secondary);margin-bottom:1rem}
-        .venue-address{font-size:1rem;color:var(--text-secondary);margin-bottom:1rem}
-        .tag-chips{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.4rem}
-        .tag-chip{background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary);padding:0.15rem 0.5rem;border-radius:8px;font-size:0.78rem}
-        .section-title{font-size:1.8rem;font-weight:600;margin:2rem 0 1rem;color:var(--text-primary)}
-        .events-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
-        .event-card{background:var(--bg-secondary);border-radius:18px;border:1px solid var(--border-color);overflow:hidden;transition:all 0.25s ease}
-        .event-card:hover{transform:translateY(-4px);box-shadow:0 0 24px var(--hover-glow);border-color:var(--accent-cyan)}
-        .event-card-image{width:100%;height:180px;object-fit:cover}
-        .event-card-body{padding:1rem}
-        .event-card-title{font-size:1.2rem;font-weight:600;color:var(--accent-cyan);margin-bottom:0.5rem}
-        .event-card-detail{font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.3rem}
-        .past-events-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
-        .photo-card{position:relative;aspect-ratio:1;overflow:hidden;border-radius:12px;border:1px solid var(--border-color);cursor:pointer;transition:all 0.25s ease}
-        .photo-card:hover{transform:scale(1.05);box-shadow:0 0 18px var(--hover-glow)}
-        .photo-card img{width:100%;height:100%;object-fit:cover}
-        .photo-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);padding:0.8rem;color:white;font-size:0.85rem}
-        @media(max-width:768px){.venue-hero{grid-template-columns:1fr}}
-    </style>
 </head>
 <body data-theme="dark">
     <div class="app-container">
