@@ -201,7 +201,7 @@ function buildDayClasses(array $eventsForDay): string
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="events-list-add-info.php" class="nav-link">
+                    <a href="event-list.php" class="nav-link">
                         <span class="nav-icon">🎉</span>
                         <span>Events</span>
                     </a>
@@ -213,15 +213,21 @@ function buildDayClasses(array $eventsForDay): string
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="index.php?page=photos" class="nav-link">
-                        <span class="nav-icon">📸</span>
-                        <span>Photos</span>
+                    <a href="tags.php" class="nav-link">
+                        <span class="nav-icon">🏷️</span>
+                        <span>Tags</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="shared.html" class="nav-link">
-                        <span class="nav-icon">🏷️</span>
-                        <span>Tags</span>
+                    <a href="account.php" class="nav-link">
+                        <span class="nav-icon">👤</span>
+                        <span>Account</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-event.php" class="nav-link">
+                        <span class="nav-icon">➕</span>
+                        <span>Add Event</span>
                     </a>
                 </li>
             </ul>

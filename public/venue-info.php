@@ -124,9 +124,12 @@ $venues = $venueManager ? $venueManager->all() : [];
         <h1><a href="index.php"><?= e($siteName) ?></a></h1>
         <nav>
             <a href="index.php">Home</a>
-            <a href="index.php?page=events">Events</a>
-            <a href="calendar-7x5.php">Calendar 7x5</a>
+            <a href="event-list.php">Events</a>
+            <a href="calendar-7x5.php">Calendar</a>
             <a href="venue-info.php" class="active">Venues</a>
+            <a href="tags.php">Tags</a>
+            <a href="account.php">Account</a>
+            <a href="add-event.php">Add Event</a>
         </nav>
     </div>
 </header>
