@@ -24,25 +24,25 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="events-list-add-info.php" class="nav-link">
                         <span class="nav-icon">🎉</span>
                         <span>Events</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="venue-info.php" class="nav-link">
                         <span class="nav-icon">📍</span>
                         <span>Venues</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="index.php?page=photos" class="nav-link">
                         <span class="nav-icon">📸</span>
                         <span>Photos</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="shared.html" class="nav-link">
                         <span class="nav-icon">🏷️</span>
                         <span>Tags</span>
                     </a>
@@ -59,18 +59,18 @@
                 <div class="user-profile">
                     <img src="https://i.pravatar.cc/150?img=33" alt="User Avatar" class="user-avatar" onclick="toggleUserDropdown()">
                     <div class="user-dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="alert('Contact Info')">
+                        <a href="account.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             📧 Contact Info
-                        </div>
-                        <div class="dropdown-item" onclick="alert('Notifications')">
+                        </a>
+                        <a href="account.html?tab=notifications" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             🔔 Notifications
-                        </div>
-                        <div class="dropdown-item" onclick="alert('Account Info')">
+                        </a>
+                        <a href="account-settings.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             ⚙️ Account Info
-                        </div>
-                        <div class="dropdown-item" onclick="alert('My Past Events')">
+                        </a>
+                        <a href="account-events.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             📜 My Past Events
-                        </div>
+                        </a>
                         <div class="dropdown-item" onclick="alert('Logout')">
                             🚪 Logout
                         </div>
@@ -124,8 +124,16 @@
                             </div>
                             <div class="event-popover">
                                 <div class="event-item">
-                                    <div class="event-title">🎸 Jazz Night</div>
-                                    <div class="event-detail">📍 Blue Note Club</div>
+                                    <div class="event-title">
+                                        <a href="events-list-add-info.php?event=Jazz%20Night" style="color: inherit; text-decoration: none;">
+                                            🎸 Jazz Night
+                                        </a>
+                                    </div>
+                                    <div class="event-detail">
+                                        <a href="venue-info.php?venue=Blue%20Note%20Club" style="color: inherit; text-decoration: none;">
+                                            📍 Blue Note Club
+                                        </a>
+                                    </div>
                                     <div class="event-detail">🕐 7:00 PM - 11:00 PM</div>
                                     <div class="event-detail">👤 Created by: Alice Johnson</div>
                                     <div class="event-detail emphasis">🗓️ Past Event</div>
@@ -172,8 +180,16 @@
                             </div>
                             <div class="event-popover">
                                 <div class="event-item">
-                                    <div class="event-title">🎨 Art Exhibition Opening</div>
-                                    <div class="event-detail">📍 Modern Art Gallery</div>
+                                    <div class="event-title">
+                                        <a href="events-list-add-info.php?event=Art%20Exhibition%20Opening" style="color: inherit; text-decoration: none;">
+                                            🎨 Art Exhibition Opening
+                                        </a>
+                                    </div>
+                                    <div class="event-detail">
+                                        <a href="venue-info.php?venue=Modern%20Art%20Gallery" style="color: inherit; text-decoration: none;">
+                                            📍 Modern Art Gallery
+                                        </a>
+                                    </div>
                                     <div class="event-detail">🕐 6:00 PM - 9:00 PM</div>
                                     <div class="event-detail">👤 Created by: You</div>
                                     <div class="event-detail emphasis">🚀 Upcoming Event</div>
@@ -184,8 +200,16 @@
                                     </div>
                                 </div>
                                 <div class="event-item">
-                                    <div class="event-title">🍕 Pizza Party</div>
-                                    <div class="event-detail">📍 Tony's Pizzeria</div>
+                                    <div class="event-title">
+                                        <a href="events-list-add-info.php?event=Pizza%20Party" style="color: inherit; text-decoration: none;">
+                                            🍕 Pizza Party
+                                        </a>
+                                    </div>
+                                    <div class="event-detail">
+                                        <a href="venue-info.php?venue=Tony%27s%20Pizzeria" style="color: inherit; text-decoration: none;">
+                                            📍 Tony's Pizzeria
+                                        </a>
+                                    </div>
                                     <div class="event-detail">🕐 7:30 PM - 10:00 PM</div>
                                     <div class="event-detail">👤 Created by: Bob Smith</div>
                                     <div class="event-detail emphasis">🚀 Upcoming Event</div>
@@ -205,8 +229,16 @@
                             </div>
                             <div class="event-popover">
                                 <div class="event-item">
-                                    <div class="event-title">💻 Tech Conference</div>
-                                    <div class="event-detail">📍 Convention Center</div>
+                                    <div class="event-title">
+                                        <a href="events-list-add-info.php?event=Tech%20Conference" style="color: inherit; text-decoration: none;">
+                                            💻 Tech Conference
+                                        </a>
+                                    </div>
+                                    <div class="event-detail">
+                                        <a href="venue-info.php?venue=Convention%20Center" style="color: inherit; text-decoration: none;">
+                                            📍 Convention Center
+                                        </a>
+                                    </div>
                                     <div class="event-detail">🕐 9:00 AM - 6:00 PM</div>
                                     <div class="event-detail emphasis">⚡ Happening Now!</div>
                                     <div class="event-detail">👤 Created by: Tech Corp</div>
@@ -231,8 +263,16 @@
                             </div>
                             <div class="event-popover">
                                 <div class="event-item">
-                                    <div class="event-title">🎭 Theater Performance</div>
-                                    <div class="event-detail">📍 City Theater</div>
+                                    <div class="event-title">
+                                        <a href="events-list-add-info.php?event=Theater%20Performance" style="color: inherit; text-decoration: none;">
+                                            🎭 Theater Performance
+                                        </a>
+                                    </div>
+                                    <div class="event-detail">
+                                        <a href="venue-info.php?venue=City%20Theater" style="color: inherit; text-decoration: none;">
+                                            📍 City Theater
+                                        </a>
+                                    </div>
                                     <div class="event-detail">🕐 8:00 PM - 10:30 PM</div>
                                     <div class="event-detail">👤 Created by: You</div>
                                     <div class="event-detail emphasis">🚀 Upcoming Event</div>
@@ -263,8 +303,16 @@
                             </div>
                             <div class="event-popover">
                                 <div class="event-item">
-                                    <div class="event-title">🏃 Marathon Event</div>
-                                    <div class="event-detail">📍 City Park</div>
+                                    <div class="event-title">
+                                        <a href="events-list-add-info.php?event=Marathon%20Event" style="color: inherit; text-decoration: none;">
+                                            🏃 Marathon Event
+                                        </a>
+                                    </div>
+                                    <div class="event-detail">
+                                        <a href="venue-info.php?venue=City%20Park" style="color: inherit; text-decoration: none;">
+                                            📍 City Park
+                                        </a>
+                                    </div>
                                     <div class="event-detail">🕐 6:00 AM - 12:00 PM</div>
                                     <div class="event-detail">👤 Created by: Sports Club</div>
                                     <div class="event-detail emphasis">🚀 Upcoming Event</div>
@@ -289,8 +337,16 @@
                             </div>
                             <div class="event-popover">
                                 <div class="event-item">
-                                    <div class="event-title">🎃 Halloween Party</div>
-                                    <div class="event-detail">📍 Community Center</div>
+                                    <div class="event-title">
+                                        <a href="events-list-add-info.php?event=Halloween%20Party" style="color: inherit; text-decoration: none;">
+                                            🎃 Halloween Party
+                                        </a>
+                                    </div>
+                                    <div class="event-detail">
+                                        <a href="venue-info.php?venue=Community%20Center" style="color: inherit; text-decoration: none;">
+                                            📍 Community Center
+                                        </a>
+                                    </div>
                                     <div class="event-detail">🕐 7:00 PM - 12:00 AM</div>
                                     <div class="event-detail">👤 Created by: You</div>
                                     <div class="event-detail emphasis">🚀 Upcoming Event</div>

@@ -344,6 +344,13 @@ body {
     transition: all 0.28s ease;
     cursor: pointer;
     overflow: visible;
+    z-index: 0;
+}
+
+.calendar-day:hover,
+.calendar-day:focus-within,
+.calendar-day.sticky {
+    z-index: 15;
 }
 
 .calendar-day:hover {

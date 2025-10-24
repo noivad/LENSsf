@@ -113,7 +113,12 @@ $events = [
 <body class="theme-dark">
   <header>
     <div class="container" style="align-items:center;display:flex;gap:1rem;justify-content:space-between">
-      <h1><a href="#">Events List/Add/Info Mockup</a></h1>
+      <h1><a href="index.php">Events List/Add/Info</a></h1>
+      <nav style="display:flex;gap:1rem;">
+        <a href="index.php">Home</a>
+        <a href="calendar-7x5.php">Calendar</a>
+        <a href="venue-info.php">Venues</a>
+      </nav>
       <div class="help-hint">Right-click (or control-click) items for options. Highlight text + Option-/ to search, Option-? for help.</div>
     </div>
   </header>
