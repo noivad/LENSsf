@@ -25,6 +25,9 @@ $isEditor = strcasecmp($currentUser, (string) ($venue['owner'] ?? '')) === 0
             </div>
         </div>
         <div class="event-single-actions">
+            <?php if ($isEditor): ?>
+                <div class="action-row"><a href="?page=venue_edit&id=<?= e((string) $venue['id']) ?>" class="button-small">Edit Venue</a></div>
+            <?php endif; ?>
             <div class="action-row"><a href="?page=venues" class="button-small">Back to Venues</a></div>
         </div>
     </div>

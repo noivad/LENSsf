@@ -147,6 +147,121 @@ class EventManager
         return $this->findById($eventId);
     }
 
+    public function update(int $eventId, array $data, ?array $imageFile = null): ?array
+    {
+        if ($eventId <= 0) {
+            return null;
+        }
+
+        $existing = $this->findById($eventId);
+        if (!$existing) {
+            return null;
+        }
+
+        $title = trim($data['title'] ?? '');
+        $eventDate = $data['event_date'] ?? null;
+        $owner = trim($data['owner'] ?? '');
+
+        if ($title === '' || !$eventDate || $owner === '') {
+            return null;
+        }
+
+        $description = trim($data['description'] ?? '') ?: null;
+        $startTime = trim((string) ($data['start_time'] ?? '')) ?: null;
+        $venueId = $data['venue_id'] ?: null;
+
+        $deputies = array_map('trim', $data['deputies'] ?? []);
+        $deputies = array_values(array_filter(array_unique($deputies)));
+
+        $tags = array_map('trim', $data['tags'] ?? []);
+        $tags = array_values(array_filter(array_unique($tags)));
+
+        $newImage = null;
+        if ($imageFile && $this->uploadPath) {
+            $newImage = $this->handleImageUpload($imageFile) ?: null;
+        }
+
+        try {
+            $this->db->beginTransaction();
+
+            $assignments = [
+                'title' => $title,
+                'description' => $description,
+                'event_date' => $eventDate,
+                'event_time' => $startTime,
+                'venue_id' => $venueId ?: null,
+                'owner_name' => $owner,
+                'deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
+            ];
+
+            if ($this->hasColumn('events', 'tags')) {
+                $assignments['tags'] = json_encode($tags, JSON_THROW_ON_ERROR);
+            }
+
+            if ($newImage !== null) {
+                $assignments['image'] = $newImage;
+            }
+
+            $setClauses = [];
+            $params = [':id' => $eventId];
+            foreach ($assignments as $column => $value) {
+                $setClauses[] = sprintf('%s = :%s', $column, $column);
+                $params[':' . $column] = $value;
+            }
+
+            $sql = sprintf('UPDATE events SET %s WHERE id = :id', implode(', ', $setClauses));
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+
+            $this->db->commit();
+
+            if ($newImage !== null && !empty($existing['image']) && $existing['image'] !== $newImage) {
+                $this->deleteImage($existing['image']);
+            }
+        } catch (Throwable $e) {
+            $this->db->rollBack();
+            if ($newImage !== null) {
+                $this->deleteImage($newImage);
+            }
+            throw $e;
+        }
+
+        return $this->findById($eventId);
+    }
+
+    public function delete(int $eventId): bool
+    {
+        if ($eventId <= 0) {
+            return false;
+        }
+
+        $event = $this->findById($eventId);
+        if (!$event) {
+            return false;
+        }
+
+        try {
+            $this->db->beginTransaction();
+
+            $this->db->prepare('DELETE FROM event_calendar_entries WHERE event_id = :id')->execute([':id' => $eventId]);
+            $this->db->prepare('DELETE FROM event_shares WHERE event_id = :id')->execute([':id' => $eventId]);
+            $this->db->prepare('DELETE FROM event_comments WHERE event_id = :id')->execute([':id' => $eventId]);
+            $this->db->prepare('UPDATE photos SET event_id = NULL WHERE event_id = :id')->execute([':id' => $eventId]);
+            $this->db->prepare('DELETE FROM events WHERE id = :id')->execute([':id' => $eventId]);
+
+            $this->db->commit();
+        } catch (Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+
+        if (!empty($event['image'])) {
+            $this->deleteImage($event['image']);
+        }
+
+        return true;
+    }
+
     public function addCalendarEntry(string $eventId, string $name): void
     {
         $name = trim($name);
