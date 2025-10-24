@@ -31,7 +31,7 @@ $eventPhotos = array_values(array_filter($allPhotos, static function (array $p) 
         </div>
         <div class="event-single-actions">
             <?php if ($isEditor): ?>
-                <div class="action-row"><a href="?page=events#<?= e((string) $event['id']) ?>" class="button-small">Edit Event</a></div>
+                <div class="action-row"><a href="?page=event_edit&id=<?= e((string) $event['id']) ?>" class="button-small">Edit Event</a></div>
             <?php endif; ?>
             <?php if (!is_guest()): ?>
             <div class="action-row"><button id="share-btn" class="button-small" type="button">Share</button></div>

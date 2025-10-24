@@ -89,6 +89,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'kick_user':
             handleKickUser($pdo);
             break;
+        case 'update_event':
+            handleUpdateEvent($eventManager);
+            break;
+        case 'delete_event':
+            handleDeleteEvent($eventManager);
+            break;
+        case 'update_venue':
+            handleUpdateVenue($venueManager);
+            break;
+        case 'delete_venue':
+            handleDeleteVenue($venueManager);
+            break;
     }
 }
 
@@ -571,6 +583,167 @@ function handleDeleteEventComment(PDO $pdo): void
     redirect($redirect);
 }
 
+function handleUpdateEvent(EventManager $eventManager): void
+{
+    $eventId = (int) ($_POST['event_id'] ?? 0);
+    $currentUser = $_SESSION['current_user'] ?? '';
+
+    if ($eventId <= 0) {
+        set_flash('Invalid event.', 'error');
+        redirect('?page=events');
+    }
+
+    $event = $eventManager->findById($eventId);
+    if (!$event) {
+        set_flash('Event not found.', 'error');
+        redirect('?page=events');
+    }
+
+    $isEditor = $currentUser === ($event['owner'] ?? '') || in_array($currentUser, $event['deputies'] ?? [], true);
+    if (!$isEditor && !is_admin($currentUser)) {
+        set_flash('You do not have permission to edit this event.', 'error');
+        redirect('?page=event&id=' . $eventId);
+    }
+
+    $imageFile = null;
+    if (!empty($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $imageFile = $_FILES['image'];
+    }
+
+    $result = $eventManager->update($eventId, [
+        'title' => trim($_POST['title'] ?? ''),
+        'description' => trim($_POST['description'] ?? ''),
+        'event_date' => trim($_POST['event_date'] ?? ''),
+        'start_time' => trim($_POST['start_time'] ?? ''),
+        'venue_id' => $_POST['venue_id'] ?: null,
+        'owner' => trim($_POST['owner'] ?? ''),
+        'deputies' => normalize_list_input($_POST['deputies'] ?? ''),
+        'tags' => normalize_list_input($_POST['tags'] ?? ''),
+    ], $imageFile);
+
+    if ($result) {
+        set_flash('Event updated successfully!');
+    } else {
+        set_flash('Failed to update event. Please check all required fields.', 'error');
+    }
+
+    redirect('?page=event&id=' . $eventId);
+}
+
+function handleDeleteEvent(EventManager $eventManager): void
+{
+    $eventId = (int) ($_POST['event_id'] ?? 0);
+    $currentUser = $_SESSION['current_user'] ?? '';
+
+    if ($eventId <= 0) {
+        set_flash('Invalid event.', 'error');
+        redirect('?page=events');
+    }
+
+    $event = $eventManager->findById($eventId);
+    if (!$event) {
+        set_flash('Event not found.', 'error');
+        redirect('?page=events');
+    }
+
+    $isOwner = strcasecmp((string)($event['owner'] ?? ''), $currentUser) === 0;
+    $isDeputy = in_array($currentUser, $event['deputies'] ?? [], true);
+
+    if (!$isOwner && !$isDeputy && !is_admin($currentUser)) {
+        set_flash('You do not have permission to delete this event.', 'error');
+        redirect('?page=event&id=' . $eventId);
+    }
+
+    if ($eventManager->delete($eventId)) {
+        set_flash('Event deleted successfully.');
+    } else {
+        set_flash('Failed to delete event.', 'error');
+    }
+
+    redirect('?page=events');
+}
+
+function handleUpdateVenue(VenueManager $venueManager): void
+{
+    $venueId = (int) ($_POST['venue_id'] ?? 0);
+    $currentUser = $_SESSION['current_user'] ?? '';
+
+    if ($venueId <= 0) {
+        set_flash('Invalid venue.', 'error');
+        redirect('?page=venues');
+    }
+
+    $venue = $venueManager->findById($venueId);
+    if (!$venue) {
+        set_flash('Venue not found.', 'error');
+        redirect('?page=venues');
+    }
+
+    $isEditor = strcasecmp($currentUser, (string) ($venue['owner'] ?? '')) === 0 || in_array($currentUser, $venue['deputies'] ?? [], true);
+    if (!$isEditor && !is_admin($currentUser)) {
+        set_flash('You do not have permission to edit this venue.', 'error');
+        redirect('?page=venue&id=' . $venueId);
+    }
+
+    $imageFile = null;
+    if (!empty($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $imageFile = $_FILES['image'];
+    }
+
+    $result = $venueManager->update($venueId, [
+        'name' => trim($_POST['name'] ?? ''),
+        'description' => trim($_POST['description'] ?? ''),
+        'address' => trim($_POST['address'] ?? ''),
+        'city' => trim($_POST['city'] ?? ''),
+        'state' => trim($_POST['state'] ?? ''),
+        'zip_code' => trim($_POST['zip_code'] ?? ''),
+        'owner' => trim($_POST['owner'] ?? ''),
+        'deputies' => normalize_list_input($_POST['deputies'] ?? ''),
+        'tags' => normalize_list_input($_POST['tags'] ?? ''),
+    ], $imageFile);
+
+    if ($result) {
+        set_flash('Venue updated successfully!');
+    } else {
+        set_flash('Failed to update venue. Please check all required fields.', 'error');
+    }
+
+    redirect('?page=venue&id=' . $venueId);
+}
+
+function handleDeleteVenue(VenueManager $venueManager): void
+{
+    $venueId = (int) ($_POST['venue_id'] ?? 0);
+    $currentUser = $_SESSION['current_user'] ?? '';
+
+    if ($venueId <= 0) {
+        set_flash('Invalid venue.', 'error');
+        redirect('?page=venues');
+    }
+
+    $venue = $venueManager->findById($venueId);
+    if (!$venue) {
+        set_flash('Venue not found.', 'error');
+        redirect('?page=venues');
+    }
+
+    $isOwner = strcasecmp((string)($venue['owner'] ?? ''), $currentUser) === 0;
+    $isDeputy = in_array($currentUser, $venue['deputies'] ?? [], true);
+
+    if (!$isOwner && !$isDeputy && !is_admin($currentUser)) {
+        set_flash('You do not have permission to delete this venue.', 'error');
+        redirect('?page=venue&id=' . $venueId);
+    }
+
+    if ($venueManager->delete($venueId)) {
+        set_flash('Venue deleted successfully.');
+    } else {
+        set_flash('Failed to delete venue.', 'error');
+    }
+
+    redirect('?page=venues');
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -594,6 +767,7 @@ function handleDeleteEventComment(PDO $pdo): void
                     <a href="?page=photos" class="<?= $page === 'photos' ? 'active' : '' ?>">Photos</a>
                     <a href="?page=shared" class="<?= $page === 'shared' ? 'active' : '' ?>">Shared</a>
                     <a href="?page=account" class="<?= $page === 'account' ? 'active' : '' ?>">Account</a>
+                    <a href="?page=account_info" class="<?= $page === 'account_info' ? 'active' : '' ?>">Account Info</a>
                     <a href="?page=account_settings" class="<?= $page === 'account_settings' ? 'active' : '' ?>">Settings</a>
                 <?php endif; ?>
             </nav>
@@ -636,11 +810,23 @@ function handleDeleteEventComment(PDO $pdo): void
             case 'account':
                 include __DIR__ . '/../includes/pages/account.php';
                 break;
+            case 'account_info':
+                include __DIR__ . '/../includes/pages/account_info.php';
+                break;
             case 'account_settings':
                 include __DIR__ . '/../includes/pages/account_settings.php';
                 break;
             case 'account_events':
                 include __DIR__ . '/../includes/pages/account_events.php';
+                break;
+            case 'event_edit':
+                include __DIR__ . '/../includes/pages/event_edit.php';
+                break;
+            case 'venue_edit':
+                include __DIR__ . '/../includes/pages/venue_edit.php';
+                break;
+            case 'venue_info':
+                include __DIR__ . '/../includes/pages/venue_info.php';
                 break;
             case 'admin':
                 include __DIR__ . '/../includes/pages/admin.php';
