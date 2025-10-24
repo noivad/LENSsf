@@ -193,9 +193,27 @@ function buildDayClasses(array $eventsForDay): string
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="events-list-add-info.php" class="nav-link">
+                        <span class="nav-icon">🎉</span>
+                        <span>Events</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="venue-info.php" class="nav-link">
                         <span class="nav-icon">📍</span>
                         <span>Venues</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.php?page=photos" class="nav-link">
+                        <span class="nav-icon">📸</span>
+                        <span>Photos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="shared.html" class="nav-link">
+                        <span class="nav-icon">🏷️</span>
+                        <span>Tags</span>
                     </a>
                 </li>
             </ul>
@@ -213,18 +231,18 @@ function buildDayClasses(array $eventsForDay): string
                 <div class="user-profile">
                     <img src="https://i.pravatar.cc/150?img=33" alt="User Avatar" class="user-avatar" onclick="toggleUserDropdown()">
                     <div class="user-dropdown" id="userDropdown">
-                        <div class="dropdown-item" onclick="alert('Contact Info panel would open here.')">
+                        <a href="account.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             📧 Contact Info
-                        </div>
-                        <div class="dropdown-item" onclick="alert('Notifications center would open here.')">
+                        </a>
+                        <a href="account.html?tab=notifications" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             🔔 Notifications
-                        </div>
-                        <div class="dropdown-item" onclick="alert('Account settings would open here.')">
+                        </a>
+                        <a href="account-settings.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             ⚙️ Account Info
-                        </div>
-                        <div class="dropdown-item" onclick="alert('Showing past events list.')">
+                        </a>
+                        <a href="account-events.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             📜 My Past Events
-                        </div>
+                        </a>
                         <div class="dropdown-item" onclick="alert('Logging out...')">
                             🚪 Logout
                         </div>
@@ -314,8 +332,17 @@ function buildDayClasses(array $eventsForDay): string
                                                         <?php $imgUrl = 'https://picsum.photos/seed/' . rawurlencode($event['title']) . '/360/200'; ?>
                                                         <img src="<?php echo $imgUrl; ?>" alt="<?php echo htmlspecialchars($event['title'], ENT_QUOTES); ?> image" style="width:100%; border-radius:12px; border:1px solid var(--border-color);">
                                                     </div>
-                                                    <div class="event-title"><?php echo htmlspecialchars($event['title'], ENT_QUOTES); ?></div>
-                                                    <div class="event-detail event-location" data-location="<?php echo htmlspecialchars($event['venue'] . ', San Francisco, CA', ENT_QUOTES); ?>">📍 <?php echo htmlspecialchars($event['venue'], ENT_QUOTES); ?> <small style="opacity:.7">(hover to preview map)</small></div>
+                                                    <div class="event-title">
+                                                        <a href="events-list-add-info.php?event=<?php echo urlencode($event['title']); ?>" style="color: inherit; text-decoration: none;">
+                                                            <?php echo htmlspecialchars($event['title'], ENT_QUOTES); ?>
+                                                        </a>
+                                                    </div>
+                                                    <div class="event-detail event-location" data-location="<?php echo htmlspecialchars($event['venue'] . ', San Francisco, CA', ENT_QUOTES); ?>">
+                                                        <a href="venue-info.php?venue=<?php echo urlencode($event['venue']); ?>" style="color: inherit; text-decoration: none;">
+                                                            📍 <?php echo htmlspecialchars($event['venue'], ENT_QUOTES); ?>
+                                                        </a>
+                                                        <small style="opacity:.7">(hover to preview map)</small>
+                                                    </div>
                                                     <div class="event-detail">🕐 <?php echo htmlspecialchars($event['start_time'] . ' - ' . $event['end_time'], ENT_QUOTES); ?></div>
                                                     <div class="event-detail">👤 Created by: <?php echo htmlspecialchars($event['creator'], ENT_QUOTES); ?></div>
                                                     <?php if (!empty($event['description'])): ?>

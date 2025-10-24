@@ -33,11 +33,11 @@ function nextMonth() {
 }
 
 function shareEvent(eventName) {
-    alert(`Sharing event: "${eventName}"\nIn production, this would open a share dialog with options to share via email, social media, or copy a link.`);
+    window.location.href = 'shared.html?event=' + encodeURIComponent(eventName);
 }
 
 function editEvent(eventName) {
-    alert(`Editing event: "${eventName}"\nIn production, this would open an event editor form.`);
+    window.location.href = 'events-list-add-info.php?edit=' + encodeURIComponent(eventName);
 }
 
 let eventToDelete = '';
