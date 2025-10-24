@@ -4,7 +4,7 @@
 <section>
     <h2>Venues</h2>
 
-    <div class="card" id="create">
+    <div class="card" id="create" style="max-width: 800px; margin-left: auto; margin-right: auto; margin-bottom: 1.5rem;">
         <h3>Add New Venue</h3>
         <form method="post" enctype="multipart/form-data" class="form">
             <input type="hidden" name="action" value="create_venue">

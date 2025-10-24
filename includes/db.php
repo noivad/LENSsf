@@ -19,7 +19,7 @@ class Database
         }
 
         $host = defined('DB_HOST') ? DB_HOST : '127.0.0.1';
-        $name = defined('DB_NAME') ? DB_NAME : 'lenssf';
+        $name = defined('DB_NAME') ? DB_NAME : 'lensf7';
         $user = defined('DB_USER') ? DB_USER : 'root';
         $pass = defined('DB_PASS') ? DB_PASS : '';
         $port = defined('DB_PORT') ? (int) DB_PORT : 3306;
