@@ -5,7 +5,7 @@
 }
 
 :root {
-    --bg-primary: #050818;
+    --bg-primary: #333333;
     --bg-secondary: #10142c;
     --bg-tertiary: #192042;
     --text-primary: #f1f6ff;
@@ -24,7 +24,7 @@
 }
 
 [data-theme="light"] {
-    --bg-primary: #f3f6fb;
+    --bg-primary: #333333;
     --bg-secondary: #ffffff;
     --bg-tertiary: #e6ebf6;
     --text-primary: #141c35;

@@ -1,85 +1,85 @@
 body {
-	font-family: Arial, sans-serif;
-	background-color: #333;
-	color: #add8e6;
-	margin: 0;
-	padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #333333;
+    color: #add8e6;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
-	max-width: 800px;
-	margin: 0 auto;
-	padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 h1, h2 {
-	color: #add8e6;
+    color: #add8e6;
 }
 
 .calendar-controls {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 .calendar-controls a {
-	color: #add8e6;
-	text-decoration: none;
+    color: #add8e6;
+    text-decoration: none;
 }
 
 .calendar-controls a:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 .calendar-grid {
-	display: grid;
-	grid-template-columns: repeat(7, 1fr);
-	gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
 }
 
 .calendar-header {
-	display: contents;
-	font-weight: bold;
+    display: contents;
+    font-weight: bold;
 }
 
 .calendar-day {
-	text-align: center;
-	padding: 10px;
-	background-color: #444;
-	border-radius: 4px;
+    text-align: center;
+    padding: 10px;
+    background-color: #444;
+    border-radius: 4px;
 }
 
 .calendar-days {
-	display: contents;
+    display: contents;
 }
 
 .calendar-date {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 60px;
-	background-color: #555;
-	border-radius: 4px;
-	cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    background-color: #555;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .calendar-date:hover {
-	background-color: #666;
+    background-color: #666;
 }
 
 .event-list {
-	margin-top: 20px;
+    margin-top: 20px;
 }
 
 .event-list h2 {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .event-list ul {
-	list-style-type: none;
-	padding: 0;
+    list-style-type: none;
+    padding: 0;
 }
 
 .event-list li {
-	margin-bottom: 5px;
+    margin-bottom: 5px;
 }
