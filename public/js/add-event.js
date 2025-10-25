@@ -16,3 +16,18 @@ function previewImage(event) {
         preview.innerHTML = '📷 No image selected - Choose a file to preview';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const recurringCheckbox = document.querySelector('input[name="is_recurring"]');
+    const recurringOptions = document.getElementById('recurring-options');
+    
+    if (recurringCheckbox) {
+        recurringCheckbox.addEventListener('change', function() {
+            recurringOptions.style.display = this.checked ? 'block' : 'none';
+        });
+        
+        if (recurringCheckbox.checked) {
+            recurringOptions.style.display = 'block';
+        }
+    }
+});

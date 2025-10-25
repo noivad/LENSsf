@@ -1,6 +1,18 @@
 <?php
 declare(strict_types=1);
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Redirect to login if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: auth/login.php');
+    exit;
+}
+
+$currentUser = $_SESSION['display_name'] ?? $_SESSION['username'] ?? 'User';
+
 $defaultMonth = 10;
 $defaultYear = 2025;
 
@@ -9,7 +21,7 @@ $year = isset($_GET['year']) ? max(1970, (int) $_GET['year']) : $defaultYear;
 
 $firstDayOfMonth = new DateTime(sprintf('%04d-%02d-01', $year, $month));
 $daysInMonth = (int) $firstDayOfMonth->format('t');
-$startingWeekdayIndex = (int) $firstDayOfMonth->format('w'); // 0 (Sun) - 6 (Sat)
+$startingWeekdayIndex = (int) $firstDayOfMonth->format('w');
 $monthLabel = $firstDayOfMonth->format('F Y');
 
 $previousMonth = $month - 1;
@@ -29,7 +41,11 @@ if ($nextMonth > 12) {
 $previousYearSameMonth = $year - 1;
 $nextYearSameMonth = $year + 1;
 
-$events = [
+// In a real application, fetch user's accepted events from database
+// For now, use mock data
+$userTopTags = ['jazz', 'art', 'tech'];
+
+$allEvents = [
     [
         'title' => 'Jazz Night',
         'venue' => 'Blue Note Club',
@@ -40,7 +56,8 @@ $events = [
         'is_creator' => false,
         'status' => 'past',
         'description' => 'An evening of improvisation featuring local legends.',
-        'tags' => ['jazz','music','live']
+        'tags' => ['jazz','music','live'],
+        'accepted' => true
     ],
     [
         'title' => 'Art Exhibition Opening',
@@ -52,19 +69,8 @@ $events = [
         'is_creator' => true,
         'status' => 'upcoming',
         'description' => 'Celebrate the launch of the "Lightscapes" collection with the artists.',
-        'tags' => ['art','gallery','opening']
-    ],
-    [
-        'title' => 'Pizza Party',
-        'venue' => "Tony's Pizzeria",
-        'date' => sprintf('%04d-%02d-15', $year, $month),
-        'start_time' => '19:30',
-        'end_time' => '22:00',
-        'creator' => 'Bob Smith',
-        'is_creator' => false,
-        'status' => 'upcoming',
-        'description' => 'Community-organized meetup to celebrate the fall menu launch.',
-        'tags' => ['food','pizza','community']
+        'tags' => ['art','gallery','opening'],
+        'accepted' => true
     ],
     [
         'title' => 'Tech Conference',
@@ -76,7 +82,8 @@ $events = [
         'is_creator' => false,
         'status' => 'happening',
         'description' => 'Keynotes on emerging AI systems plus hands-on futuristic demos.',
-        'tags' => ['tech','conference','ai']
+        'tags' => ['tech','conference','ai'],
+        'accepted' => true
     ],
     [
         'title' => 'Theater Performance',
@@ -88,33 +95,15 @@ $events = [
         'is_creator' => true,
         'status' => 'upcoming',
         'description' => 'Premiere of the sci-fi stage play "Echoes of Tomorrow".',
-        'tags' => ['theater','performance','premiere']
-    ],
-    [
-        'title' => 'Marathon Event',
-        'venue' => 'Eon City Park',
-        'date' => sprintf('%04d-%02d-25', $year, $month),
-        'start_time' => '06:00',
-        'end_time' => '12:00',
-        'creator' => 'Sports Club',
-        'is_creator' => false,
-        'status' => 'upcoming',
-        'description' => 'City-wide marathon following the Skyline Nebula route.',
-        'tags' => ['sports','marathon','outdoor']
-    ],
-    [
-        'title' => 'Halloween Party',
-        'venue' => 'Community Center',
-        'date' => sprintf('%04d-%02d-28', $year, $month),
-        'start_time' => '19:00',
-        'end_time' => '00:00',
-        'creator' => 'You',
-        'is_creator' => true,
-        'status' => 'upcoming',
-        'description' => 'Costumes, synthwave DJs, and an augmented reality haunted maze.',
-        'tags' => ['halloween','party','costumes']
+        'tags' => ['theater','performance','premiere'],
+        'accepted' => false
     ],
 ];
+
+// Filter only accepted events
+$events = array_filter($allEvents, function($e) {
+    return $e['accepted'] ?? false;
+});
 
 $eventsByDay = [];
 foreach ($events as $event) {
@@ -126,15 +115,6 @@ foreach ($events as $event) {
     $dayIndex = (int) $eventDate->format('j');
     $eventsByDay[$dayIndex][] = $event;
 }
-
-$eventImages = [
-    ['src' => 'https://picsum.photos/400/400?random=10', 'caption' => 'Jazz Night @ Blue Note'],
-    ['src' => 'https://picsum.photos/400/400?random=11', 'caption' => 'Summer Festival 2024'],
-    ['src' => 'https://picsum.photos/400/400?random=12', 'caption' => 'Tech Meetup'],
-    ['src' => 'https://picsum.photos/400/400?random=13', 'caption' => 'Art Workshop'],
-    ['src' => 'https://picsum.photos/400/400?random=14', 'caption' => 'Food Festival'],
-    ['src' => 'https://picsum.photos/400/400?random=15', 'caption' => 'Concert Night'],
-];
 
 function buildDayClasses(array $eventsForDay): string
 {
@@ -153,13 +133,34 @@ function buildDayClasses(array $eventsForDay): string
 
     return implode(' ', $classes);
 }
+
+// Get suggested events based on user's top tags
+$suggestedEvents = array_values(array_filter($allEvents, function($e) use ($userTopTags) {
+    if ($e['accepted'] ?? false) {
+        return false;
+    }
+    if (!in_array($e['status'], ['upcoming', 'happening'], true)) {
+        return false;
+    }
+    $eventTags = array_map('strtolower', $e['tags'] ?? []);
+    foreach ($userTopTags as $mainTag) {
+        if (in_array(strtolower($mainTag), $eventTags, true)) {
+            return true;
+        }
+    }
+    return false;
+}));
+
+usort($suggestedEvents, function($a, $b) {
+    return strcmp($a['date'], $b['date']);
+});
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LENSsf::Calendar</title>
+    <title>LENSsf::Home</title>
     <link rel="stylesheet" href="css/calendar-7x5.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
@@ -169,15 +170,21 @@ function buildDayClasses(array $eventsForDay): string
             <div class="nav-logo">LENS</div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="calendar-7x5.php" class="nav-link active">
+                    <a href="calendar-home.php" class="nav-link active">
                         <span class="nav-icon">🏠</span>
                         <span>Home</span>
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="calendar-7x5.php" class="nav-link">
+                        <span class="nav-icon">📅</span>
+                        <span>All Events</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="event-list.php" class="nav-link">
                         <span class="nav-icon">📋</span>
-                        <span>All Events</span>
+                        <span>Events</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -219,21 +226,21 @@ function buildDayClasses(array $eventsForDay): string
                 <div class="user-profile">
                     <img src="https://i.pravatar.cc/150?img=33" alt="User Avatar" class="user-avatar" onclick="toggleUserDropdown()">
                     <div class="user-dropdown" id="userDropdown">
-                        <a href="account.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                        <a href="account.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             📧 Contact Info
                         </a>
-                        <a href="account.html?tab=notifications" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                        <a href="account.php?tab=notifications" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             🔔 Notifications
                         </a>
-                        <a href="account-settings.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                        <a href="account.php?tab=settings" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             ⚙️ Account Info
                         </a>
-                        <a href="account-events.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                        <a href="account.php?tab=events" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             📜 My Past Events
                         </a>
-                        <div class="dropdown-item" onclick="alert('Logging out...')">
+                        <a href="auth/logout.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
                             🚪 Logout
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -267,13 +274,12 @@ function buildDayClasses(array $eventsForDay): string
 
                     <div class="calendar-grid">
                         <?php
-                        $totalCells = 35; // 7 columns x 5 rows
+                        $totalCells = 35;
                         for ($cell = 0; $cell < $totalCells; $cell++) {
                             $dayNumber = $cell - $startingWeekdayIndex + 1;
                             $isValidDay = $dayNumber >= 1 && $dayNumber <= $daysInMonth;
                             $dayEvents = $isValidDay && isset($eventsByDay[$dayNumber]) ? $eventsByDay[$dayNumber] : [];
                             $dayClasses = $isValidDay ? buildDayClasses($dayEvents) : '';
-                            // Gather top tags for this day
                             $dayTags = [];
                             foreach ($dayEvents as $de) {
                                 foreach (($de['tags'] ?? []) as $t) {
@@ -368,33 +374,11 @@ function buildDayClasses(array $eventsForDay): string
                     </div>
                 </div>
 
-                <?php
-                // User's 3 main tags (in a real app, these would come from user preferences/history)
-                $userMainTags = ['jazz', 'art', 'tech'];
-                
-                // Get upcoming events filtered by user's main tags
-                $tagFilteredUpcoming = array_values(array_filter($events, static function(array $e) use ($userMainTags): bool {
-                    if (!in_array($e['status'], ['upcoming', 'happening'], true)) {
-                        return false;
-                    }
-                    $eventTags = array_map('strtolower', $e['tags'] ?? []);
-                    foreach ($userMainTags as $mainTag) {
-                        if (in_array(strtolower($mainTag), $eventTags, true)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }));
-                
-                usort($tagFilteredUpcoming, static function(array $a, array $b): int {
-                    return strcmp($a['date'], $b['date']);
-                });
-                ?>
-                <?php if (!empty($tagFilteredUpcoming)): ?>
+                <?php if (!empty($suggestedEvents)): ?>
                     <div class="event-images" style="margin-top: 1rem;">
-                        <h2 class="images-title">🎯 Upcoming Events Based on Your Top Tags (<?php echo implode(', ', array_map(function($t) { return '#' . $t; }, $userMainTags)); ?>)</h2>
+                        <h2 class="images-title">🎯 Suggested Events Based on Your Top Tags (<?php echo implode(', ', array_map(function($t) { return '#' . $t; }, $userTopTags)); ?>)</h2>
                         <div class="upcoming-events-list">
-                            <?php foreach ($tagFilteredUpcoming as $e): ?>
+                            <?php foreach ($suggestedEvents as $e): ?>
                                 <?php $img = 'https://picsum.photos/seed/' . rawurlencode($e['title']) . '/400/300'; ?>
                                 <div class="upcoming-event-card">
                                     <img src="<?= $img ?>" alt="<?= htmlspecialchars($e['title'], ENT_QUOTES) ?>" class="event-card-img">
@@ -419,6 +403,7 @@ function buildDayClasses(array $eventsForDay): string
                                                 <span class="tag-chip">#<?php echo htmlspecialchars(strtolower((string)$tg), ENT_QUOTES); ?></span>
                                             <?php endforeach; ?>
                                         </div>
+                                        <button class="event-action-btn" onclick="acceptEvent('<?php echo htmlspecialchars($e['title'], ENT_QUOTES); ?>')">✅ Add to My Calendar</button>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -446,7 +431,7 @@ function buildDayClasses(array $eventsForDay): string
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-      window.__CAL_EVENTS__ = <?php echo json_encode($events, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+      window.__CAL_EVENTS__ = <?php echo json_encode(array_values($events), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
     </script>
     <script src="js/calendar-7x5.js"></script>
 </body>

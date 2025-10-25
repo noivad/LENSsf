@@ -206,7 +206,7 @@ usort($pastEvents, function($a, $b) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($venue['name'], ENT_QUOTES); ?> - LENS</title>
+    <title>LENSsf::<?php echo htmlspecialchars($venue['name'], ENT_QUOTES); ?></title>
     <link rel="stylesheet" href="css/calendar-7x5.css">
     <link rel="stylesheet" href="css/venue-detail.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -291,15 +291,43 @@ usort($pastEvents, function($a, $b) {
                     <div id="venueMap" class="venue-map"></div>
                 </div>
 
-                <h2 class="venue-name"><?php echo htmlspecialchars($venue['name'], ENT_QUOTES); ?></h2>
+                <div class="venue-header-row">
+                    <h2 class="venue-name" id="venue-name-display"><?php echo htmlspecialchars($venue['name'], ENT_QUOTES); ?></h2>
+                    <button id="edit-venue-btn" class="edit-venue-btn" style="display: none;">✏️ Edit Venue</button>
+                    <button id="save-venue-btn" class="save-venue-btn" style="display: none;">💾 Save Changes</button>
+                    <button id="cancel-edit-btn" class="cancel-edit-btn" style="display: none;">❌ Cancel</button>
+                </div>
 
-                <div class="venue-info-section">
-                    <div class="venue-address">📍 <?php echo htmlspecialchars($venue['address'], ENT_QUOTES); ?></div>
+                <div class="venue-info-section" id="venue-display-mode">
+                    <div class="venue-address" data-address="<?php echo htmlspecialchars($venue['address'], ENT_QUOTES); ?>">📍 <span id="venue-address-hover" class="hoverable-address"><?php echo htmlspecialchars($venue['address'], ENT_QUOTES); ?></span></div>
                     <div class="venue-description"><?php echo htmlspecialchars($venue['description'], ENT_QUOTES); ?></div>
                     <div class="tag-chips">
                         <?php foreach ($venue['tags'] as $tag): ?>
                             <span class="tag-chip">#<?php echo htmlspecialchars($tag, ENT_QUOTES); ?></span>
                         <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div class="venue-info-section venue-edit-form" id="venue-edit-mode" style="display: none;">
+                    <div class="form-row">
+                        <label>Venue Name
+                            <input type="text" id="edit-venue-name" value="<?php echo htmlspecialchars($venue['name'], ENT_QUOTES); ?>">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>Address
+                            <input type="text" id="edit-venue-address" value="<?php echo htmlspecialchars($venue['address'], ENT_QUOTES); ?>">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>Description
+                            <textarea id="edit-venue-description" rows="4"><?php echo htmlspecialchars($venue['description'], ENT_QUOTES); ?></textarea>
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>Tags (comma-separated)
+                            <input type="text" id="edit-venue-tags" value="<?php echo htmlspecialchars(implode(', ', $venue['tags']), ENT_QUOTES); ?>">
+                        </label>
                     </div>
                 </div>
 

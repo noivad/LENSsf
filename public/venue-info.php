@@ -106,23 +106,26 @@ $venues = $venueManager ? $venueManager->all() : [];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Venues - <?= e($siteName) ?></title>
+    <title>LENSsf::Venues</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/venue-info.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
-<body>
+<body data-theme="light">
 <header>
     <div class="container">
         <h1><a href="index.php"><?= e($siteName) ?></a></h1>
         <nav>
-            <a href="index.php">Home</a>
+            <a href="calendar-home.php">Home</a>
             <a href="event-list.php">Events</a>
             <a href="calendar-7x5.php">Calendar</a>
             <a href="venue-info.php" class="active">Venues</a>
             <a href="tags.php">Tags</a>
             <a href="account.php">Account</a>
             <a href="add-event.php">Add Event</a>
+            <button class="theme-toggle" onclick="toggleTheme()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
+                <span id="theme-icon">🌙</span>
+            </button>
         </nav>
     </div>
 </header>

@@ -80,8 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = $user['username'];
             $_SESSION['display_name'] = $user['display_name'];
             $_SESSION['current_user'] = $user['display_name'];
-            // Redirect to the calendar 7x5 page on successful login
-            redirect('../calendar-7x5.php');
+            // Redirect to the calendar home page on successful login
+            redirect('../calendar-home.php');
         }
     }
 }
@@ -91,12 +91,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <title>LENSsf::Login</title>
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/auth.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/longbow.slidercaptcha@1.1.0/dist/slidercaptcha.min.css" />
 </head>
-<body>
+<body data-theme="light">
     <header>
         <div class="container">
             <h1><a href="../index.php">Local Event Network Service</a></h1>

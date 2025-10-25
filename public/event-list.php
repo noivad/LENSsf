@@ -78,22 +78,25 @@ usort($filteredEvents, function ($a, $b) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Events - <?= e($siteName) ?></title>
+    <title>LENSsf::Events</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/event-list.css">
 </head>
-<body>
+<body data-theme="light">
     <header>
         <div class="container">
             <h1><a href="index.php"><?= e($siteName) ?></a></h1>
             <nav>
-                <a href="index.php">Home</a>
+                <a href="calendar-home.php">Home</a>
                 <a href="event-list.php" class="active">Events</a>
                 <a href="calendar-7x5.php">Calendar</a>
                 <a href="venue-info.php">Venues</a>
                 <a href="tags.php">Tags</a>
                 <a href="account.php">Account</a>
                 <a href="add-event.php">Add Event</a>
+                <button class="theme-toggle" onclick="toggleTheme()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
+                    <span id="theme-icon">🌙</span>
+                </button>
             </nav>
         </div>
     </header>
