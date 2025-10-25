@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../includes/helpers.php';
 require __DIR__ . '/../includes/db.php';
 require __DIR__ . '/../includes/managers/EventManager.php';
+require __DIR__ . '/../includes/navigation.php';
 
 if (file_exists(__DIR__ . '/../config.php')) {
     require __DIR__ . '/../config.php';
@@ -53,74 +54,54 @@ ksort($allTags);
     <title>LENSsf::Tags</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/tags.css">
+    <link rel="stylesheet" href="css/calendar-7x5.css">
 </head>
 <body data-theme="light">
-    <header>
-        <div class="container">
-            <h1><a href="index.php"><?= e($siteName) ?></a></h1>
-            <nav>
-                <a href="calendar-home.php">Home</a>
-                <a href="event-list.php">Events</a>
-                <a href="calendar-7x5.php">Calendar</a>
-                <a href="venue-info.php">Venues</a>
-                <a href="tags.php" class="active">Tags</a>
-                <a href="account.php">Account</a>
-                <a href="add-event.php">Add Event</a>
-                <button class="theme-toggle" onclick="toggleTheme()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
-                    <span id="theme-icon">🌙</span>
-                </button>
-            </nav>
-        </div>
-    </header>
+    <?php renderNavigation('tags', 'LENSsf - Tags'); ?>
 
-    <main class="container">
-        <section class="card">
-            <h2>Event Tags</h2>
-            
-            <div class="info-box">
-                <strong>Search tags:</strong> Type #tag1, #tag2 (comma-separated) to search for specific tags. 
-                Click any tag below to filter events by that tag.
-            </div>
+        <main class="main-content">
+            <div class="container">
+                <section class="card">
+                    <h2>Event Tags</h2>
+                    
+                    <div class="info-box">
+                        <strong>Search tags:</strong> Type #tag1, #tag2 (comma-separated) to search for specific tags. 
+                        Click any tag below to filter events by that tag.
+                    </div>
 
-            <div class="search-box">
-                <input 
-                    type="text" 
-                    id="tag-search" 
-                    placeholder="Search tags with #tag syntax (e.g., #music, #art)" 
-                    aria-label="Search tags"
-                >
-            </div>
+                    <div class="search-box">
+                        <input 
+                            type="text" 
+                            id="tag-search" 
+                            placeholder="Search tags with #tag syntax (e.g., #music, #art)" 
+                            aria-label="Search tags"
+                        >
+                    </div>
 
-            <div id="selected-tags-container" class="selected-tags" style="display: none;">
-                <strong>Selected tags:</strong>
-                <div id="selected-tags"></div>
-                <button class="button-small" id="clear-filters">Clear All Filters</button>
-            </div>
+                    <div id="selected-tags-container" class="selected-tags" style="display: none;">
+                        <strong>Selected tags:</strong>
+                        <div id="selected-tags"></div>
+                        <button class="button-small" id="clear-filters">Clear All Filters</button>
+                    </div>
 
-            <?php if (empty($allTags)): ?>
-                <p class="subtle">No tags found. Tags will appear here once events are created with tags.</p>
-            <?php else: ?>
-                <div class="tags-grid" id="tags-grid">
-                    <?php foreach ($allTags as $tag => $count): ?>
-                        <div class="tag-card" data-tag="<?= e($tag) ?>" onclick="selectTag('<?= e($tag) ?>')">
-                            <div class="tag-name">#<?= e($tag) ?></div>
-                            <div class="tag-count"><?= e((string) $count) ?> event<?= $count !== 1 ? 's' : '' ?></div>
+                    <?php if (empty($allTags)): ?>
+                        <p class="subtle">No tags found. Tags will appear here once events are created with tags.</p>
+                    <?php else: ?>
+                        <div class="tags-grid" id="tags-grid">
+                            <?php foreach ($allTags as $tag => $count): ?>
+                                <div class="tag-card" data-tag="<?= e($tag) ?>" onclick="selectTag('<?= e($tag) ?>')">
+                                    <div class="tag-name">#<?= e($tag) ?></div>
+                                    <div class="tag-count"><?= e((string) $count) ?> event<?= $count !== 1 ? 's' : '' ?></div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        </section>
-    </main>
+                    <?php endif; ?>
+                </section>
+            </div>
+        </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <?= date('Y') ?> <?= e($siteName) ?></p>
-        </div>
-    </footer>
+    <?php renderFooter(); ?>
 
-    <script>
-        window.__ALL_TAGS__ = <?= json_encode($allTags, JSON_UNESCAPED_UNICODE) ?>;
-    </script>
     <script src="js/tags.js"></script>
 </body>
 </html>

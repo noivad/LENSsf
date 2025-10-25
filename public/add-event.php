@@ -78,35 +78,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>LENSsf::Add Event</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/add-event.css">
+    <link rel="stylesheet" href="css/calendar-7x5.css">
 </head>
 <body data-theme="light">
-    <header>
-        <div class="container">
-            <h1><a href="index.php"><?= e($siteName) ?></a></h1>
-            <nav>
-                <a href="calendar-home.php">Home</a>
-                <a href="event-list.php">Events</a>
-                <a href="calendar-7x5.php">Calendar</a>
-                <a href="venue-info.php">Venues</a>
-                <a href="tags.php">Tags</a>
-                <a href="account.php">Account</a>
-                <a href="add-event.php" class="active">Add Event</a>
-                <button class="theme-toggle" onclick="toggleTheme()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
-                    <span id="theme-icon">🌙</span>
+    <div class="app-container">
+        <nav class="sidebar-nav">
+            <div class="nav-logo">LENS</div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="calendar-7x5.php" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="event-list.php" class="nav-link">
+                        <span class="nav-icon">📋</span>
+                        <span>Events</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="venue-info.php" class="nav-link">
+                        <span class="nav-icon">📍</span>
+                        <span>Venues</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="tags.php" class="nav-link">
+                        <span class="nav-icon">🏷️</span>
+                        <span>Tags</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-event.php" class="nav-link active">
+                        <span class="nav-icon">➕</span>
+                        <span>Add Event</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <header class="top-header">
+            <h1 class="header-title">LENSsf - Add Event</h1>
+            <div class="user-controls">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">☀️</span> Toggle Theme
                 </button>
-            </nav>
-        </div>
-    </header>
-
-    <main class="container">
-        <?php foreach (get_flashes() as $flash): ?>
-            <div class="alert alert-<?= e($flash['type']) ?>">
-                <?= e($flash['message']) ?>
+                <div class="user-profile">
+                    <img src="https://i.pravatar.cc/150?img=33" alt="User Avatar" class="user-avatar" onclick="toggleUserDropdown()">
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="account-contact.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            📧 Contact Info
+                        </a>
+                        <a href="account-notifications.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            🔔 Notifications
+                        </a>
+                        <a href="account.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            ⚙️ Account Info
+                        </a>
+                        <a href="account-past-events.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            📜 My Past Events
+                        </a>
+                        <div class="dropdown-item" onclick="alert('Logging out...')">
+                            🚪 Logout
+                        </div>
+                    </div>
+                </div>
             </div>
-        <?php endforeach; ?>
+        </header>
 
-        <section>
-            <h2>Add New Event</h2>
+        <main class="main-content">
+            <div class="container">
+                <?php foreach (get_flashes() as $flash): ?>
+                    <div class="alert alert-<?= e($flash['type']) ?>">
+                        <?= e($flash['message']) ?>
+                    </div>
+                <?php endforeach; ?>
+
+                <section>
+                    <h2>Add New Event</h2>
 
             <div class="card">
                 <form method="post" enctype="multipart/form-data" class="form">
@@ -157,24 +207,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="form-row" id="recurring-options" style="display: none;">
                         <label>
-                            Recurrence Pattern *
-                            <select name="recurrence_pattern">
-                                <option value="">Select pattern</option>
-                                <option value="every_week">Every week</option>
-                                <option value="every_two_weeks">Every 2 weeks</option>
-                                <option value="every_month">Every month</option>
-                                <option value="every_two_months">Every 2 months</option>
-                                <option value="first_monday">First Monday of the month</option>
-                                <option value="first_tuesday">First Tuesday of the month</option>
-                                <option value="first_wednesday">First Wednesday of the month</option>
-                                <option value="first_thursday">First Thursday of the month</option>
-                                <option value="first_friday">First Friday of the month</option>
-                                <option value="second_monday">Second Monday of the month</option>
-                                <option value="third_thursday">Third Thursday of the month</option>
-                                <option value="last_friday">Last Friday of the month</option>
+                            Recurrence Type *
+                            <select name="recurrence_type" id="recurrence_type" onchange="updateRecurrenceOptions()">
+                                <option value="">Select type</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly_day">Monthly (specific day of week)</option>
+                                <option value="monthly_date">Monthly (specific date)</option>
+                                <option value="custom">Custom interval</option>
                             </select>
                         </label>
-                        <label>
+
+                        <div id="weekly-options" style="display: none; margin-top: 1rem;">
+                            <label>
+                                Repeat every
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <input type="number" name="weekly_interval" min="1" max="52" value="1" style="width: 80px;">
+                                    <span>week(s)</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div id="monthly-day-options" style="display: none; margin-top: 1rem;">
+                            <div class="form-split">
+                                <label>
+                                    Week of month
+                                    <select name="month_week">
+                                        <option value="first">First</option>
+                                        <option value="second">Second</option>
+                                        <option value="third">Third</option>
+                                        <option value="fourth">Fourth</option>
+                                        <option value="last">Last</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    Day of week
+                                    <select name="day_of_week">
+                                        <option value="monday">Monday</option>
+                                        <option value="tuesday">Tuesday</option>
+                                        <option value="wednesday">Wednesday</option>
+                                        <option value="thursday">Thursday</option>
+                                        <option value="friday">Friday</option>
+                                        <option value="saturday">Saturday</option>
+                                        <option value="sunday">Sunday</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <label style="margin-top: 1rem;">
+                                Every
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <input type="number" name="monthly_day_interval" min="1" max="12" value="1" style="width: 80px;">
+                                    <span>month(s)</span>
+                                </div>
+                                <small>e.g., "2" = every other month, "6" = twice a year</small>
+                            </label>
+                        </div>
+
+                        <div id="monthly-date-options" style="display: none; margin-top: 1rem;">
+                            <label>
+                                Repeat every
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <input type="number" name="monthly_date_interval" min="1" max="12" value="1" style="width: 80px;">
+                                    <span>month(s) on the same date</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div id="custom-options" style="display: none; margin-top: 1rem;">
+                            <label>
+                                Repeat every
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <input type="number" name="custom_interval" min="1" value="1" style="width: 80px;">
+                                    <select name="custom_unit" style="width: auto;">
+                                        <option value="days">Day(s)</option>
+                                        <option value="weeks">Week(s)</option>
+                                        <option value="months">Month(s)</option>
+                                    </select>
+                                </div>
+                            </label>
+                        </div>
+
+                        <label style="margin-top: 1rem;">
                             Until Date
                             <input type="date" name="recurrence_end_date" value="<?= e($_POST['recurrence_end_date'] ?? '') ?>">
                             <small>Leave blank for indefinite recurrence</small>
@@ -223,15 +335,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
         </section>
-    </main>
+            </div>
+        </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <?= date('Y') ?> <?= e($siteName) ?></p>
-        </div>
-    </footer>
+        <footer class="footer">
+            <p>&copy; <?= date('Y') ?> LENSsf - Local Event Network Service | Built with ❤️ for the community</p>
+        </footer>
+    </div>
 
     <script src="js/main.js"></script>
     <script src="js/add-event.js"></script>
+    <script src="js/calendar-7x5.js"></script>
 </body>
 </html>
