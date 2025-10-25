@@ -80,3 +80,23 @@
 .venue-info-tags {
     margin-top: 0.5rem;
 }
+
+.venue-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1.5rem;
+}
+
+.venue-info-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.venue-image {
+    margin-bottom: 1.5rem;
+}
+
+.venue-details > div {
+    margin-bottom: 0.5rem;
+}

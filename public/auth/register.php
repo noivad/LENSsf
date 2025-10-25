@@ -166,26 +166,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="https://cdn.jsdelivr.net/npm/longbow.slidercaptcha@1.1.0/dist/slidercaptcha.min.js"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (window.sliderCaptcha) {
-                sliderCaptcha({
-                    id: 'sliderCaptcha',
-                    width: 280,
-                    height: 155,
-                    sliderL: 42,
-                    sliderR: 9,
-                    offset: 5,
-                    loadingText: 'Loading...',
-                    failedText: 'Try again',
-                    barText: 'Slide to match the puzzle piece',
-                    repeatIcon: 'fa fa-redo',
-                    onSuccess: function () {
-                        document.getElementById('slider_captcha').value = 'verified';
-                    }
-                });
-            }
-        });
-    </script>
+    <script src="../js/auth.js"></script>
 </body>
 </html>
