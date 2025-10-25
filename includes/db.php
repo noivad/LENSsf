@@ -18,14 +18,11 @@ class Database
             throw new RuntimeException('Only MySQL is supported in the current configuration.');
         }
 
-<<<<<<< Updated upstream
-        $host = defined('DB_HOST') ? DB_HOST : '127.0.0.1';
-=======
+
         $host = defined('DB_HOST') ? DB_HOST : 'mysql.cyberdrunktank.com';
->>>>>>> Stashed changes
         $name = defined('DB_NAME') ? DB_NAME : 'lenssf';
         $user = defined('DB_USER') ? DB_USER : 'lenssfadmin';
-        $pass = defined('DB_PASS') ? DB_PASS : '';
+        $pass = defined('DB_PASS') ? DB_PASS : 'squads@dinah3darlin_twisting';
         $port = defined('DB_PORT') ? (int) DB_PORT : 3306;
 
         $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $host, $port, $name);
@@ -66,8 +63,11 @@ class Database
             }
             self::$pdo->commit();
         } catch (PDOException $e) {
-            self::$pdo->rollBack();
+          try {
+            self::$pdo->rollBack(); }
+          catch (PDOException $e) {
             throw new RuntimeException('Failed to initialize database schema: ' . $e->getMessage(), (int) $e->getCode(), $e);
+          }
         }
     }
 }
