@@ -159,12 +159,6 @@ function buildDayClasses(array $eventsForDay): string
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="account.php" class="nav-link">
-                        <span class="nav-icon">👤</span>
-                        <span>Account</span>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="add-event.php" class="nav-link">
                         <span class="nav-icon">➕</span>
                         <span>Add Event</span>
@@ -185,16 +179,13 @@ function buildDayClasses(array $eventsForDay): string
                 <div class="user-profile">
                     <img src="https://i.pravatar.cc/150?img=33" alt="User Avatar" class="user-avatar" onclick="toggleUserDropdown()">
                     <div class="user-dropdown" id="userDropdown">
-                        <a href="account.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
-                            📧 Contact Info
+                        <a href="account-unified.php?tab=info" class="dropdown-item">
+                            ⚙️ Account & Contact Info
                         </a>
-                        <a href="account.html?tab=notifications" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                        <a href="account-unified.php?tab=notifications" class="dropdown-item">
                             🔔 Notifications
                         </a>
-                        <a href="account-settings.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
-                            ⚙️ Account Info
-                        </a>
-                        <a href="account-events.html" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                        <a href="account-unified.php?tab=past-events" class="dropdown-item">
                             📜 My Past Events
                         </a>
                         <div class="dropdown-item" onclick="alert('Logging out...')">

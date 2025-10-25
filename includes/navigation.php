@@ -42,22 +42,22 @@ if (!function_exists('renderNavigation')) {
             <header class="top-header">
                 <h1 class="header-title"><?= htmlspecialchars($pageTitle, ENT_QUOTES) ?></h1>
                 <div class="user-controls">
+                    <div class="searchbar">
+                        <input id="calendar-search" type="text" placeholder="Search events/venues/descriptions or #tag" />
+                    </div>
                     <button class="theme-toggle" onclick="toggleTheme()">
                         <span id="theme-icon">☀️</span> Toggle Theme
                     </button>
                     <div class="user-profile">
                         <img src="https://i.pravatar.cc/150?img=33" alt="User Avatar" class="user-avatar" onclick="toggleUserDropdown()">
                         <div class="user-dropdown" id="userDropdown">
-                            <a href="account-contact.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
-                                📧 Contact Info
+                            <a href="account-unified.php?tab=info" class="dropdown-item">
+                                ⚙️ Account & Contact Info
                             </a>
-                            <a href="account-notifications.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            <a href="account-unified.php?tab=notifications" class="dropdown-item">
                                 🔔 Notifications
                             </a>
-                            <a href="account.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
-                                ⚙️ Account Info
-                            </a>
-                            <a href="account-past-events.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            <a href="account-unified.php?tab=past-events" class="dropdown-item">
                                 📜 My Past Events
                             </a>
                             <div class="dropdown-item" onclick="alert('Logging out...')">
@@ -73,11 +73,10 @@ if (!function_exists('renderNavigation')) {
     function renderFooter(): void {
         ?>
             <footer class="footer">
-                <p>&copy; <?= date('Y') ?> LENSsf - Local Event Network Service | Built with ❤️ for the community</p>
+                <p>© <?= date('Y') ?> LENS - Local Event Network Service | Built with ❤️ for the community</p>
             </footer>
         </div>
 
-        <script src="js/main.js"></script>
         <script src="js/calendar-7x5.js"></script>
         <?php
     }
