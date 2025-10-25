@@ -58,7 +58,7 @@ $venues = $venueManager ? $venueManager->all() : [];
                 <div class="calendar-grid venue-grid">
                     <?php foreach ($venues as $v): ?>
                         <div class="venue-card">
-                            <a href="venue-detail.php?id=<?= e((string)$v['id']) ?>" class="venue-card-link">
+                            <a href="venue-info.php?id=<?= e((string)$v['id']) ?>" class="venue-card-link">
                                 <?php if (!empty($v['image'])): ?>
                                     <div class="venue-image">
                                         <img src="uploads/<?= e($v['image']) ?>" alt="<?= e($v['name']) ?>">
