@@ -1,7 +1,7 @@
 -- MySQL Schema for Local Event Network Service
 
 CREATE TABLE IF NOT EXISTS venues (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     address VARCHAR(255),
@@ -18,12 +18,12 @@ CREATE TABLE IF NOT EXISTS venues (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS events (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     event_date DATE NOT NULL,
     event_time TIME,
-    venue_id INT,
+    venue_id INT UNSIGNED,
     owner_name VARCHAR(255) NOT NULL,
     deputies TEXT,
     image VARCHAR(255),
@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS events (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS event_calendar_entries (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    event_id INT NOT NULL,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id INT UNSIGNED NOT NULL,
     name VARCHAR(255) NOT NULL,
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS event_calendar_entries (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS event_shares (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    event_id INT NOT NULL,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id INT UNSIGNED NOT NULL,
     shared_with VARCHAR(255) NOT NULL,
     shared_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS event_shares (
 
 -- Optional messages attached to event shares
 CREATE TABLE IF NOT EXISTS event_share_messages (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    event_id INT NOT NULL,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id INT UNSIGNED NOT NULL,
     shared_with VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -66,8 +66,8 @@ CREATE TABLE IF NOT EXISTS event_share_messages (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS photos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    event_id INT,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id INT UNSIGNED,
     filename VARCHAR(255) NOT NULL,
     original_name VARCHAR(255) NOT NULL,
     file_size INT NOT NULL,
@@ -80,8 +80,8 @@ CREATE TABLE IF NOT EXISTS photos (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS photo_comments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    photo_id INT NOT NULL,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    photo_id INT UNSIGNED NOT NULL,
     name VARCHAR(255) NOT NULL,
     comment TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -90,8 +90,8 @@ CREATE TABLE IF NOT EXISTS photo_comments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS event_comments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    event_id INT NOT NULL,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id INT UNSIGNED NOT NULL,
     name VARCHAR(255) NOT NULL,
     comment TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS event_comments (
 
 -- Basic users table for authentication
 CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(64) NOT NULL,
     display_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Bans/Kicks
 CREATE TABLE IF NOT EXISTS banned_users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_identifier VARCHAR(255) NOT NULL,
     ends_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
