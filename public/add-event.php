@@ -32,6 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $eventDate = trim($_POST['event_date'] ?? '');
     $owner = trim($_POST['owner'] ?? '');
+    $venueSelection = $_POST['venue_id'] ?? '';
+
+    if ($venueSelection === 'create_new') {
+        $_SESSION['pending_event_data'] = $_POST;
+        $_SESSION['pending_event_files'] = $_FILES;
+        redirect('create-venue.php?from=event');
+    }
 
     if ($title === '' || $eventDate === '' || $owner === '') {
         set_flash('Please provide the event title, date, and owner name.', 'error');

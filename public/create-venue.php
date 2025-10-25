@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../includes/helpers.php';
 require __DIR__ . '/../includes/db.php';
 require __DIR__ . '/../includes/managers/VenueManager.php';
+require __DIR__ . '/../includes/managers/EventManager.php';
 require __DIR__ . '/../includes/navigation.php';
 
 if (file_exists(__DIR__ . '/../config.php')) {
@@ -30,6 +31,8 @@ try {
 }
 
 $venueManager = $pdo ? new VenueManager($pdo, $uploadDir) : null;
+$eventManager = $pdo ? new EventManager($pdo, $uploadDir) : null;
+$fromEvent = $_GET['from'] === 'event';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $venueManager) {
     $name = trim($_POST['name'] ?? '');
@@ -63,7 +66,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $venueManager) {
 
         if ($venue) {
             set_flash('Venue created successfully!');
-            redirect('venues-list.php');
+            
+            if (isset($_SESSION['pending_event_data']) && $eventManager) {
+                $eventData = $_SESSION['pending_event_data'];
+                $eventData['venue_id'] = $venue['id'];
+                
+                $imageFile = null;
+                if (isset($_SESSION['pending_event_files']['image']) && $_SESSION['pending_event_files']['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                    $imageFile = $_SESSION['pending_event_files']['image'];
+                }
+                
+                $event = $eventManager->create([
+                    'title' => trim($eventData['title'] ?? ''),
+                    'description' => trim($eventData['description'] ?? ''),
+                    'event_date' => trim($eventData['event_date'] ?? ''),
+                    'start_time' => trim($eventData['start_time'] ?? ''),
+                    'end_time' => trim($eventData['end_time'] ?? ''),
+                    'venue_id' => $venue['id'],
+                    'owner' => trim($eventData['owner'] ?? ''),
+                    'deputies' => normalize_list_input($eventData['deputies'] ?? ''),
+                    'tags' => normalize_list_input($eventData['tags'] ?? ''),
+                    'is_recurring' => !empty($eventData['is_recurring']),
+                    'recurrence_type' => trim($eventData['recurrence_type'] ?? ''),
+                    'recurrence_end_date' => trim($eventData['recurrence_end_date'] ?? ''),
+                    'weekly_interval' => $eventData['weekly_interval'] ?? 1,
+                    'month_week' => trim($eventData['month_week'] ?? ''),
+                    'day_of_week' => trim($eventData['day_of_week'] ?? ''),
+                    'monthly_day_interval' => $eventData['monthly_day_interval'] ?? 1,
+                    'monthly_date_interval' => $eventData['monthly_date_interval'] ?? 1,
+                    'custom_interval' => $eventData['custom_interval'] ?? 1,
+                    'custom_unit' => trim($eventData['custom_unit'] ?? 'days'),
+                ], $imageFile);
+                
+                unset($_SESSION['pending_event_data']);
+                unset($_SESSION['pending_event_files']);
+                
+                if ($event) {
+                    set_flash('Event created successfully with new venue!');
+                    redirect('event-list.php');
+                } else {
+                    set_flash('Venue created but failed to create event. Please try again.', 'error');
+                    redirect('add-event.php');
+                }
+            } else {
+                redirect('venues-list.php');
+            }
         } else {
             set_flash('Failed to create venue. Please try again.', 'error');
         }
@@ -89,6 +136,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $venueManager) {
 
         <section>
             <h2>Create Venue</h2>
+            
+            <?php if ($fromEvent): ?>
+                <div class="alert alert-success" style="margin-bottom: 1.5rem;">
+                    <strong>📌 Creating venue for your event</strong><br>
+                    After you create this venue, your event will be automatically created and linked to it.
+                </div>
+            <?php endif; ?>
 
             <div class="card">
                 <form method="post" enctype="multipart/form-data" class="form">
