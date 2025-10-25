@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../includes/helpers.php';
 require __DIR__ . '/../includes/db.php';
 require __DIR__ . '/../includes/managers/VenueManager.php';
+require __DIR__ . '/../includes/navigation.php';
 
 if (file_exists(__DIR__ . '/../config.php')) {
     require __DIR__ . '/../config.php';
@@ -109,28 +110,14 @@ $venues = $venueManager ? $venueManager->all() : [];
     <title>LENSsf::Venues</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/venue-info.css">
+    <link rel="stylesheet" href="css/calendar-7x5.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
 <body data-theme="light">
-<header>
-    <div class="container">
-        <h1><a href="index.php"><?= e($siteName) ?></a></h1>
-        <nav>
-            <a href="calendar-home.php">Home</a>
-            <a href="event-list.php">Events</a>
-            <a href="calendar-7x5.php">Calendar</a>
-            <a href="venue-info.php" class="active">Venues</a>
-            <a href="tags.php">Tags</a>
-            <a href="account.php">Account</a>
-            <a href="add-event.php">Add Event</a>
-            <button class="theme-toggle" onclick="toggleTheme()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
-                <span id="theme-icon">🌙</span>
-            </button>
-        </nav>
-    </div>
-</header>
+<?php renderNavigation('venues', 'LENSsf - Venues'); ?>
 
-<main class="container">
+<main class="main-content">
+    <div class="container">
     <?php foreach (get_flashes() as $flash): ?>
         <div class="alert alert-<?= e($flash['type']) ?>"><?= e($flash['message']) ?></div>
     <?php endforeach; ?>
@@ -274,12 +261,10 @@ $venues = $venueManager ? $venueManager->all() : [];
         </div>
     </div>
 </div>
-
-<footer>
-    <div class="container">
-        <p>&copy; <?= date('Y') ?> <?= e($siteName) ?></p>
     </div>
-</footer>
+</main>
+
+<?php renderFooter(); ?>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>

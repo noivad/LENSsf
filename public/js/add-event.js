@@ -17,6 +17,25 @@ function previewImage(event) {
     }
 }
 
+function updateRecurrenceOptions() {
+    const recurrenceType = document.getElementById('recurrence_type').value;
+    
+    document.getElementById('weekly-options').style.display = 'none';
+    document.getElementById('monthly-day-options').style.display = 'none';
+    document.getElementById('monthly-date-options').style.display = 'none';
+    document.getElementById('custom-options').style.display = 'none';
+    
+    if (recurrenceType === 'weekly') {
+        document.getElementById('weekly-options').style.display = 'block';
+    } else if (recurrenceType === 'monthly_day') {
+        document.getElementById('monthly-day-options').style.display = 'block';
+    } else if (recurrenceType === 'monthly_date') {
+        document.getElementById('monthly-date-options').style.display = 'block';
+    } else if (recurrenceType === 'custom') {
+        document.getElementById('custom-options').style.display = 'block';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const recurringCheckbox = document.querySelector('input[name="is_recurring"]');
     const recurringOptions = document.getElementById('recurring-options');

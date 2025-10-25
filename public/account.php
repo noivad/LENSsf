@@ -32,15 +32,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($action === 'update_profile') {
-        $newName = trim($_POST['name'] ?? '');
+        $newUsername = trim($_POST['username'] ?? '');
         $newEmail = trim($_POST['email'] ?? '');
+        $newNickname = trim($_POST['nickname'] ?? '');
+        $newFirstName = trim($_POST['first_name'] ?? '');
+        $newLastName = trim($_POST['last_name'] ?? '');
         
-        if ($newName !== '' && $newEmail !== '') {
-            $_SESSION['current_user'] = $newName;
+        if ($newUsername !== '' && $newEmail !== '') {
+            $_SESSION['current_user'] = $newUsername;
             $_SESSION['user_email'] = $newEmail;
+            $_SESSION['user_nickname'] = $newNickname;
+            $_SESSION['user_first_name'] = $newFirstName;
+            $_SESSION['user_last_name'] = $newLastName;
             set_flash('Profile updated successfully!');
         } else {
-            set_flash('Please provide both name and email.', 'error');
+            set_flash('Please provide both username and email.', 'error');
         }
         redirect('account.php');
     }
@@ -111,34 +117,84 @@ $userEmail = $_SESSION['user_email'] ?? '';
     <title>LENSsf::Account</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/account.css">
+    <link rel="stylesheet" href="css/calendar-7x5.css">
 </head>
 <body data-theme="light">
-    <header>
-        <div class="container">
-            <h1><a href="index.php"><?= e($siteName) ?></a></h1>
-            <nav>
-                <a href="calendar-home.php">Home</a>
-                <a href="event-list.php">Events</a>
-                <a href="calendar-7x5.php">Calendar</a>
-                <a href="venue-info.php">Venues</a>
-                <a href="tags.php">Tags</a>
-                <a href="account.php" class="active">Account</a>
-                <a href="add-event.php">Add Event</a>
-                <button class="theme-toggle" onclick="toggleTheme()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
-                    <span id="theme-icon">🌙</span>
+    <div class="app-container">
+        <nav class="sidebar-nav">
+            <div class="nav-logo">LENS</div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="calendar-7x5.php" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="event-list.php" class="nav-link">
+                        <span class="nav-icon">📋</span>
+                        <span>Events</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="venue-info.php" class="nav-link">
+                        <span class="nav-icon">📍</span>
+                        <span>Venues</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="tags.php" class="nav-link">
+                        <span class="nav-icon">🏷️</span>
+                        <span>Tags</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-event.php" class="nav-link">
+                        <span class="nav-icon">➕</span>
+                        <span>Add Event</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <header class="top-header">
+            <h1 class="header-title">LENSsf - My Account</h1>
+            <div class="user-controls">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">☀️</span> Toggle Theme
                 </button>
-            </nav>
-        </div>
-    </header>
-
-    <main class="container">
-        <?php foreach (get_flashes() as $flash): ?>
-            <div class="alert alert-<?= e($flash['type']) ?>">
-                <?= e($flash['message']) ?>
+                <div class="user-profile">
+                    <img src="https://i.pravatar.cc/150?img=33" alt="User Avatar" class="user-avatar" onclick="toggleUserDropdown()">
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="account-contact.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            📧 Contact Info
+                        </a>
+                        <a href="account-notifications.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            🔔 Notifications
+                        </a>
+                        <a href="account.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            ⚙️ Account Info
+                        </a>
+                        <a href="account-past-events.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                            📜 My Past Events
+                        </a>
+                        <div class="dropdown-item" onclick="alert('Logging out...')">
+                            🚪 Logout
+                        </div>
+                    </div>
+                </div>
             </div>
-        <?php endforeach; ?>
+        </header>
 
-        <h2>My Account</h2>
+        <main class="main-content">
+            <div class="container">
+                <?php foreach (get_flashes() as $flash): ?>
+                    <div class="alert alert-<?= e($flash['type']) ?>">
+                        <?= e($flash['message']) ?>
+                    </div>
+                <?php endforeach; ?>
+
+                <h2>My Account</h2>
 
         <div class="stats-grid">
             <div class="stat-card">
@@ -159,9 +215,30 @@ $userEmail = $_SESSION['user_email'] ?? '';
                 
                 <div class="form-row">
                     <label>
-                        Name
-                        <input type="text" name="name" value="<?= e($currentUser) ?>" required>
+                        Username
+                        <input type="text" name="username" value="<?= e($currentUser) ?>" required>
                     </label>
+                </div>
+
+                <div class="form-row">
+                    <label>
+                        Nickname
+                        <input type="text" name="nickname" value="<?= e($_SESSION['user_nickname'] ?? '') ?>">
+                        <small>A friendly display name (optional)</small>
+                    </label>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-split">
+                        <label>
+                            First Name
+                            <input type="text" name="first_name" value="<?= e($_SESSION['user_first_name'] ?? '') ?>">
+                        </label>
+                        <label>
+                            Last Name
+                            <input type="text" name="last_name" value="<?= e($_SESSION['user_last_name'] ?? '') ?>">
+                        </label>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -294,12 +371,15 @@ $userEmail = $_SESSION['user_email'] ?? '';
                 </div>
             <?php endif; ?>
         </section>
-    </main>
+            </div>
+        </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <?= date('Y') ?> <?= e($siteName) ?></p>
-        </div>
-    </footer>
+        <footer class="footer">
+            <p>&copy; <?= date('Y') ?> LENSsf - Local Event Network Service | Built with ❤️ for the community</p>
+        </footer>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/calendar-7x5.js"></script>
 </body>
 </html>

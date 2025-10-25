@@ -1,11 +1,38 @@
 <?php
 declare(strict_types=1);
 
-$defaultMonth = 10;
-$defaultYear = 2025;
+require __DIR__ . '/../includes/helpers.php';
+require __DIR__ . '/../includes/db.php';
+require __DIR__ . '/../includes/managers/EventManager.php';
+require __DIR__ . '/../includes/managers/VenueManager.php';
+require __DIR__ . '/../includes/managers/PhotoManager.php';
 
-$month = isset($_GET['month']) ? max(1, min(12, (int) $_GET['month'])) : $defaultMonth;
-$year = isset($_GET['year']) ? max(1970, (int) $_GET['year']) : $defaultYear;
+if (file_exists(__DIR__ . '/../config.php')) {
+    require __DIR__ . '/../config.php';
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!defined('SITE_NAME')) {
+    define('SITE_NAME', 'Local Event Network Service');
+}
+
+$uploadDir = defined('UPLOAD_DIR') ? rtrim((string) UPLOAD_DIR, '/') : __DIR__ . '/uploads';
+
+$pdo = Database::connect();
+$eventManager = new EventManager($pdo, $uploadDir);
+$venueManager = new VenueManager($pdo, $uploadDir);
+$photoManager = new PhotoManager($pdo, $uploadDir, 5242880);
+
+$currentUser = $_SESSION['current_user'] ?? 'Demo User';
+
+$defaultMonth = (int) ($_GET['month'] ?? date('n'));
+$defaultYear = (int) ($_GET['year'] ?? date('Y'));
+
+$month = max(1, min(12, $defaultMonth));
+$year = max(1970, $defaultYear);
 
 $firstDayOfMonth = new DateTime(sprintf('%04d-%02d-01', $year, $month));
 $daysInMonth = (int) $firstDayOfMonth->format('t');
@@ -29,92 +56,33 @@ if ($nextMonth > 12) {
 $previousYearSameMonth = $year - 1;
 $nextYearSameMonth = $year + 1;
 
-$events = [
-    [
-        'title' => 'Jazz Night',
-        'venue' => 'Blue Note Club',
-        'date' => sprintf('%04d-%02d-05', $year, $month),
-        'start_time' => '19:00',
-        'end_time' => '23:00',
-        'creator' => 'Alice Johnson',
-        'is_creator' => false,
-        'status' => 'past',
-        'description' => 'An evening of improvisation featuring local legends.',
-        'tags' => ['jazz','music','live']
-    ],
-    [
-        'title' => 'Art Exhibition Opening',
-        'venue' => 'Modern Art Gallery',
-        'date' => sprintf('%04d-%02d-15', $year, $month),
-        'start_time' => '18:00',
-        'end_time' => '21:00',
-        'creator' => 'You',
-        'is_creator' => true,
-        'status' => 'upcoming',
-        'description' => 'Celebrate the launch of the "Lightscapes" collection with the artists.',
-        'tags' => ['art','gallery','opening']
-    ],
-    [
-        'title' => 'Pizza Party',
-        'venue' => "Tony's Pizzeria",
-        'date' => sprintf('%04d-%02d-15', $year, $month),
-        'start_time' => '19:30',
-        'end_time' => '22:00',
-        'creator' => 'Bob Smith',
-        'is_creator' => false,
-        'status' => 'upcoming',
-        'description' => 'Community-organized meetup to celebrate the fall menu launch.',
-        'tags' => ['food','pizza','community']
-    ],
-    [
-        'title' => 'Tech Conference',
-        'venue' => 'Central Convention Center',
-        'date' => sprintf('%04d-%02d-17', $year, $month),
-        'start_time' => '09:00',
-        'end_time' => '18:00',
-        'creator' => 'Tech Corp',
-        'is_creator' => false,
-        'status' => 'happening',
-        'description' => 'Keynotes on emerging AI systems plus hands-on futuristic demos.',
-        'tags' => ['tech','conference','ai']
-    ],
-    [
-        'title' => 'Theater Performance',
-        'venue' => 'City Theater',
-        'date' => sprintf('%04d-%02d-20', $year, $month),
-        'start_time' => '20:00',
-        'end_time' => '22:30',
-        'creator' => 'You',
-        'is_creator' => true,
-        'status' => 'upcoming',
-        'description' => 'Premiere of the sci-fi stage play "Echoes of Tomorrow".',
-        'tags' => ['theater','performance','premiere']
-    ],
-    [
-        'title' => 'Marathon Event',
-        'venue' => 'Eon City Park',
-        'date' => sprintf('%04d-%02d-25', $year, $month),
-        'start_time' => '06:00',
-        'end_time' => '12:00',
-        'creator' => 'Sports Club',
-        'is_creator' => false,
-        'status' => 'upcoming',
-        'description' => 'City-wide marathon following the Skyline Nebula route.',
-        'tags' => ['sports','marathon','outdoor']
-    ],
-    [
-        'title' => 'Halloween Party',
-        'venue' => 'Community Center',
-        'date' => sprintf('%04d-%02d-28', $year, $month),
-        'start_time' => '19:00',
-        'end_time' => '00:00',
-        'creator' => 'You',
-        'is_creator' => true,
-        'status' => 'upcoming',
-        'description' => 'Costumes, synthwave DJs, and an augmented reality haunted maze.',
-        'tags' => ['halloween','party','costumes']
-    ],
-];
+$allDbEvents = $eventManager->all();
+$allPhotos = $photoManager->all();
+$today = new DateTimeImmutable('today');
+
+$events = array_map(function($event) use ($today, $currentUser) {
+    $eventDate = DateTimeImmutable::createFromFormat('Y-m-d', $event['event_date']);
+    
+    $status = 'upcoming';
+    if ($eventDate && $eventDate < $today) {
+        $status = 'past';
+    } elseif ($eventDate && $eventDate->format('Y-m-d') === $today->format('Y-m-d')) {
+        $status = 'happening';
+    }
+    
+    return [
+        'title' => $event['title'],
+        'venue' => $event['venue_name'] ?? 'TBA',
+        'date' => $event['event_date'],
+        'start_time' => $event['start_time'] ?? '',
+        'end_time' => '',
+        'creator' => $event['owner'],
+        'is_creator' => strcasecmp($event['owner'], $currentUser) === 0,
+        'status' => $status,
+        'description' => $event['description'] ?? '',
+        'tags' => $event['tags'] ?? []
+    ];
+}, $allDbEvents);
 
 $eventsByDay = [];
 foreach ($events as $event) {
@@ -127,14 +95,12 @@ foreach ($events as $event) {
     $eventsByDay[$dayIndex][] = $event;
 }
 
-$eventImages = [
-    ['src' => 'https://picsum.photos/400/400?random=10', 'caption' => 'Jazz Night @ Blue Note'],
-    ['src' => 'https://picsum.photos/400/400?random=11', 'caption' => 'Summer Festival 2024'],
-    ['src' => 'https://picsum.photos/400/400?random=12', 'caption' => 'Tech Meetup'],
-    ['src' => 'https://picsum.photos/400/400?random=13', 'caption' => 'Art Workshop'],
-    ['src' => 'https://picsum.photos/400/400?random=14', 'caption' => 'Food Festival'],
-    ['src' => 'https://picsum.photos/400/400?random=15', 'caption' => 'Concert Night'],
-];
+$eventImages = array_map(function($photo) {
+    return [
+        'src' => 'uploads/' . $photo['filename'],
+        'caption' => $photo['caption'] ?? $photo['event_id'] ?? 'Event Photo'
+    ];
+}, array_slice($allPhotos, 0, 6));
 
 function buildDayClasses(array $eventsForDay): string
 {
