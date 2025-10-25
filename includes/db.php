@@ -63,11 +63,10 @@ class Database
             }
             self::$pdo->commit();
         } catch (PDOException $e) {
-          try {
-            self::$pdo->rollBack(); }
-          catch (PDOException $e) {
+            if (self::$pdo->inTransaction()) {
+                self::$pdo->rollBack();
+            }
             throw new RuntimeException('Failed to initialize database schema: ' . $e->getMessage(), (int) $e->getCode(), $e);
-          }
         }
     }
 }
