@@ -2,12 +2,22 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/TagManager.php';
+
 class VenueManager
 {
+    private ?TagManager $tagManager = null;
+
     public function __construct(
         private readonly PDO $db,
         private readonly ?string $uploadPath = null
     ) {
+        $this->tagManager = new TagManager($db);
+    }
+
+    private function hasUniversalTags(): bool
+    {
+        return $this->tagManager && $this->tagManager->hasUniversalTagsSupport();
     }
 
     private function hasColumn(string $table, string $column): bool
@@ -34,14 +44,22 @@ class VenueManager
 
         $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $useUniversalTags = $this->hasUniversalTags();
         $hasTags = $this->hasColumn('venues', 'tags');
         $hasOpenTimes = $this->hasColumn('venues', 'open_times');
         $hasIsPrivate = $this->hasColumn('venues', 'is_private');
         $hasIsPublic = $this->hasColumn('venues', 'is_public');
 
-        return array_map(static function (array $venue) use ($hasTags, $hasOpenTimes, $hasIsPrivate, $hasIsPublic): array {
+        return array_map(function (array $venue) use ($useUniversalTags, $hasTags, $hasOpenTimes, $hasIsPrivate, $hasIsPublic): array {
             $deputies = json_decode($venue['deputies'] ?? '[]', true) ?: [];
-            $tags = $hasTags ? (json_decode($venue['tags'] ?? '[]', true) ?: []) : [];
+            
+            if ($useUniversalTags) {
+                $tagObjs = $this->tagManager->getTagsForVenue((int)$venue['id']);
+                $tags = array_map(fn($t) => $t['name'], $tagObjs);
+            } else {
+                $tags = $hasTags ? (json_decode($venue['tags'] ?? '[]', true) ?: []) : [];
+            }
+            
             return [
                 'id' => (int) $venue['id'],
                 'name' => $venue['name'],
@@ -226,7 +244,13 @@ class VenueManager
 
             $stmt->execute($execParams);
 
-            return (int) $this->db->lastInsertId();
+            $venueId = (int) $this->db->lastInsertId();
+            
+            if ($this->hasUniversalTags() && !empty($tags)) {
+                $this->tagManager->setTagsForVenue($venueId, $tags);
+            }
+
+            return $venueId;
         } catch (Throwable $e) {
             if ($imageName) {
                 $this->deleteImage($imageName);
@@ -321,6 +345,10 @@ class VenueManager
             $sql = sprintf('UPDATE venues SET %s WHERE id = :id', implode(', ', $setClauses));
             $stmt = $this->db->prepare($sql);
             $stmt->execute($params);
+            
+            if ($this->hasUniversalTags() && array_key_exists('tags', $data)) {
+                $this->tagManager->setTagsForVenue($venueId, $tags);
+            }
 
             $this->db->commit();
 
@@ -379,10 +407,18 @@ class VenueManager
         }
 
         $deputies = json_decode($venue['deputies'] ?? '[]', true) ?: [];
+        $useUniversalTags = $this->hasUniversalTags();
         $hasTags = $this->hasColumn('venues', 'tags');
         $hasOpenTimes = $this->hasColumn('venues', 'open_times');
         $hasIsPrivate = $this->hasColumn('venues', 'is_private');
         $hasIsPublic = $this->hasColumn('venues', 'is_public');
+
+        if ($useUniversalTags) {
+            $tagObjs = $this->tagManager->getTagsForVenue((int)$venue['id']);
+            $tags = array_map(fn($t) => $t['name'], $tagObjs);
+        } else {
+            $tags = $hasTags ? (json_decode($venue['tags'] ?? '[]', true) ?: []) : [];
+        }
 
         return [
             'id' => (int) $venue['id'],
@@ -398,7 +434,7 @@ class VenueManager
             'open_times' => $hasOpenTimes ? ($venue['open_times'] ?? null) : null,
             'is_private' => $hasIsPrivate ? (bool)($venue['is_private'] ?? false) : false,
             'is_public' => $hasIsPublic ? (bool)($venue['is_public'] ?? true) : true,
-            'tags' => $hasTags ? (json_decode($venue['tags'] ?? '[]', true) ?: []) : [],
+            'tags' => $tags,
             'created_at' => $venue['created_at'],
         ];
     }
@@ -416,21 +452,28 @@ class VenueManager
     public function addTagPublic(int $venueId, string $tag): ?array
     {
         $tag = strtolower(trim($tag));
-        if ($venueId <= 0 || $tag === '' || !$this->hasColumn('venues', 'tags')) {
+        if ($venueId <= 0 || $tag === '') {
             return null;
         }
+        
         $venue = $this->findById($venueId);
         if (!$venue) {
             return null;
         }
-        $tags = $venue['tags'] ?? [];
-        $tags[] = $tag;
-        $tags = array_values(array_filter(array_unique($tags)));
-        $stmt = $this->db->prepare('UPDATE venues SET tags = :tags WHERE id = :id');
-        $stmt->execute([
-            ':tags' => json_encode($tags, JSON_THROW_ON_ERROR),
-            ':id' => $venueId,
-        ]);
+        
+        if ($this->hasUniversalTags()) {
+            $this->tagManager->addTagToVenue($venueId, $tag);
+        } else if ($this->hasColumn('venues', 'tags')) {
+            $tags = $venue['tags'] ?? [];
+            $tags[] = $tag;
+            $tags = array_values(array_filter(array_unique($tags)));
+            $stmt = $this->db->prepare('UPDATE venues SET tags = :tags WHERE id = :id');
+            $stmt->execute([
+                ':tags' => json_encode($tags, JSON_THROW_ON_ERROR),
+                ':id' => $venueId,
+            ]);
+        }
+        
         return $this->findById($venueId);
     }
 

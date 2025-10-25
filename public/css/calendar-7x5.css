@@ -1366,6 +1366,24 @@ body {
     box-shadow: 0 0 18px var(--hover-glow);
 }
 
+.button-danger {
+    background: linear-gradient(135deg, #e63946, #d62828);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.85rem 1.8rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 18px rgba(230, 57, 70, 0.4);
+}
+
+.button-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(230, 57, 70, 0.6);
+}
+
 .venue-grid,
 .venues-grid {
     display: grid;
@@ -1591,9 +1609,13 @@ body {
     background: var(--bg-secondary);
     border: 2px solid var(--border-color);
     border-radius: 16px;
-    overflow: hidden;
+    overflow: visible;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     box-shadow: var(--shadow-medium);
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 300px;
 }
 
 .venue-card:hover {
@@ -1603,9 +1625,12 @@ body {
 }
 
 .venue-card-link {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
     text-decoration: none;
     color: inherit;
+    height: 100%;
 }
 
 .venue-image {
@@ -1613,6 +1638,7 @@ body {
     height: 200px;
     overflow: hidden;
     background: var(--bg-tertiary);
+    flex-shrink: 0;
 }
 
 .venue-image img {
@@ -1628,6 +1654,9 @@ body {
 
 .venue-card-content {
     padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .venue-card-content h3 {

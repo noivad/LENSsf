@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$stmt = $pdo->prepare('SELECT e.*, v.name as venue_name FROM events e LEFT JOIN venues v ON e.venue_id = v.id WHERE e.owner = ? AND e.event_date < ? ORDER BY e.event_date DESC');
+$stmt = $pdo->prepare('SELECT e.*, v.name as venue_name FROM events e LEFT JOIN venues v ON e.venue_id = v.id WHERE e.owner_name = ? AND e.event_date < ? ORDER BY e.event_date DESC');
 $stmt->execute([$currentUser, date('Y-m-d')]);
 $pastEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
