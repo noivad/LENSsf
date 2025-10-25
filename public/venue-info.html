@@ -5,15 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Venue Info ()</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/venue-info.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <style>
-    .tag-list.lines .badge{display:block;margin:0.15rem 0;}
-    .venue-grid{display:grid;grid-template-columns:1fr;gap:1rem}
-    @media(min-width:900px){.venue-popover-body{display:grid;grid-template-columns:1fr 320px;gap:1rem;align-items:start}}
-    .mini-map{height:260px;border:1px solid var(--border-color);border-radius:8px}
-    .overlay-mask{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(2px);display:none;z-index:49}
-    .overlay-mask.visible{display:block}
-  </style>
 </head>
 <body>
   <header>
@@ -30,7 +23,7 @@
 
   <main class="container">
     <section class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+      <div class="venue-header">
         <h2>Venues</h2>
         <button id="create-venue-btn" class="button">Create Venue</button>
       </div>
@@ -45,14 +38,14 @@
             <span>94105</span>
             <span><strong>Hours:</strong> Mon-Sun 5pm-1am</span>
           </div>
-          <div class="tag-list lines" style="margin-top:0.5rem">
+          <div class="tag-list lines venue-tags">
             <span class="badge">#jazz</span>
             <span class="badge">#live</span>
             <span class="badge">#late-night</span>
           </div>
-          <div class="venue-meta" style="margin-top:0.5rem">
+          <div class="venue-meta venue-meta-actions">
             <span><strong>Owner:</strong> Alex Johnson</span>
-            <button class="button-small open-venue" style="margin-left:auto">Open</button>
+            <button class="button-small open-venue">Open</button>
           </div>
         </div>
         <div class="venue-item" data-venue-id="2" data-owner="Pat Lee">
@@ -64,14 +57,14 @@
             <span>94107</span>
             <span><strong>Hours:</strong> Tue-Sun 10am-6pm</span>
           </div>
-          <div class="tag-list lines" style="margin-top:0.5rem">
+          <div class="tag-list lines venue-tags">
             <span class="badge">#art</span>
             <span class="badge">#gallery</span>
             <span class="badge">#family</span>
           </div>
-          <div class="venue-meta" style="margin-top:0.5rem">
+          <div class="venue-meta venue-meta-actions">
             <span><strong>Owner:</strong> Pat Lee</span>
-            <button class="button-small open-venue" style="margin-left:auto">Open</button>
+            <button class="button-small open-venue">Open</button>
           </div>
         </div>
       </div>
@@ -148,17 +141,17 @@
           </div>
         </form>
 
-        <div id="venue-info" style="display:none">
+        <div id="venue-info" class="venue-info-hidden">
           <div id="venue-info-content"></div>
-          <div class="form-row" style="margin-top:0.5rem">
+          <div class="form-row venue-tag-form">
             <label>Add a tag
               <input type="text" id="info_tag_input" placeholder="Type a tag and press Enter or comma" />
             </label>
-            <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.4rem">
+            <div class="tag-visibility-options">
               <label><input type="radio" name="tag_visibility" value="private" checked /> Private</label>
               <label><input type="radio" name="tag_visibility" value="public" id="public_tag_radio" /> Public (owner only)</label>
             </div>
-            <div id="info_tag_list" class="tag-list lines" style="margin-top:0.5rem"></div>
+            <div id="info_tag_list" class="tag-list lines venue-info-tags"></div>
           </div>
         </div>
       </div>
@@ -170,18 +163,12 @@
 
   <footer>
     <div class="container">
-      <p>&copy; <script>document.write(new Date().getFullYear());</script> LENS</p>
+      <p>&copy; <span id="year"></span> LENS</p>
     </div>
   </footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script>
-    window.__VENUES__ = [
-      { id: 1, name: 'Blue Note Club', address: '123 Music Ave', city: 'San Francisco', state: 'CA', zip_code: '94105', description: 'Legendary jazz club with nightly performances.', owner: 'Alex Johnson', open_times: 'Mon-Sun 5pm-1am', tags: ['jazz','live','late-night'] },
-      { id: 2, name: 'Modern Art Gallery', address: '55 Canvas Rd', city: 'San Francisco', state: 'CA', zip_code: '94107', description: 'Contemporary art exhibits and community workshops.', owner: 'Pat Lee', open_times: 'Tue-Sun 10am-6pm', tags: ['art','gallery','family'] }
-    ];
-    window.__CURRENT_USER__ = 'Alex Johnson';
-  </script>
+  <script src="js/venue-info-data.js"></script>
   <script src="js/venue-info.js"></script>
 </body>
 </html>

@@ -19,12 +19,9 @@ class Database
         }
 
         $host = defined('DB_HOST') ? DB_HOST : '127.0.0.1';
-        $host = defined('DB_HOST') ? DB_HOST : 'mysql.cyberdrunktank.com';
         $name = defined('DB_NAME') ? DB_NAME : 'lenssf';
-        $user = defined('DB_USER') ? DB_USER : 'root';
-        $pass = defined('DB_PASS') ? DB_PASS : '';
         $user = defined('DB_USER') ? DB_USER : 'lenssfadmin';
-        $pass = defined('DB_PASS') ? DB_PASS : 'squads@dinah3darlin_twisting';
+        $pass = defined('DB_PASS') ? DB_PASS : '';
         $port = defined('DB_PORT') ? (int) DB_PORT : 3306;
 
         $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $host, $port, $name);

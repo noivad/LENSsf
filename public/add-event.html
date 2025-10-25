@@ -5,50 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Event - LENS </title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .-note {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            color: #856404;
-        }
-
-        .-note strong {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .preview-box {
-            border: 2px dashed var(--border-color);
-            border-radius: 0.5rem;
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-subtle);
-            background: #f8f9fa;
-            margin-top: 0.5rem;
-        }
-
-        .preview-box.has-image {
-            padding: 0;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-
-        .preview-box img {
-            width: 100%;
-            max-height: 300px;
-            object-fit: cover;
-        }
-
-        .form-hint {
-            display: block;
-            font-size: 0.875rem;
-            color: var(--text-subtle);
-            margin-top: 0.25rem;
-        }
-    </style>
+    <link rel="stylesheet" href="css/add-event.css">
 </head>
 <body>
     <header>
@@ -142,14 +99,14 @@
                         </label>
                     </div>
 
-                    <div class="form-row">
+                    <div class="form-row form-buttons">
                         <button type="submit" class="button">Create Event</button>
-                        <a href="index.php?page=events" class="button-small" style="margin-left: 1rem; background: var(--secondary-color);">Cancel</a>
+                        <a href="index.php?page=events" class="button-small button-cancel">Cancel</a>
                     </div>
                 </form>
             </div>
 
-            <div class="card" style="margin-top: 2rem;">
+            <div class="card event-preview-card">
                 <h3>Event Preview</h3>
                 <div class="event-item">
                     <div class="event-header">
@@ -180,25 +137,6 @@
         </div>
     </footer>
 
-    <script>
-        function previewImage(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('imagePreview');
-            
-            if (file) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    preview.className = 'preview-box has-image';
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                }
-                
-                reader.readAsDataURL(file);
-            } else {
-                preview.className = 'preview-box';
-                preview.innerHTML = '📷 No image selected - Choose a file to preview';
-            }
-        }
-    </script>
+    <script src="js/add-event.js"></script>
 </body>
 </html>

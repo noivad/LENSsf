@@ -1,5 +1,5 @@
 .auth-card {
-    max-width: 520px;
+    max-width: 640px;
     margin: 2rem auto;
 }
 
@@ -11,40 +11,4 @@
 .captcha-group {
     display: grid;
     gap: 1rem;
-}
-
-.captcha-help {
-    text-align: center;
-    color: var(--text-subtle);
-    font-size: 0.85rem;
-}
-
-#slider-box {
-    margin: 1rem 0;
-}
-
-#turnstile-widget {
-    display: flex;
-    justify-content: center;
-    margin: 1rem 0;
-}
-
-.login-button {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1.1rem;
-}
-
-.signup-link {
-    text-align: center;
-    margin-top: 1rem;
-}
-
-.signup-link a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.signup-link a:hover {
-    text-decoration: underline;
 }
