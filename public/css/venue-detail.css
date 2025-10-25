@@ -20,11 +20,82 @@
     border: 2px solid var(--border-color);
 }
 
+.venue-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+
 .venue-name {
     font-size: 2.5rem;
     font-weight: 700;
-    margin: 1rem 0;
-    color: var(--accent-cyan);
+    margin: 0;
+    color: var(--accent-blue);
+    flex: 1;
+}
+
+.edit-venue-btn,
+.save-venue-btn,
+.cancel-edit-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancel-edit-btn {
+    background: var(--secondary-color);
+}
+
+.edit-venue-btn:hover,
+.save-venue-btn:hover,
+.cancel-edit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.venue-edit-form .form-row {
+    margin-bottom: 1rem;
+}
+
+.venue-edit-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.venue-edit-form input,
+.venue-edit-form textarea {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.venue-edit-form input:focus,
+.venue-edit-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(77, 124, 255, 0.1);
+}
+
+.hoverable-address {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
 }
 
 .venue-info-section {
@@ -74,7 +145,7 @@
 .event-card-title {
     font-size: 1.2rem;
     font-weight: 600;
-    color: var(--accent-cyan);
+    color: var(--accent-blue);
     margin-bottom: 0.5rem;
 }
 

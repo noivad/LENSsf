@@ -46,10 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'description' => trim($_POST['description'] ?? ''),
             'event_date' => $eventDate,
             'start_time' => trim($_POST['start_time'] ?? ''),
+            'end_time' => trim($_POST['end_time'] ?? ''),
             'venue_id' => $_POST['venue_id'] ?: null,
             'owner' => $owner,
             'deputies' => normalize_list_input($_POST['deputies'] ?? ''),
             'tags' => normalize_list_input($_POST['tags'] ?? ''),
+            'is_recurring' => !empty($_POST['is_recurring']),
+            'recurrence_pattern' => trim($_POST['recurrence_pattern'] ?? ''),
+            'recurrence_end_date' => trim($_POST['recurrence_end_date'] ?? ''),
         ], $imageFile);
 
         if ($event) {
@@ -71,21 +75,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Event - <?= e($siteName) ?></title>
+    <title>LENSsf::Add Event</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/add-event.css">
 </head>
-<body>
+<body data-theme="light">
     <header>
         <div class="container">
             <h1><a href="index.php"><?= e($siteName) ?></a></h1>
             <nav>
-                <a href="index.php">Home</a>
+                <a href="calendar-home.php">Home</a>
                 <a href="event-list.php">Events</a>
                 <a href="calendar-7x5.php">Calendar</a>
                 <a href="venue-info.php">Venues</a>
                 <a href="tags.php">Tags</a>
                 <a href="account.php">Account</a>
                 <a href="add-event.php" class="active">Add Event</a>
+                <button class="theme-toggle" onclick="toggleTheme()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer;">
+                    <span id="theme-icon">🌙</span>
+                </button>
             </nav>
         </div>
     </header>
@@ -134,7 +142,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 Start Time
                                 <input type="time" name="start_time" value="<?= e($_POST['start_time'] ?? '') ?>">
                             </label>
+                            <label>
+                                End Time
+                                <input type="time" name="end_time" value="<?= e($_POST['end_time'] ?? '') ?>">
+                            </label>
                         </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>
+                            <input type="checkbox" name="is_recurring" value="1" <?= ($_POST['is_recurring'] ?? '') ? 'checked' : '' ?>> Recurring Event
+                        </label>
+                    </div>
+
+                    <div class="form-row" id="recurring-options" style="display: none;">
+                        <label>
+                            Recurrence Pattern *
+                            <select name="recurrence_pattern">
+                                <option value="">Select pattern</option>
+                                <option value="every_week">Every week</option>
+                                <option value="every_two_weeks">Every 2 weeks</option>
+                                <option value="every_month">Every month</option>
+                                <option value="every_two_months">Every 2 months</option>
+                                <option value="first_monday">First Monday of the month</option>
+                                <option value="first_tuesday">First Tuesday of the month</option>
+                                <option value="first_wednesday">First Wednesday of the month</option>
+                                <option value="first_thursday">First Thursday of the month</option>
+                                <option value="first_friday">First Friday of the month</option>
+                                <option value="second_monday">Second Monday of the month</option>
+                                <option value="third_thursday">Third Thursday of the month</option>
+                                <option value="last_friday">Last Friday of the month</option>
+                            </select>
+                        </label>
+                        <label>
+                            Until Date
+                            <input type="date" name="recurrence_end_date" value="<?= e($_POST['recurrence_end_date'] ?? '') ?>">
+                            <small>Leave blank for indefinite recurrence</small>
+                        </label>
                     </div>
 
                     <div class="form-row">
@@ -188,5 +232,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/add-event.js"></script>
 </body>
 </html>

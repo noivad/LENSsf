@@ -41,7 +41,7 @@ $photoManager = new PhotoManager($pdo, $uploadDir, $maxUploadSize);
 $page = $_GET['page'] ?? 'home';
 
 if ($page === 'home' && !isset($_GET['action']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: calendar-7x5.php');
+    header('Location: calendar-home.php');
     exit;
 }
 
