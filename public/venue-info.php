@@ -133,7 +133,7 @@ $venues = $venueManager ? $venueManager->all() : [];
     <?php endforeach; ?>
 
     <section class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+        <div class="venue-header">
             <h2>Venues</h2>
             <button id="create-venue-btn" class="button">Create Venue</button>
         </div>
@@ -151,15 +151,15 @@ $venues = $venueManager ? $venueManager->all() : [];
                             <?php if (!empty($v['open_times'])): ?><span><strong>Hours:</strong> <?= e($v['open_times']) ?></span><?php endif; ?>
                         </div>
                         <?php if (!empty($v['tags'])): ?>
-                            <div class="tag-list lines" style="margin-top:0.5rem">
+                            <div class="tag-list lines venue-tags">
                                 <?php foreach ($v['tags'] as $tag): ?>
                                     <span class="badge">#<?= e(strtolower((string)$tag)) ?></span>
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>
-                        <div class="venue-meta" style="margin-top:0.5rem">
+                        <div class="venue-meta venue-meta-actions">
                             <span><strong>Owner:</strong> <?= e((string)$v['owner']) ?></span>
-                            <a href="venue-detail.php?venue=<?= urlencode($v['name']) ?>" class="button-small" style="margin-left:auto; text-decoration: none; display: inline-block;">View Details</a>
+                            <a href="venue-detail.php?venue=<?= urlencode($v['name']) ?>" class="button-small venue-detail-link">View Details</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -252,17 +252,17 @@ $venues = $venueManager ? $venueManager->all() : [];
                 </div>
             </form>
 
-            <div id="venue-info" style="display:none">
+            <div id="venue-info" class="venue-info-hidden">
                 <div id="venue-info-content"></div>
-                <div class="form-row" style="margin-top:0.5rem">
+                <div class="form-row venue-tag-form">
                     <label>Add a tag
                         <input type="text" id="info_tag_input" placeholder="Type a tag and press Enter or comma">
                     </label>
-                    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.4rem">
+                    <div class="tag-visibility-options">
                         <label><input type="radio" name="tag_visibility" value="private" checked> Private</label>
                         <label><input type="radio" name="tag_visibility" value="public" id="public_tag_radio"> Public (owner only)</label>
                     </div>
-                    <div id="info_tag_list" class="tag-list lines" style="margin-top:0.5rem"></div>
+                    <div id="info_tag_list" class="tag-list lines venue-info-tags"></div>
                 </div>
             </div>
         </div>

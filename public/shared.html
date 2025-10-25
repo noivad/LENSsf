@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shared Items - LENS</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/shared.css">
 </head>
 <body class="theme-dark">
     <header>
@@ -25,7 +26,7 @@
             <h2>Shared</h2>
 
             <div class="card">
-                <div class="actions" style="margin-bottom: 1rem;">
+                <div class="actions shared-tabs">
                     <a href="#shared-with-me" class="active" onclick="showTab('shared_with_me')">Shared with me</a>
                     <a href="#my-shares" onclick="showTab('my_shares')">My shares</a>
                 </div>
@@ -36,19 +37,19 @@
                         <p class="loading">Loading shared events...</p>
                     </div>
 
-                    <h3 style="margin-top: 2rem;">Venues Shared With Me</h3>
+                    <h3 class="section-heading">Venues Shared With Me</h3>
                     <div id="shared-venues-list" class="item-list">
                         <p class="loading">Loading shared venues...</p>
                     </div>
                 </div>
 
-                <div id="my-shares-tab" class="tab-content" style="display: none;">
+                <div id="my-shares-tab" class="tab-content tab-hidden">
                     <h3>Events I've Shared</h3>
                     <div id="my-event-shares-list" class="item-list">
                         <p class="loading">Loading your event shares...</p>
                     </div>
 
-                    <h3 style="margin-top: 2rem;">Venues I've Shared</h3>
+                    <h3 class="section-heading">Venues I've Shared</h3>
                     <div id="my-venue-shares-list" class="item-list">
                         <p class="loading">Loading your venue shares...</p>
                     </div>
@@ -63,113 +64,6 @@
         </div>
     </footer>
 
-    <script>
-    let currentTab = 'shared_with_me';
-
-    function showTab(tabName) {
-        currentTab = tabName;
-        const sharedTab = document.getElementById('shared-with-me-tab');
-        const mySharesTab = document.getElementById('my-shares-tab');
-        
-        if (tabName === 'shared_with_me') {
-            sharedTab.style.display = 'block';
-            mySharesTab.style.display = 'none';
-            loadSharedWithMe();
-        } else {
-            sharedTab.style.display = 'none';
-            mySharesTab.style.display = 'block';
-            loadMyShares();
-        }
-    }
-
-    async function loadSharedWithMe() {
-        // Simulated data - replace with actual API call
-        const eventsList = document.getElementById('shared-events-list');
-        const venuesList = document.getElementById('shared-venues-list');
-        
-        eventsList.innerHTML = `
-            <div class="shared-item">
-                <h4><a href="index.php?page=event&id=1">Sample Event</a></h4>
-                <p class="subtle">Shared by: John Doe on 2025-10-15</p>
-                <p><em>"Check out this cool event!"</em></p>
-            </div>
-        `;
-        
-        venuesList.innerHTML = `
-            <div class="shared-item">
-                <h4><a href="index.php?page=venue&id=1">Sample Venue</a></h4>
-                <p class="subtle">Shared by: Jane Smith on 2025-10-18</p>
-            </div>
-        `;
-    }
-
-    async function loadMyShares() {
-        // Simulated data - replace with actual API call
-        const eventsList = document.getElementById('my-event-shares-list');
-        const venuesList = document.getElementById('my-venue-shares-list');
-        
-        eventsList.innerHTML = `
-            <div class="shared-item">
-                <h4><a href="index.php?page=event&id=2">My Shared Event</a></h4>
-                <p class="subtle">Shared with 2 user(s):</p>
-                <div class="share-recipients">
-                    <div class="share-recipient">
-                        <span>Alice Johnson</span>
-                        <button class="button-small" onclick="alert('Revoke share')">Revoke</button>
-                    </div>
-                    <div class="share-recipient">
-                        <span>Bob Williams</span>
-                        <button class="button-small" onclick="alert('Revoke share')">Revoke</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        venuesList.innerHTML = `<p>You haven't shared any venues yet.</p>`;
-    }
-
-    // Load initial tab
-    loadSharedWithMe();
-    </script>
-
-    <style>
-    .shared-item {
-        padding: 1rem;
-        border: 1px solid var(--border-color, #ccc);
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        background: var(--bg-secondary, #f9f9f9);
-    }
-
-    .share-recipients {
-        margin-top: 0.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .share-recipient {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem;
-        background: var(--bg-tertiary, #fff);
-        border-radius: 6px;
-    }
-
-    .loading {
-        color: var(--text-secondary, #666);
-        font-style: italic;
-    }
-
-    .tab-content {
-        animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    </style>
+    <script src="js/shared.js"></script>
 </body>
 </html>

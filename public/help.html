@@ -5,53 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Help Search</title>
   <link rel="stylesheet" href="css/style.css">
-  <style>
-    .wrap{max-width:800px;margin:2rem auto}
-    .result{border:1px solid var(--border-color);border-radius:10px;padding:0.75rem;margin-bottom:0.75rem;background:var(--card-bg)}
-    .muted{color:var(--text-subtle)}
-  </style>
+  <link rel="stylesheet" href="css/help.css">
 </head>
 <body class="theme-dark">
   <main class="container wrap">
     <h1>Help</h1>
     <p class="muted">This is a lightweight mock help page. Type a topic or use Option-? from any  page.</p>
     <form>
-      <input type="text" id="q" placeholder="Search help topics..." style="width:100%">
+      <input type="text" id="q" placeholder="Search help topics..." class="search-input">
     </form>
-    <div id="results" style="margin-top:1rem"></div>
+    <div id="results" class="results-container"></div>
   </main>
-  <script>
-  (function(){
-    const params = new URLSearchParams(location.search);
-    const q = params.get('q') || '';
-    const input = document.getElementById('q');
-    const results = document.getElementById('results');
-    input.value = q;
-    function search(text){
-      const t = (text||'').toLowerCase();
-      const data = [
-        {t:'recurring events', d:'Set Frequency, Interval, By Day, and Nth for monthly patterns.'},
-        {t:'privacy', d:'Visibility options: Public, Invite Only, Private, Event Specific.'},
-        {t:'context menu', d:'Right-click entries to see actions like copy, cancel occurrences, or set list lines.'},
-        {t:'keyboard', d:'Option-/ searches the highlighted text (addresses open in Maps). Option-? searches help.'}
-      ];
-      results.innerHTML = '';
-      data.filter(x => x.t.includes(t) || x.d.toLowerCase().includes(t)).forEach(x => {
-        const div = document.createElement('div');
-        div.className = 'result';
-        div.innerHTML = `<strong>${x.t}</strong><div>${x.d}</div>`;
-        results.appendChild(div);
-      });
-      if (!results.children.length){
-        const div = document.createElement('div');
-        div.className = 'result muted';
-        div.textContent = 'No help results.';
-        results.appendChild(div);
-      }
-    }
-    input.addEventListener('input', ()=> search(input.value));
-    search(q);
-  })();
-  </script>
+  <script src="js/help.js"></script>
 </body>
 </html>
