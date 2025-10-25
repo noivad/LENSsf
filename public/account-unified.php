@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../includes/helpers.php';
 require __DIR__ . '/../includes/db.php';
+require __DIR__ . '/../includes/managers/MediaManager.php';
 
 if (file_exists(__DIR__ . '/../config.php')) {
     require __DIR__ . '/../config.php';
@@ -19,16 +20,30 @@ if (!defined('SITE_NAME')) {
 $pdo = Database::connect();
 $siteName = SITE_NAME;
 $currentUser = $_SESSION['current_user'] ?? 'Demo User';
+$userId = $_SESSION['user_id'] ?? 1;
 $userEmail = $_SESSION['user_email'] ?? 'demo@example.com';
 $userPhone = $_SESSION['user_phone'] ?? '';
 $userAddress = $_SESSION['user_address'] ?? '';
+
+$uploadDir = defined('UPLOAD_DIR') ? rtrim((string) UPLOAD_DIR, '/') : __DIR__ . '/uploads';
+$mediaManager = new MediaManager($pdo, $uploadDir);
 
 $activeTab = $_GET['tab'] ?? 'info';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    if ($action === 'update_contact') {
+    if ($action === 'update_avatar' && !empty($_FILES['avatar'])) {
+        $avatarPath = $mediaManager->updateUserAvatar($userId, $_FILES['avatar']);
+        
+        if ($avatarPath) {
+            $_SESSION['avatar_url'] = $avatarPath;
+            set_flash('Profile picture updated successfully!');
+        } else {
+            set_flash('Failed to upload profile picture.', 'error');
+        }
+        redirect('account-unified.php?tab=info');
+    } elseif ($action === 'update_contact') {
         $newEmail = trim($_POST['email'] ?? '');
         $newPhone = trim($_POST['phone'] ?? '');
         $newAddress = trim($_POST['address'] ?? '');
@@ -158,6 +173,33 @@ $pastEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if ($activeTab === 'info'): ?>
                     <div class="account-section">
                         <div class="account-info-grid">
+                            <div class="account-card">
+                                <h2 class="account-section-title">Profile Picture</h2>
+                                <div style="text-align: center; margin-bottom: 1rem;">
+                                    <?php 
+                                    $avatarUrl = $_SESSION['avatar_url'] ?? null;
+                                    if ($avatarUrl):
+                                    ?>
+                                        <img src="uploads/<?= e($avatarUrl) ?>" alt="Profile" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-blue);">
+                                    <?php else: ?>
+                                        <img src="https://i.pravatar.cc/150?img=33" alt="Default Avatar" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-blue);">
+                                    <?php endif; ?>
+                                </div>
+                                <form method="post" enctype="multipart/form-data" class="account-form">
+                                    <input type="hidden" name="action" value="update_avatar">
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Upload New Profile Picture</label>
+                                        <input type="file" name="avatar" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input" required>
+                                        <small style="color: var(--text-secondary);">Max size: 10MB</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button type="submit" class="btn-primary">Update Picture</button>
+                                    </div>
+                                </form>
+                            </div>
+
                             <div class="account-card">
                                 <h2 class="account-section-title">Account Information</h2>
                                 <form method="post" class="account-form">

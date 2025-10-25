@@ -62,7 +62,91 @@ class VenueManager
         }, $venues);
     }
 
+    private function mergeVenues(int $venueId, int $duplicateId): void
+    {
+        $venue = $this->findById($venueId);
+        $duplicate = $this->findById($duplicateId);
+        
+        if (!$venue || !$duplicate) {
+            return;
+        }
+
+        $mergedName = $venue['name'] . ' / ' . $duplicate['name'];
+        
+        $mergedDescription = trim(($venue['description'] ?? '') . "\n\n" . ($duplicate['description'] ?? ''));
+        
+        $widestOpenTime = $this->getWidestOpenTime($venue['open_times'] ?? '', $duplicate['open_times'] ?? '');
+        
+        $this->update($venueId, [
+            'name' => $mergedName,
+            'description' => $mergedDescription,
+            'open_times' => $widestOpenTime,
+            'address' => $venue['address'],
+            'city' => $venue['city'],
+            'state' => $venue['state'],
+            'zip_code' => $venue['zip_code'],
+            'owner' => $venue['owner'],
+            'deputies' => array_unique(array_merge($venue['deputies'] ?? [], $duplicate['deputies'] ?? [])),
+            'tags' => array_unique(array_merge($venue['tags'] ?? [], $duplicate['tags'] ?? [])),
+        ]);
+        
+        $this->db->prepare('UPDATE events SET venue_id = :new_id WHERE venue_id = :old_id')
+            ->execute([':new_id' => $venueId, ':old_id' => $duplicateId]);
+        
+        $this->delete($duplicateId);
+    }
+
+    private function getWidestOpenTime(string $time1, string $time2): string
+    {
+        if (empty($time1)) return $time2;
+        if (empty($time2)) return $time1;
+        
+        return strlen($time1) >= strlen($time2) ? $time1 : $time2;
+    }
+
+    private function checkForDuplicateAddress(string $address, string $city, string $state): ?int
+    {
+        if (empty($address)) {
+            return null;
+        }
+        
+        $stmt = $this->db->prepare('SELECT id FROM venues WHERE address = :address AND city = :city AND state = :state LIMIT 1');
+        $stmt->execute([':address' => $address, ':city' => $city, ':state' => $state]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result ? (int)$result['id'] : null;
+    }
+
     public function create(array $data, ?array $imageFile = null): ?array
+    {
+        $name = trim($data['name'] ?? '');
+        $owner = trim($data['owner'] ?? '');
+
+        if ($name === '' || $owner === '') {
+            return null;
+        }
+
+        $address = trim($data['address'] ?? '') ?: null;
+        $city = trim($data['city'] ?? '') ?: null;
+        $state = trim($data['state'] ?? '') ?: null;
+        $zipCode = trim($data['zip_code'] ?? '') ?: null;
+        $description = trim($data['description'] ?? '') ?: null;
+        $openTimes = trim($data['open_times'] ?? '') ?: null;
+        
+        $duplicateId = $this->checkForDuplicateAddress($address ?? '', $city ?? '', $state ?? '');
+        if ($duplicateId !== null) {
+            $newVenueId = $this->createWithoutDuplicateCheck($data, $imageFile);
+            if ($newVenueId) {
+                $this->mergeVenues($duplicateId, $newVenueId);
+                return $this->findById($duplicateId);
+            }
+        }
+
+        $venueId = $this->createWithoutDuplicateCheck($data, $imageFile);
+        return $venueId ? $this->findById($venueId) : null;
+    }
+
+    private function createWithoutDuplicateCheck(array $data, ?array $imageFile = null): ?int
     {
         $name = trim($data['name'] ?? '');
         $owner = trim($data['owner'] ?? '');
@@ -126,7 +210,6 @@ class VenueManager
             }
 
             $placeholders = array_map(static fn(string $c) => ':' . $c, $columns);
-            // Map placeholders keys to actual params keys (already set above with col names)
             $sql = sprintf(
                 'INSERT INTO venues (%s) VALUES (%s)',
                 implode(', ', $columns),
@@ -135,7 +218,6 @@ class VenueManager
 
             $stmt = $this->db->prepare($sql);
 
-            // Ensure placeholder keys match param keys
             $execParams = [];
             foreach ($columns as $c) {
                 $key = ':' . $c;
@@ -144,9 +226,7 @@ class VenueManager
 
             $stmt->execute($execParams);
 
-            $venueId = (int) $this->db->lastInsertId();
-
-            return $this->findById($venueId);
+            return (int) $this->db->lastInsertId();
         } catch (Throwable $e) {
             if ($imageName) {
                 $this->deleteImage($imageName);
