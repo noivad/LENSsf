@@ -36,8 +36,10 @@ class VenueManager
 
         $hasTags = $this->hasColumn('venues', 'tags');
         $hasOpenTimes = $this->hasColumn('venues', 'open_times');
+        $hasIsPrivate = $this->hasColumn('venues', 'is_private');
+        $hasIsPublic = $this->hasColumn('venues', 'is_public');
 
-        return array_map(static function (array $venue) use ($hasTags, $hasOpenTimes): array {
+        return array_map(static function (array $venue) use ($hasTags, $hasOpenTimes, $hasIsPrivate, $hasIsPublic): array {
             $deputies = json_decode($venue['deputies'] ?? '[]', true) ?: [];
             $tags = $hasTags ? (json_decode($venue['tags'] ?? '[]', true) ?: []) : [];
             return [
@@ -52,6 +54,8 @@ class VenueManager
                 'deputies' => $deputies,
                 'image' => $venue['image'],
                 'open_times' => $hasOpenTimes ? ($venue['open_times'] ?? null) : null,
+                'is_private' => $hasIsPrivate ? (bool)($venue['is_private'] ?? false) : false,
+                'is_public' => $hasIsPublic ? (bool)($venue['is_public'] ?? true) : true,
                 'tags' => $tags,
                 'created_at' => $venue['created_at'],
             ];
@@ -87,6 +91,8 @@ class VenueManager
 
         $hasTags = $this->hasColumn('venues', 'tags');
         $hasOpenTimes = $this->hasColumn('venues', 'open_times');
+        $hasIsPrivate = $this->hasColumn('venues', 'is_private');
+        $hasIsPublic = $this->hasColumn('venues', 'is_public');
 
         try {
             $columns = ['name','address','city','state','zip_code','description','owner_name','deputies','image'];
@@ -109,6 +115,14 @@ class VenueManager
             if ($hasTags) {
                 $columns[] = 'tags';
                 $params[':tags'] = json_encode($tags, JSON_THROW_ON_ERROR);
+            }
+            if ($hasIsPrivate) {
+                $columns[] = 'is_private';
+                $params[':is_private'] = (bool)($data['is_private'] ?? false);
+            }
+            if ($hasIsPublic) {
+                $columns[] = 'is_public';
+                $params[':is_public'] = (bool)($data['is_public'] ?? true);
             }
 
             $placeholders = array_map(static fn(string $c) => ':' . $c, $columns);
@@ -202,6 +216,16 @@ class VenueManager
             if ($hasTags) {
                 $assignments['tags'] = json_encode($tags, JSON_THROW_ON_ERROR);
             }
+            
+            $hasIsPrivate = $this->hasColumn('venues', 'is_private');
+            $hasIsPublic = $this->hasColumn('venues', 'is_public');
+            
+            if ($hasIsPrivate && array_key_exists('is_private', $data)) {
+                $assignments['is_private'] = (bool)($data['is_private'] ?? false);
+            }
+            if ($hasIsPublic && array_key_exists('is_public', $data)) {
+                $assignments['is_public'] = (bool)($data['is_public'] ?? true);
+            }
 
             if ($newImage !== null) {
                 $assignments['image'] = $newImage;
@@ -277,6 +301,8 @@ class VenueManager
         $deputies = json_decode($venue['deputies'] ?? '[]', true) ?: [];
         $hasTags = $this->hasColumn('venues', 'tags');
         $hasOpenTimes = $this->hasColumn('venues', 'open_times');
+        $hasIsPrivate = $this->hasColumn('venues', 'is_private');
+        $hasIsPublic = $this->hasColumn('venues', 'is_public');
 
         return [
             'id' => (int) $venue['id'],
@@ -290,6 +316,8 @@ class VenueManager
             'deputies' => $deputies,
             'image' => $venue['image'],
             'open_times' => $hasOpenTimes ? ($venue['open_times'] ?? null) : null,
+            'is_private' => $hasIsPrivate ? (bool)($venue['is_private'] ?? false) : false,
+            'is_public' => $hasIsPublic ? (bool)($venue['is_public'] ?? true) : true,
             'tags' => $hasTags ? (json_decode($venue['tags'] ?? '[]', true) ?: []) : [],
             'created_at' => $venue['created_at'],
         ];

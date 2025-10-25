@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS venues (
     image VARCHAR(255),
     open_times TEXT,
     tags TEXT,
+    is_private BOOLEAN DEFAULT FALSE COMMENT 'Private venues are custom addresses created by users',
+    is_public BOOLEAN DEFAULT TRUE COMMENT 'Can be toggled by venue owner to make venue public',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -28,6 +30,8 @@ CREATE TABLE IF NOT EXISTS events (
     deputies TEXT,
     image VARCHAR(255),
     tags TEXT,
+    is_recurring BOOLEAN DEFAULT FALSE,
+    recurrence_pattern TEXT COMMENT 'JSON field storing recurrence details',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE SET NULL,
     INDEX idx_event_date (event_date),
@@ -110,6 +114,16 @@ CREATE TABLE IF NOT EXISTS users (
     UNIQUE KEY uniq_username (username),
     UNIQUE KEY uniq_email (email),
     INDEX idx_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- User Profiles
+CREATE TABLE IF NOT EXISTS user_profiles (
+    user_id INT UNSIGNED PRIMARY KEY,
+    avatar_url VARCHAR(255),
+    bio TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Bans/Kicks

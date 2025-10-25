@@ -50,10 +50,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (recurringCheckbox.checked) {
             recurringOptions.style.display = 'block';
+            updateRecurrenceOptions();
         }
     }
     
     if (recurrenceTypeSelect) {
         recurrenceTypeSelect.addEventListener('change', updateRecurrenceOptions);
+        updateRecurrenceOptions();
+    }
+    
+    const venueSelect = document.getElementById('venue_id');
+    if (venueSelect) {
+        venueSelect.addEventListener('change', function() {
+            if (this.value === 'create_new') {
+                window.location.href = 'create-venue.php?return=add-event';
+            }
+        });
     }
 });

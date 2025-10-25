@@ -90,6 +90,9 @@ class EventManager
         $tags = array_map('trim', $data['tags'] ?? []);
         $tags = array_values(array_filter(array_unique($tags)));
 
+        $isRecurring = !empty($data['is_recurring']);
+        $recurrencePattern = $this->buildRecurrencePattern($data);
+
         $imageName = null;
         if ($imageFile && $this->uploadPath) {
             $imageName = $this->handleImageUpload($imageFile);
@@ -98,40 +101,42 @@ class EventManager
         try {
             $this->db->beginTransaction();
 
-            if ($this->hasColumn('events', 'tags')) {
-                $stmt = $this->db->prepare(
-                    'INSERT INTO events (title, description, event_date, event_time, venue_id, owner_name, deputies, image, tags)
-                     VALUES (:title, :description, :event_date, :event_time, :venue_id, :owner_name, :deputies, :image, :tags)'
-                );
+            $hasTags = $this->hasColumn('events', 'tags');
+            $hasRecurrence = $this->hasColumn('events', 'is_recurring');
 
-                $stmt->execute([
-                    ':title' => $title,
-                    ':description' => $description,
-                    ':event_date' => $eventDate,
-                    ':event_time' => $startTime ?: null,
-                    ':venue_id' => $venueId ?: null,
-                    ':owner_name' => $owner,
-                    ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
-                    ':image' => $imageName,
-                    ':tags' => json_encode($tags, JSON_THROW_ON_ERROR),
-                ]);
-            } else {
-                $stmt = $this->db->prepare(
-                    'INSERT INTO events (title, description, event_date, event_time, venue_id, owner_name, deputies, image)
-                     VALUES (:title, :description, :event_date, :event_time, :venue_id, :owner_name, :deputies, :image)'
-                );
+            $columns = ['title', 'description', 'event_date', 'event_time', 'venue_id', 'owner_name', 'deputies', 'image'];
+            $params = [
+                ':title' => $title,
+                ':description' => $description,
+                ':event_date' => $eventDate,
+                ':event_time' => $startTime ?: null,
+                ':venue_id' => $venueId ?: null,
+                ':owner_name' => $owner,
+                ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
+                ':image' => $imageName,
+            ];
 
-                $stmt->execute([
-                    ':title' => $title,
-                    ':description' => $description,
-                    ':event_date' => $eventDate,
-                    ':event_time' => $startTime ?: null,
-                    ':venue_id' => $venueId ?: null,
-                    ':owner_name' => $owner,
-                    ':deputies' => json_encode($deputies, JSON_THROW_ON_ERROR),
-                    ':image' => $imageName,
-                ]);
+            if ($hasTags) {
+                $columns[] = 'tags';
+                $params[':tags'] = json_encode($tags, JSON_THROW_ON_ERROR);
             }
+
+            if ($hasRecurrence) {
+                $columns[] = 'is_recurring';
+                $columns[] = 'recurrence_pattern';
+                $params[':is_recurring'] = $isRecurring;
+                $params[':recurrence_pattern'] = $recurrencePattern ? json_encode($recurrencePattern, JSON_THROW_ON_ERROR) : null;
+            }
+
+            $placeholders = array_map(static fn(string $c) => ':' . $c, $columns);
+            $sql = sprintf(
+                'INSERT INTO events (%s) VALUES (%s)',
+                implode(', ', $columns),
+                implode(', ', $placeholders)
+            );
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
 
             $eventId = (int) $this->db->lastInsertId();
 
@@ -467,6 +472,10 @@ class EventManager
         }
 
         $deputies = json_decode($event['deputies'] ?? '[]', true) ?: [];
+        $recurrencePattern = null;
+        if (!empty($event['recurrence_pattern'])) {
+            $recurrencePattern = json_decode($event['recurrence_pattern'], true);
+        }
 
         return [
             'id' => (int) $event['id'],
@@ -480,6 +489,8 @@ class EventManager
             'deputies' => $deputies,
             'image' => $event['image'],
             'tags' => json_decode($event['tags'] ?? '[]', true) ?: [],
+            'is_recurring' => !empty($event['is_recurring']),
+            'recurrence_pattern' => $recurrencePattern,
             'calendar_entries' => $this->fetchCalendarEntries([$eventId])[$eventId] ?? [],
             'shared_with' => $this->fetchStringRelations('event_shares', 'event_id', 'shared_with', [$eventId])[$eventId] ?? [],
             'created_at' => $event['created_at'],
@@ -650,5 +661,45 @@ class EventManager
         if (file_exists($path)) {
             unlink($path);
         }
+    }
+
+    private function buildRecurrencePattern(array $data): ?array
+    {
+        if (empty($data['is_recurring'])) {
+            return null;
+        }
+
+        $recurrenceType = trim($data['recurrence_type'] ?? '');
+        if ($recurrenceType === '') {
+            return null;
+        }
+
+        $pattern = [
+            'type' => $recurrenceType,
+            'end_date' => trim($data['recurrence_end_date'] ?? '') ?: null,
+        ];
+
+        switch ($recurrenceType) {
+            case 'weekly':
+                $pattern['interval'] = (int)($data['weekly_interval'] ?? 1);
+                break;
+
+            case 'monthly_day':
+                $pattern['week'] = trim($data['month_week'] ?? 'first');
+                $pattern['day_of_week'] = trim($data['day_of_week'] ?? 'monday');
+                $pattern['interval'] = (int)($data['monthly_day_interval'] ?? 1);
+                break;
+
+            case 'monthly_date':
+                $pattern['interval'] = (int)($data['monthly_date_interval'] ?? 1);
+                break;
+
+            case 'custom':
+                $pattern['interval'] = (int)($data['custom_interval'] ?? 1);
+                $pattern['unit'] = trim($data['custom_unit'] ?? 'days');
+                break;
+        }
+
+        return $pattern;
     }
 }
