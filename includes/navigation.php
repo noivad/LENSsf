@@ -19,7 +19,7 @@ if (!function_exists('renderNavigation')) {
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="venue-info.php" class="nav-link<?= $activePage === 'venues' ? ' active' : '' ?>">
+                        <a href="venues-list.php" class="nav-link<?= $activePage === 'venues' ? ' active' : '' ?>">
                             <span class="nav-icon">📍</span>
                             <span>Venues</span>
                         </a>

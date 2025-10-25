@@ -52,8 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'deputies' => normalize_list_input($_POST['deputies'] ?? ''),
             'tags' => normalize_list_input($_POST['tags'] ?? ''),
             'is_recurring' => !empty($_POST['is_recurring']),
-            'recurrence_pattern' => trim($_POST['recurrence_pattern'] ?? ''),
+            'recurrence_type' => trim($_POST['recurrence_type'] ?? ''),
             'recurrence_end_date' => trim($_POST['recurrence_end_date'] ?? ''),
+            'weekly_interval' => $_POST['weekly_interval'] ?? 1,
+            'month_week' => trim($_POST['month_week'] ?? ''),
+            'day_of_week' => trim($_POST['day_of_week'] ?? ''),
+            'monthly_day_interval' => $_POST['monthly_day_interval'] ?? 1,
+            'monthly_date_interval' => $_POST['monthly_date_interval'] ?? 1,
+            'custom_interval' => $_POST['custom_interval'] ?? 1,
+            'custom_unit' => trim($_POST['custom_unit'] ?? 'days'),
         ], $imageFile);
 
         if ($event) {
@@ -294,8 +301,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-row">
                         <label>
                             Venue
-                            <select name="venue_id">
+                            <select name="venue_id" id="venue_id">
                                 <option value="">— No venue —</option>
+                                <option value="create_new">+ Create New Venue</option>
                                 <?php foreach ($venues as $venue): ?>
                                     <option value="<?= e($venue['id']) ?>" <?= ($_POST['venue_id'] ?? '') == $venue['id'] ? 'selected' : '' ?>>
                                         <?= e($venue['name']) ?>
@@ -303,6 +311,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <?php endforeach; ?>
                             </select>
                         </label>
+                        <a href="create-venue.php" class="button-small" style="margin-top: 0.5rem; display: inline-block;">Create Custom Venue</a>
                     </div>
 
                     <div class="form-row">
