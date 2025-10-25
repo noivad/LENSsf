@@ -52,12 +52,10 @@ ksort($allTags);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LENSsf::Tags</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/tags.css">
     <link rel="stylesheet" href="css/calendar-7x5.css">
 </head>
-<body data-theme="light">
-    <?php renderNavigation('tags', 'LENSsf - Tags'); ?>
+<body data-theme="dark">
+    <?php renderNavigation('tags', 'Tags'); ?>
 
         <main class="main-content">
             <div class="container">

@@ -108,13 +108,11 @@ $venues = $venueManager ? $venueManager->all() : [];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LENSsf::Venues</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/venue-info.css">
     <link rel="stylesheet" href="css/calendar-7x5.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
-<body data-theme="light">
-<?php renderNavigation('venues', 'LENSsf - Venues'); ?>
+<body data-theme="dark">
+<?php renderNavigation('venues', 'Venues'); ?>
 
 <main class="main-content">
     <div class="container">

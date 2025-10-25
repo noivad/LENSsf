@@ -39,8 +39,11 @@ function updateRecurrenceOptions() {
 document.addEventListener('DOMContentLoaded', function() {
     const recurringCheckbox = document.querySelector('input[name="is_recurring"]');
     const recurringOptions = document.getElementById('recurring-options');
+    const recurrenceTypeSelect = document.getElementById('recurrence_type');
     
-    if (recurringCheckbox) {
+    if (recurringCheckbox && recurringOptions) {
+        recurringOptions.style.display = 'none';
+        
         recurringCheckbox.addEventListener('change', function() {
             recurringOptions.style.display = this.checked ? 'block' : 'none';
         });
@@ -48,5 +51,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (recurringCheckbox.checked) {
             recurringOptions.style.display = 'block';
         }
+    }
+    
+    if (recurrenceTypeSelect) {
+        recurrenceTypeSelect.addEventListener('change', updateRecurrenceOptions);
     }
 });

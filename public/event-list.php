@@ -137,11 +137,9 @@ function buildDayClasses(array $eventsForDay): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LENSsf::Events</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/event-list.css">
     <link rel="stylesheet" href="css/calendar-7x5.css">
 </head>
-<body data-theme="light">
+<body data-theme="dark">
     <div class="app-container">
         <nav class="sidebar-nav">
             <div class="nav-logo">LENS</div>
@@ -180,7 +178,7 @@ function buildDayClasses(array $eventsForDay): string
         </nav>
 
         <header class="top-header">
-            <h1 class="header-title">LENSsf - Events</h1>
+            <h1 class="header-title">All Events</h1>
             <div class="user-controls">
                 <div class="searchbar">
                     <input id="event-search" type="text" placeholder="Search events..." />
@@ -191,16 +189,13 @@ function buildDayClasses(array $eventsForDay): string
                 <div class="user-profile">
                     <img src="https://i.pravatar.cc/150?img=33" alt="User Avatar" class="user-avatar" onclick="toggleUserDropdown()">
                     <div class="user-dropdown" id="userDropdown">
-                        <a href="account-contact.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
-                            📧 Contact Info
+                        <a href="account-unified.php?tab=info" class="dropdown-item">
+                            ⚙️ Account & Contact Info
                         </a>
-                        <a href="account-notifications.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                        <a href="account-unified.php?tab=notifications" class="dropdown-item">
                             🔔 Notifications
                         </a>
-                        <a href="account.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
-                            ⚙️ Account Info
-                        </a>
-                        <a href="account-past-events.php" class="dropdown-item" style="text-decoration: none; color: inherit; display: block;">
+                        <a href="account-unified.php?tab=past-events" class="dropdown-item">
                             📜 My Past Events
                         </a>
                         <div class="dropdown-item" onclick="alert('Logging out...')">
@@ -354,14 +349,13 @@ function buildDayClasses(array $eventsForDay): string
         </main>
 
         <footer class="footer">
-            <p>&copy; <?= date('Y') ?> LENSsf - Local Event Network Service | Built with ❤️ for the community</p>
+            <p>© <?= date('Y') ?> LENS - Local Event Network Service | Built with ❤️ for the community</p>
         </footer>
     </div>
 
     <script>
         window.__CURRENT_FILTER_TAGS__ = <?= json_encode($filterTags) ?>;
     </script>
-    <script src="js/main.js"></script>
     <script src="js/event-list.js"></script>
     <script src="js/calendar-7x5.js"></script>
 </body>
