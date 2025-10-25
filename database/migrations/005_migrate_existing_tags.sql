@@ -11,7 +11,11 @@ FROM (
         SELECT 0 as idx UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 
         UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
     ) numbers
-    WHERE JSON_EXTRACT(tags, CONCAT('$[', idx, ']')) IS NOT NULL
+    WHERE tags IS NOT NULL 
+    AND tags != ''
+    AND tags LIKE '[%'
+    AND JSON_VALID(tags)
+    AND JSON_EXTRACT(tags, CONCAT('$[', idx, ']')) IS NOT NULL
 ) venue_tags_data
 WHERE tag_value IS NOT NULL AND TRIM(tag_value) != '';
 
@@ -25,7 +29,11 @@ FROM (
         SELECT 0 as idx UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 
         UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
     ) numbers
-    WHERE JSON_EXTRACT(tags, CONCAT('$[', idx, ']')) IS NOT NULL
+    WHERE tags IS NOT NULL 
+    AND tags != ''
+    AND tags LIKE '[%'
+    AND JSON_VALID(tags)
+    AND JSON_EXTRACT(tags, CONCAT('$[', idx, ']')) IS NOT NULL
 ) event_tags_data
 WHERE tag_value IS NOT NULL AND TRIM(tag_value) != '';
 
@@ -38,7 +46,11 @@ CROSS JOIN (
     UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
 ) numbers
 INNER JOIN tags t ON t.name = LOWER(TRIM(JSON_UNQUOTE(JSON_EXTRACT(v.tags, CONCAT('$[', numbers.idx, ']')))))
-WHERE JSON_EXTRACT(v.tags, CONCAT('$[', numbers.idx, ']')) IS NOT NULL;
+WHERE v.tags IS NOT NULL 
+AND v.tags != ''
+AND v.tags LIKE '[%'
+AND JSON_VALID(v.tags)
+AND JSON_EXTRACT(v.tags, CONCAT('$[', numbers.idx, ']')) IS NOT NULL;
 
 -- Step 4: Create junction table entries for events
 INSERT IGNORE INTO event_tags (event_id, tag_id)
@@ -49,4 +61,8 @@ CROSS JOIN (
     UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
 ) numbers
 INNER JOIN tags t ON t.name = LOWER(TRIM(JSON_UNQUOTE(JSON_EXTRACT(e.tags, CONCAT('$[', numbers.idx, ']')))))
-WHERE JSON_EXTRACT(e.tags, CONCAT('$[', numbers.idx, ']')) IS NOT NULL;
+WHERE e.tags IS NOT NULL 
+AND e.tags != ''
+AND e.tags LIKE '[%'
+AND JSON_VALID(e.tags)
+AND JSON_EXTRACT(e.tags, CONCAT('$[', numbers.idx, ']')) IS NOT NULL;
