@@ -192,16 +192,3 @@
   loadPopular();
 })();
 </script>
-
-<style>
-.badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    margin: 0.25rem;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-</style>

@@ -126,36 +126,3 @@ usort($venueEvents, static function (array $a, array $b): int {
         </div>
     </div>
 </section>
-
-<style>
-.venue-info-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 1.5rem;
-}
-
-.venue-info-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.venue-image {
-    margin-bottom: 1.5rem;
-}
-
-.venue-details > div {
-    margin-bottom: 0.5rem;
-}
-
-.badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    margin: 0.25rem;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-</style>

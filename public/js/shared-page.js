@@ -1,49 +1,6 @@
-<?php
-/** @var array $events */
-/** @var array $venues */
-
-$currentUser = $_SESSION['current_user'] ?? 'Demo User';
-$currentUserId = $_SESSION['user_id'] ?? 1;
-$tab = $_GET['tab'] ?? 'shared_with_me';
-?>
-<section>
-    <h2>Shared</h2>
-
-    <div class="card">
-        <div class="actions" style="margin-bottom: 1rem;">
-            <a href="?page=shared&tab=shared_with_me" class="<?= $tab === 'shared_with_me' ? 'active' : '' ?>">Shared with me</a>
-            <a href="?page=shared&tab=my_shares" class="<?= $tab === 'my_shares' ? 'active' : '' ?>">My shares</a>
-        </div>
-
-        <?php if ($tab === 'shared_with_me'): ?>
-            <h3>Events Shared With Me</h3>
-            <div id="shared-events-list" class="item-list">
-                <p class="loading">Loading shared events...</p>
-            </div>
-
-            <h3 style="margin-top: 2rem;">Venues Shared With Me</h3>
-            <div id="shared-venues-list" class="item-list">
-                <p class="loading">Loading shared venues...</p>
-            </div>
-
-        <?php elseif ($tab === 'my_shares'): ?>
-            <h3>Events I've Shared</h3>
-            <div id="my-event-shares-list" class="item-list">
-                <p class="loading">Loading your event shares...</p>
-            </div>
-
-            <h3 style="margin-top: 2rem;">Venues I've Shared</h3>
-            <div id="my-venue-shares-list" class="item-list">
-                <p class="loading">Loading your venue shares...</p>
-            </div>
-        <?php endif; ?>
-    </div>
-</section>
-
-<script>
 (function() {
-    const currentUserId = <?= json_encode($currentUserId) ?>;
-    const tab = <?= json_encode($tab) ?>;
+    const currentUserId = window.__CURRENT_USER_ID__ || 1;
+    const tab = window.__CURRENT_TAB__ || 'shared_with_me';
 
     if (tab === 'shared_with_me') {
         loadSharedWithMe();
@@ -196,4 +153,3 @@ $tab = $_GET['tab'] ?? 'shared_with_me';
         }
     }
 })();
-</script>
