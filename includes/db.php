@@ -55,17 +55,12 @@ class Database
         }
 
         try {
-            self::$pdo->beginTransaction();
             foreach (array_filter(array_map('trim', explode(';', $sql))) as $statement) {
                 if ($statement !== '') {
                     self::$pdo->exec($statement);
                 }
             }
-            self::$pdo->commit();
         } catch (PDOException $e) {
-            if (self::$pdo->inTransaction()) {
-                self::$pdo->rollBack();
-            }
             throw new RuntimeException('Failed to initialize database schema: ' . $e->getMessage(), (int) $e->getCode(), $e);
         }
     }
