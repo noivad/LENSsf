@@ -211,11 +211,14 @@ body {
 }
 
 .dropdown-item {
-    padding: 0.9rem 1.4rem;
+    padding: 0.6rem 1.4rem;
     cursor: pointer;
     color: var(--text-secondary);
     border-bottom: 1px solid var(--border-color);
     transition: all 0.2s ease;
+    display: block;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .dropdown-item:last-child {
