@@ -28,6 +28,15 @@ $venueManager = new VenueManager($pdo, $uploadDir);
 $venues = $venueManager->all();
 $siteName = SITE_NAME;
 
+$prefillDate = '';
+if (isset($_GET['date']) && !empty($_GET['date'])) {
+    $dateParam = trim($_GET['date']);
+    $dateTime = DateTime::createFromFormat('Y-m-d', $dateParam);
+    if ($dateTime && $dateTime->format('Y-m-d') === $dateParam) {
+        $prefillDate = $dateParam;
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $eventDate = trim($_POST['event_date'] ?? '');
@@ -198,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-split">
                             <label>
                                 Event Date *
-                                <input type="date" name="event_date" required value="<?= e($_POST['event_date'] ?? '') ?>">
+                                <input type="date" name="event_date" required value="<?= e($_POST['event_date'] ?? $prefillDate) ?>">
                             </label>
                             <label>
                                 Start Time

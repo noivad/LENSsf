@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeStickyPopovers();
     initializeMiniMaps();
     initializeCalendarSearch();
+    initializeEmptyDayClicks();
 });
 
 function initializeStickyPopovers() {
@@ -193,5 +194,36 @@ function initializeCalendarSearch() {
             e.preventDefault();
             applySearch();
         }
+    });
+}
+
+function initializeEmptyDayClicks() {
+    const calendarGrid = document.querySelector('.calendar-grid');
+    if (!calendarGrid) return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentMonth = parseInt(urlParams.get('month') || new Date().getMonth() + 1);
+    const currentYear = parseInt(urlParams.get('year') || new Date().getFullYear());
+    
+    calendarGrid.addEventListener('click', function(e) {
+        const calendarDay = e.target.closest('.calendar-day');
+        
+        if (!calendarDay) return;
+        
+        const hasEvents = calendarDay.classList.contains('has-event');
+        
+        if (hasEvents) return;
+        
+        const dayNumberEl = calendarDay.querySelector('.day-number');
+        if (!dayNumberEl) return;
+        
+        const dayNumber = parseInt(dayNumberEl.textContent);
+        if (!dayNumber || isNaN(dayNumber)) return;
+        
+        const formattedMonth = String(currentMonth).padStart(2, '0');
+        const formattedDay = String(dayNumber).padStart(2, '0');
+        const dateString = `${currentYear}-${formattedMonth}-${formattedDay}`;
+        
+        window.location.href = `add-event.php?date=${dateString}`;
     });
 }
