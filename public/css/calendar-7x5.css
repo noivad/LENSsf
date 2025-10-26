@@ -65,11 +65,11 @@ body {
 .sidebar-nav {
     grid-area: nav;
     background: var(--bg-secondary);
-    padding: 1.5rem 1rem;
+    padding: 0.75rem 0.5rem;
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.75rem;
     position: relative;
     z-index: 2;
 }
@@ -88,15 +88,15 @@ body {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.2rem;
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    gap: 0.9rem;
-    padding: 0.85rem 1.1rem;
-    border-radius: 12px;
+    gap: 0.45rem;
+    padding: 0.425rem 0.55rem;
+    border-radius: 6px;
     color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
@@ -121,7 +121,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.8rem 2.5rem;
+    padding: 0.9rem 1.25rem;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     box-shadow: var(--shadow-medium);
@@ -138,15 +138,15 @@ body {
 .user-controls {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 0.6rem;
 }
 
 .theme-toggle {
     background: var(--bg-tertiary);
     border: 1px solid transparent;
     color: var(--text-primary);
-    padding: 0.55rem 1.15rem;
-    border-radius: 10px;
+    padding: 0.275rem 0.575rem;
+    border-radius: 5px;
     cursor: pointer;
     font-weight: 500;
     transition: all 0.25s ease;
@@ -183,7 +183,7 @@ body {
 
 .user-dropdown {
     position: absolute;
-    top: 64px;
+    top: 100%;
     right: 0;
     min-width: 240px;
     background: var(--bg-secondary);
@@ -192,6 +192,7 @@ body {
     box-shadow: var(--shadow-strong);
     overflow: hidden;
     display: none;
+    margin-top: 0.5rem;
 }
 
 .user-dropdown.active {
@@ -211,7 +212,7 @@ body {
 }
 
 .dropdown-item {
-    padding: 0.6rem 1.4rem;
+    padding: 0.3rem 0.7rem;
     cursor: pointer;
     color: var(--text-secondary);
     border-bottom: 1px solid var(--border-color);
@@ -232,7 +233,7 @@ body {
 
 .main-content {
     grid-area: main;
-    padding: 1.5rem 2.75rem 1.5rem;
+    padding: 0.75rem 1.375rem 0.75rem;
     overflow-y: auto;
 }
 
@@ -241,13 +242,13 @@ body {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.75rem;
 }
 
 .calendar-header {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
     align-items: center;
 }
 
@@ -255,15 +256,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.75rem;
 }
 
 .calendar-btn {
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    padding: 0.6rem 1.4rem;
-    border-radius: 12px;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -293,18 +294,18 @@ body {
 
 .calendar-grid-container {
     background: var(--bg-secondary);
-    border-radius: 24px;
-    padding: 2.2rem;
+    border-radius: 12px;
+    padding: 1.1rem;
     box-shadow: var(--shadow-strong);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
 .weekday-labels {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 12px;
+    gap: 6px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-weight: 600;
@@ -324,7 +325,7 @@ body {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(5, minmax(110px, 1fr));
-    gap: 12px;
+    gap: 6px;
     position: relative;
     z-index: 2;
 }
@@ -338,12 +339,12 @@ body {
 .calendar-day {
     position: relative;
     background: var(--bg-tertiary);
-    border-radius: 18px;
+    border-radius: 9px;
     border: 2px solid var(--border-color);
-    padding: 1rem;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
     transition: all 0.28s ease;
     cursor: pointer;
     overflow: visible;
@@ -396,14 +397,14 @@ body {
     color: var(--text-secondary);
     font-weight: 500;
     text-align: center;
-    padding: 0.25rem;
+    padding: 0.125rem;
     background: var(--bg-secondary);
-    border-radius: 8px;
+    border-radius: 4px;
 }
 
 .flag-row {
     display: flex;
-    gap: 0.25rem;
+    gap: 0.125rem;
     flex-wrap: wrap;
 }
 
@@ -434,13 +435,13 @@ body {
 
 .event-popover {
     position: absolute;
-    top: calc(100% + 12px);
+    top: calc(100% + 6px);
     left: 50%;
     transform: translateX(-50%);
     background: var(--bg-secondary);
-    border-radius: 18px;
+    border-radius: 9px;
     border: 2px solid var(--accent-blue);
-    padding: 1.4rem;
+    padding: 0.7rem;
     min-width: 320px;
     box-shadow: var(--shadow-strong);
     display: none;
@@ -475,8 +476,8 @@ body {
 }
 
 .event-item {
-    padding-bottom: 1.1rem;
-    margin-bottom: 1em;
+    padding-bottom: 0.55rem;
+    margin-bottom: 0.5em;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -489,14 +490,14 @@ body {
 .event-title {
     font-weight: 600;
     font-size: 1.1rem;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.2rem;
     color: var(--accent-blue);
 }
 
 .event-detail {
     font-size: 0.92rem;
     color: var(--text-secondary);
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.175rem;
 }
 
 .event-detail.emphasis {
@@ -506,17 +507,17 @@ body {
 
 .event-actions {
     display: flex;
-    gap: 0.45rem;
+    gap: 0.225rem;
     flex-wrap: wrap;
-    margin-top: 0.7rem;
+    margin-top: 0.35rem;
 }
 
 .event-action-btn {
     background: var(--bg-tertiary);
     border: 1px solid rgba(157, 77, 255, 0.3);
-    border-radius: 10px;
+    border-radius: 5px;
     color: var(--text-primary);
-    padding: 0.45rem 1rem;
+    padding: 0.225rem 0.5rem;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
@@ -539,8 +540,8 @@ body {
 
 .event-images {
     background: var(--bg-secondary);
-    border-radius: 24px;
-    padding: 2.4rem;
+    border-radius: 12px;
+    padding: 1.2rem;
     box-shadow: var(--shadow-medium);
 }
 
@@ -552,18 +553,18 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 1.6rem;
+    margin-bottom: 0.8rem;
 }
 
 .images-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.4rem;
+    gap: 0.7rem;
 }
 
 .image-card {
     position: relative;
-    border-radius: 16px;
+    border-radius: 8px;
     overflow: hidden;
     border: 2px solid transparent;
     background: linear-gradient(var(--bg-tertiary), var(--bg-tertiary)),
@@ -591,7 +592,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    padding: 1.1rem;
+    padding: 0.55rem;
     background: linear-gradient(180deg, transparent, rgba(4, 7, 18, 0.78));
     opacity: 0;
     transition: opacity 0.28s ease;
@@ -634,8 +635,8 @@ body {
 
 .modal-content {
     background: var(--bg-secondary);
-    border-radius: 24px;
-    padding: 2.2rem;
+    border-radius: 12px;
+    padding: 1.1rem;
     max-width: 480px;
     width: 90%;
     box-shadow: var(--shadow-strong);
@@ -657,25 +658,25 @@ body {
 .modal-title {
     font-size: 1.55rem;
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: var(--accent-pink);
 }
 
 .modal-text {
     color: var(--text-secondary);
-    margin-bottom: 1.8rem;
+    margin-bottom: 0.9rem;
 }
 
 .modal-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
     justify-content: flex-end;
 }
 
 .modal-btn {
     border: none;
-    border-radius: 12px;
-    padding: 0.65rem 1.4rem;
+    border-radius: 6px;
+    padding: 0.325rem 0.7rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.22s ease;
@@ -707,7 +708,7 @@ body {
     grid-area: footer;
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
-    padding: 1.5rem 2.5rem;
+    padding: 0.75rem 1.25rem;
     text-align: center;
     color: var(--text-secondary);
     font-size: 0.95rem;
@@ -836,24 +837,24 @@ body {
 .tag-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-top: 0.4rem;
+    gap: 0.175rem;
+    margin-top: 0.2rem;
 }
 
 .tag-chip {
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    padding: 0.15rem 0.5rem;
-    border-radius: 8px;
+    padding: 0.075rem 0.25rem;
+    border-radius: 4px;
     font-size: 0.78rem;
 }
 
 .day-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem;
-    margin-top: 0.25rem;
+    gap: 0.125rem;
+    margin-top: 0.125rem;
 }
 
 .day-tags .tag-chip {
@@ -898,17 +899,17 @@ body {
 .upcoming-events-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
 }
 
 .upcoming-event-card {
     display: flex;
-    gap: 1.5rem;
+    gap: 0.75rem;
     background: var(--bg-secondary);
-    border-radius: 18px;
+    border-radius: 9px;
     border: 1px solid var(--border-color);
-    padding: 0.8rem;
+    padding: 0.4rem;
     transition: all 0.25s ease;
 }
 
@@ -919,10 +920,10 @@ body {
 }
 
 .event-card-img {
-    width: 150px;
-    height: 100px;
+    width: 120px;
+    height: 80px;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 6px;
     border: 1px solid var(--border-color);
     flex-shrink: 0;
 }
@@ -931,7 +932,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.125rem;
 }
 
 .event-card-title {
@@ -950,25 +951,25 @@ body {
 .event-card-desc {
     font-size: 0.85rem;
     color: var(--text-secondary);
-    margin: 0.25rem 0 0;
+    margin: 0.125rem 0 0;
     line-height: 1.4;
 }
 
 .account-tabs {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.25rem;
     background: var(--bg-secondary);
-    border-radius: 16px;
-    padding: 0.5rem;
-    margin-bottom: 2rem;
+    border-radius: 8px;
+    padding: 0.25rem;
+    margin-bottom: 1rem;
     box-shadow: var(--shadow-medium);
 }
 
 .account-tab {
     flex: 1;
-    padding: 0.85rem 1.5rem;
+    padding: 0.425rem 0.75rem;
     text-align: center;
-    border-radius: 12px;
+    border-radius: 6px;
     color: var(--text-secondary);
     text-decoration: none;
     font-weight: 600;
@@ -995,15 +996,15 @@ body {
 
 .account-section {
     background: var(--bg-secondary);
-    border-radius: 24px;
-    padding: 2.5rem;
+    border-radius: 12px;
+    padding: 1.25rem;
     box-shadow: var(--shadow-medium);
 }
 
 .account-section-title {
     font-size: 1.8rem;
     font-weight: 600;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1013,39 +1014,39 @@ body {
 .account-info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .account-card {
     background: var(--bg-tertiary);
-    border-radius: 18px;
-    padding: 2rem;
+    border-radius: 9px;
+    padding: 1rem;
     border: 1px solid var(--border-color);
     transition: all 0.25s ease;
 }
 
 .account-card:hover {
-    box-shadow: 0 0 24px var(--hover-glow);
+    box-shadow: 0 0 12px var(--hover-glow);
     border-color: var(--accent-blue);
 }
 
 .account-card h2 {
     font-size: 1.4rem;
     font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
     color: var(--text-primary);
 }
 
 .account-form {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.75rem;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .form-label {
@@ -1058,8 +1059,8 @@ body {
 .form-textarea {
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    padding: 0.375rem 0.5rem;
     color: var(--text-primary);
     font-family: inherit;
     transition: all 0.25s ease;
@@ -1081,8 +1082,8 @@ body {
     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
     color: white;
     border: none;
-    border-radius: 12px;
-    padding: 0.85rem 1.8rem;
+    border-radius: 6px;
+    padding: 0.425rem 0.9rem;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
@@ -1098,15 +1099,15 @@ body {
 .notifications-list {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
 .notification-item {
     display: flex;
-    gap: 1.2rem;
+    gap: 0.6rem;
     background: var(--bg-tertiary);
-    border-radius: 16px;
-    padding: 1.5rem;
+    border-radius: 8px;
+    padding: 0.75rem;
     border: 1px solid var(--border-color);
     transition: all 0.25s ease;
 }
@@ -1129,7 +1130,7 @@ body {
     width: 48px;
     height: 48px;
     background: var(--bg-primary);
-    border-radius: 12px;
+    border-radius: 6px;
     border: 1px solid var(--border-color);
 }
 
@@ -1137,7 +1138,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.15rem;
 }
 
 .notification-title {
@@ -1160,12 +1161,12 @@ body {
 .past-events-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    gap: 0.75rem;
 }
 
 .event-card {
     background: var(--bg-tertiary);
-    border-radius: 18px;
+    border-radius: 9px;
     border: 1px solid var(--border-color);
     overflow: hidden;
     transition: all 0.28s ease;
@@ -1195,42 +1196,42 @@ body {
 }
 
 .event-card-body {
-    padding: 1.5rem;
+    padding: 0.75rem;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.3rem;
 }
 
 .event-card-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--accent-blue);
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.25rem;
 }
 
 .event-card-description {
     color: var(--text-secondary);
     font-size: 0.9rem;
     line-height: 1.5;
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
 }
 
 .empty-state {
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 2rem 1rem;
     color: var(--text-secondary);
 }
 
 .empty-icon {
     font-size: 4rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     opacity: 0.5;
 }
 
 .alert {
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
     border: 1px solid;
 }
 
@@ -1253,8 +1254,8 @@ body {
 
 .card {
     background: var(--bg-secondary);
-    border-radius: 24px;
-    padding: 2.5rem;
+    border-radius: 12px;
+    padding: 1.25rem;
     box-shadow: var(--shadow-medium);
     border: 1px solid var(--border-color);
 }
@@ -1262,13 +1263,13 @@ body {
 .form {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.75rem;
 }
 
 .form-row {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .form-row label {
@@ -1277,7 +1278,7 @@ body {
     font-size: 0.95rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .form-row input[type="text"],
@@ -1290,8 +1291,8 @@ body {
 .form-row textarea {
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    padding: 0.375rem 0.5rem;
     color: var(--text-primary);
     font-family: inherit;
     font-size: 1rem;
@@ -1324,12 +1325,12 @@ body {
 .form-split {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
 .form-row input[type="checkbox"] {
     width: auto;
-    margin-right: 0.5rem;
+    margin-right: 0.25rem;
 }
 
 .button,
@@ -1337,8 +1338,8 @@ body {
     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
     color: white;
     border: none;
-    border-radius: 12px;
-    padding: 0.85rem 1.8rem;
+    border-radius: 6px;
+    padding: 0.425rem 0.9rem;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
@@ -1356,8 +1357,8 @@ body {
     background: var(--bg-tertiary);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    padding: 0.3rem 0.6rem;
     font-weight: 600;
     text-decoration: none;
     display: inline-block;
@@ -1366,15 +1367,15 @@ body {
 
 .button-small:hover {
     border-color: var(--accent-blue);
-    box-shadow: 0 0 18px var(--hover-glow);
+    box-shadow: 0 0 9px var(--hover-glow);
 }
 
 .button-danger {
     background: linear-gradient(135deg, #e63946, #d62828);
     color: white;
     border: none;
-    border-radius: 12px;
-    padding: 0.85rem 1.8rem;
+    border-radius: 6px;
+    padding: 0.425rem 0.9rem;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
@@ -1390,24 +1391,25 @@ body {
 .venue-grid,
 .venues-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .venue-card,
 .venue-item {
     background: var(--bg-tertiary);
-    border-radius: 18px;
-    padding: 1.5rem;
+    border-radius: 9px;
+    padding: 0;
+    margin: 0;
     border: 1px solid var(--border-color);
     transition: all 0.28s ease;
 }
 
 .venue-card:hover,
 .venue-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 0 24px var(--hover-glow);
+    transform: translateY(-2px);
+    box-shadow: 0 0 12px var(--hover-glow);
     border-color: var(--accent-blue);
 }
 
@@ -1415,40 +1417,40 @@ body {
     font-size: 1.3rem;
     font-weight: 600;
     color: var(--accent-blue);
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.4rem;
 }
 
 .venue-meta {
     font-size: 0.9rem;
     color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .venue-meta-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
 }
 
 .badge {
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
     color: var(--accent-purple);
-    padding: 0.25rem 0.6rem;
-    border-radius: 8px;
+    padding: 0.125rem 0.3rem;
+    border-radius: 4px;
     font-size: 0.8rem;
     font-weight: 600;
     display: inline-block;
-    margin-right: 0.3rem;
-    margin-bottom: 0.3rem;
+    margin-right: 0.15rem;
+    margin-bottom: 0.15rem;
 }
 
 .venue-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .venue-header h2 {
@@ -1458,14 +1460,14 @@ body {
 .tags-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1.5rem;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
 }
 
 .tag-item {
     background: var(--bg-tertiary);
-    border-radius: 14px;
-    padding: 1.2rem;
+    border-radius: 7px;
+    padding: 0.6rem;
     border: 1px solid var(--border-color);
     transition: all 0.25s ease;
     cursor: pointer;
@@ -1473,16 +1475,16 @@ body {
 }
 
 .tag-item:hover {
-    transform: translateY(-3px);
+    transform: translateY(-1.5px);
     border-color: var(--accent-purple);
-    box-shadow: 0 0 18px rgba(157, 77, 255, 0.35);
+    box-shadow: 0 0 9px rgba(157, 77, 255, 0.35);
 }
 
 .tag-name {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--accent-purple);
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.15rem;
 }
 
 .tag-count {
@@ -1491,15 +1493,15 @@ body {
 }
 
 .search-box {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .search-box input {
     width: 100%;
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 0.85rem 1.2rem;
+    border-radius: 6px;
+    padding: 0.425rem 0.6rem;
     color: var(--text-primary);
     font-size: 1rem;
     transition: all 0.25s ease;
@@ -1513,10 +1515,10 @@ body {
 
 .info-box {
     background: var(--bg-tertiary);
-    border-radius: 12px;
-    padding: 1rem 1.3rem;
+    border-radius: 6px;
+    padding: 0.5rem 0.65rem;
     border-left: 4px solid var(--accent-blue);
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
     color: var(--text-secondary);
 }
 
@@ -1527,7 +1529,7 @@ body {
 .subtle {
     color: var(--text-secondary);
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 1.5rem 0.5rem;
     font-style: italic;
 }
 
@@ -1569,7 +1571,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 2rem;
+    padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -1593,7 +1595,7 @@ body {
 }
 
 .popover-body {
-    padding: 2rem;
+    padding: 1rem;
 }
 
 .venue-detail-link {
@@ -1604,25 +1606,25 @@ body {
 .venue-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    gap: 0.75rem;
     padding: 0;
 }
 
 .venue-card {
     background: var(--bg-secondary);
     border: 2px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 8px;
     overflow: visible;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     box-shadow: var(--shadow-medium);
     display: flex;
     flex-direction: column;
     height: auto;
-    min-height: 300px;
+    min-height: 250px;
 }
 
 .venue-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-strong);
     border-color: var(--accent-blue);
 }
@@ -1638,7 +1640,7 @@ body {
 
 .venue-image {
     width: 100%;
-    height: 200px;
+    height: 150px;
     overflow: hidden;
     background: var(--bg-tertiary);
     flex-shrink: 0;
@@ -1656,7 +1658,7 @@ body {
 }
 
 .venue-card-content {
-    padding: 1.5rem;
+    padding: 0.75rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -1664,7 +1666,7 @@ body {
 
 .venue-card-content h3 {
     font-size: 1.3rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.375rem;
     color: var(--text-primary);
     font-weight: 600;
 }
@@ -1672,42 +1674,42 @@ body {
 .venue-description {
     color: var(--text-secondary);
     font-size: 0.95rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.375rem;
     line-height: 1.5;
 }
 
 .venue-location {
     color: var(--text-secondary);
     font-size: 0.9rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.375rem;
 }
 
 .venue-card .tag-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
 }
 
 .venue-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 /* For responsive layouts */
 @media (max-width: 768px) {
     .venue-grid {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 1rem;
+        gap: 0.5rem;
     }
     
     .venue-card-content {
-        padding: 1rem;
+        padding: 0.5rem;
     }
     
     .venue-image {
-        height: 160px;
+        height: 120px;
     }
 }
